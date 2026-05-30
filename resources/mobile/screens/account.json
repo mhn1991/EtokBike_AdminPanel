@@ -1,0 +1,132 @@
+{
+  "schemaVersion": 1,
+  "screenId": "account",
+  "version": 4,
+  "title": "حساب کاربری",
+  "hideTitle": true,
+  "sections": [
+    {
+      "id": "account-hero",
+      "type": "hero",
+      "data": {
+        "visual": "account",
+        "eyebrow": "حساب مالک دوچرخه",
+        "title": "سلام علی، وضعیت خرید و دوچرخه‌ها اینجاست",
+        "subtitle": "سفارش، تعمیر، دوچرخه‌های ثبت‌شده و سوابق خرید در یک مسیر قابل پیگیری هستند.",
+        "featureTitle": "سرویس بعدی ETX 200",
+        "featureSubtitle": "پیشنهاد: بازبینی ترمز و زنجیر تا پایان خرداد",
+        "featurePrice": "رزرو سریع فعال است",
+        "primaryActionLabel": "رزرو سرویس",
+        "primaryTarget": "services",
+        "secondaryActionLabel": "پیام به پشتیبانی",
+        "secondaryTarget": "messages",
+        "stats": [
+          { "value": "۱ سفارش", "label": "در حال آماده‌سازی" },
+          { "value": "۲ دوچرخه", "label": "ثبت شده" },
+          { "value": "۳ خرید", "label": "سوابق قبلی" },
+          { "value": "۱ یادآور", "label": "سرویس بعدی" }
+        ]
+      },
+      "layout": { "variant": "bike_shop" },
+      "style": { "emphasis": "high" }
+    },
+    {
+      "id": "profile-summary",
+      "type": "profile_summary",
+      "data": {
+        "title": "وضعیت حساب",
+        "subtitle": "اطلاعات تماس، آدرس تحویل و سابقه سفارش‌ها برای خرید و خدمات استفاده می‌شود."
+      },
+      "layout": {},
+      "style": { "sectionVariant": "info" }
+    },
+    {
+      "id": "ongoing-purchases",
+      "type": "ongoing_purchase",
+      "data": {
+        "title": "پیگیری‌های فعال",
+        "emptyStateText": "در حال حاضر خرید فعالی ندارید.",
+        "items": [
+          {
+            "id": "order-1024",
+            "title": "سفارش ET-1024",
+            "subtitle": "دوچرخه کوهستان ETX 200 + کلاه AirFit",
+            "status": "در مرحله آماده‌سازی",
+            "currentLocation": "وضعیت فعلی: انبار مرکزی EtokBike",
+            "expandLabel": "مشاهده روند سفارش",
+            "collapseLabel": "بستن روند سفارش",
+            "currentStep": 1,
+            "steps": [
+              { "label": "ثبت سفارش", "detail": "سفارش شما ثبت و تایید شد." },
+              { "label": "آماده‌سازی", "detail": "دوچرخه در حال تنظیم، تست ترمز و بسته‌بندی است." },
+              { "label": "ارسال", "detail": "پس از تحویل به پیک، کد رهگیری نمایش داده می‌شود." },
+              { "label": "تحویل", "detail": "پس از دریافت سفارش توسط مشتری تکمیل می‌شود." }
+            ]
+          }
+        ]
+      },
+      "layout": {},
+      "style": { "cardVariant": "compact" }
+    },
+    {
+      "id": "bike-profiles",
+      "type": "bike_profile_list",
+      "data": {
+        "title": "دوچرخه‌های من",
+        "items": [
+          {
+            "title": "ETX 200",
+            "subtitle": "کوهستان - استفاده هفتگی",
+            "fields": [
+              { "label": "سایز فریم", "value": "M" },
+              { "label": "سایز تایر", "value": "۲۹ اینچ" },
+              { "label": "ترمز", "value": "دیسکی" },
+              { "label": "پیشنهاد بعدی", "value": "بازبینی ترمز و زنجیر" }
+            ]
+          },
+          {
+            "title": "E-City",
+            "subtitle": "شهری - رفت‌وآمد روزانه",
+            "fields": [
+              { "label": "سایز فریم", "value": "L" },
+              { "label": "سایز تایر", "value": "۷۰۰C" },
+              { "label": "ترمز", "value": "لقمه‌ای" },
+              { "label": "یادآوری بعدی", "value": "سرویس فصلی" }
+            ]
+          }
+        ]
+      },
+      "layout": {},
+      "style": { "cardVariant": "compact" }
+    },
+    {
+      "id": "client-details",
+      "type": "client_details",
+      "data": {
+        "title": "اطلاعات تماس و تحویل",
+        "fields": [
+          { "label": "نام کامل", "value": "علی رضایی" },
+          { "label": "شماره تماس", "value": "۰۹۱۲۱۲۳۴۵۶۷" },
+          { "label": "ایمیل", "value": "ali.rezaei@example.com" },
+          { "label": "آدرس تحویل", "value": "تهران، خیابان ولیعصر، پلاک ۱۲" }
+        ]
+      },
+      "layout": {},
+      "style": { "sectionVariant": "info" }
+    },
+    {
+      "id": "purchase-history",
+      "type": "purchase_history",
+      "data": {
+        "title": "سوابق خرید و خدمات",
+        "items": [
+          { "title": "سفارش ET-1009", "subtitle": "تایر ضد پنچری + لنت ترمز دیسکی", "description": "تحویل شده در ۱۴۰۵/۰۲/۱۸", "price": "۲,۴۴۰,۰۰۰ تومان" },
+          { "title": "سرویس ET-S221", "subtitle": "سرویس کامل دوچرخه", "description": "انجام شده در فروشگاه مرکزی", "price": "۹۵۰,۰۰۰ تومان" },
+          { "title": "سفارش ET-0972", "subtitle": "چراغ جلو شارژی + قفل زنجیری", "description": "تحویل شده در ۱۴۰۵/۰۱/۰۲", "price": "۱,۶۴۰,۰۰۰ تومان" }
+        ]
+      },
+      "layout": { "presentation": "list" },
+      "style": { "cardVariant": "compact" }
+    }
+  ]
+}

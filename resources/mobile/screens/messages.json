@@ -1,0 +1,103 @@
+{
+  "schemaVersion": 1,
+  "screenId": "messages",
+  "version": 2,
+  "title": "مرکز پیام",
+  "hideTitle": true,
+  "sections": [
+    {
+      "id": "messages-hero",
+      "type": "hero",
+      "data": {
+        "visual": "messages",
+        "eyebrow": "پشتیبانی فروشگاه",
+        "title": "پیام‌ها بر اساس موضوع مرتب شده‌اند",
+        "subtitle": "برای سفارش، خدمات، برنامه‌ها یا فاکتور مستقیم به همان واحد پیام بدهید و گفتگو را در یک مسیر نگه دارید.",
+        "featureTitle": "۲ پیام خوانده نشده",
+        "featureSubtitle": "یک پیام سفارش و یک پیام برنامه منتظر پاسخ شماست",
+        "featurePrice": "پاسخ سریع‌تر با انتخاب واحد درست",
+        "primaryActionLabel": "پشتیبانی سفارش",
+        "primaryTarget": "messages",
+        "secondaryActionLabel": "رزرو سرویس",
+        "secondaryTarget": "services",
+        "stats": [
+          { "value": "۴ واحد", "label": "پشتیبانی" },
+          { "value": "۲ پیام", "label": "خوانده نشده" },
+          { "value": "۱ سفارش", "label": "در پیگیری" },
+          { "value": "۱ برنامه", "label": "ظرفیت باز" }
+        ]
+      },
+      "layout": { "variant": "bike_shop" },
+      "style": { "emphasis": "high" }
+    },
+    {
+      "id": "message-center",
+      "type": "message_center",
+      "data": {
+        "title": "مرکز گفتگو",
+        "defaultDepartment": "support",
+        "summary": {
+          "title": "پیام‌های فعال",
+          "subtitle": "واحد مناسب را انتخاب کنید تا پاسخ، فاکتور یا وضعیت سفارش سریع‌تر پیگیری شود."
+        },
+        "departments": [
+          {
+            "id": "support",
+            "title": "پشتیبانی سفارش",
+            "subtitle": "پیگیری خرید، ارسال و وضعیت سفارش",
+            "unreadLabel": "۱ پیام جدید",
+            "threadTitle": "گفتگو با پشتیبانی سفارش",
+            "composerTitle": "ارسال پیام به پشتیبانی سفارش",
+            "placeholder": "شماره سفارش یا سوال خود را بنویسید",
+            "sendLabel": "ارسال به پشتیبانی",
+            "messages": [
+              { "sender": "department", "label": "پشتیبانی سفارش", "text": "سفارش ET-1024 در مرحله آماده‌سازی است و پس از تحویل به پیک کد رهگیری ارسال می‌شود.", "time": "امروز ۱۰:۳۰" },
+              { "sender": "client", "label": "شما", "text": "لطفا زمان تقریبی تحویل را اعلام کنید.", "time": "امروز ۱۰:۳۵" }
+            ]
+          },
+          {
+            "id": "service",
+            "title": "خدمات و تعمیرات",
+            "subtitle": "رزرو سرویس، تعمیرات و مشاوره فنی",
+            "unreadLabel": "",
+            "threadTitle": "گفتگو با واحد خدمات",
+            "composerTitle": "ارسال پیام به خدمات",
+            "placeholder": "مشکل دوچرخه یا زمان پیشنهادی سرویس را بنویسید",
+            "sendLabel": "ارسال به خدمات",
+            "messages": [
+              { "sender": "department", "label": "واحد خدمات", "text": "برای سرویس کامل، دو بازه خالی چهارشنبه ۱۶ و ۱۸ داریم.", "time": "دیروز ۱۵:۴۰" }
+            ]
+          },
+          {
+            "id": "programs",
+            "title": "برنامه‌ها و آموزش",
+            "subtitle": "ثبت‌نام، ظرفیت و سوال از مربی",
+            "unreadLabel": "۱ پیام جدید",
+            "threadTitle": "گفتگو با واحد برنامه‌ها",
+            "composerTitle": "ارسال پیام به واحد برنامه‌ها",
+            "placeholder": "نام برنامه یا سوال ثبت‌نام را بنویسید",
+            "sendLabel": "ارسال به برنامه‌ها",
+            "messages": [
+              { "sender": "department", "label": "واحد برنامه‌ها", "text": "برای تور کمپینگ آخر هفته هنوز ۵ جایگاه باقی مانده است.", "time": "امروز ۰۹:۱۰" }
+            ]
+          },
+          {
+            "id": "finance",
+            "title": "امور مالی",
+            "subtitle": "پرداخت، فاکتور و بازگشت وجه",
+            "unreadLabel": "",
+            "threadTitle": "گفتگو با امور مالی",
+            "composerTitle": "ارسال پیام به امور مالی",
+            "placeholder": "موضوع پرداخت یا فاکتور را بنویسید",
+            "sendLabel": "ارسال به مالی",
+            "messages": [
+              { "sender": "department", "label": "امور مالی", "text": "فاکتور خریدهای قبلی در حساب کاربری قابل مشاهده است.", "time": "سه‌شنبه ۱۲:۲۰" }
+            ]
+          }
+        ]
+      },
+      "layout": {},
+      "style": { "sectionVariant": "standard" }
+    }
+  ]
+}

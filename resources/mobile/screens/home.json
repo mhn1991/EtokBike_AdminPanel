@@ -1,0 +1,166 @@
+{
+  "schemaVersion": 1,
+  "screenId": "home",
+  "version": 5,
+  "title": "EtokBike",
+  "hideTitle": true,
+  "sections": [
+    {
+      "id": "home-hero",
+      "type": "hero",
+      "data": {
+        "eyebrow": "فروشگاه تخصصی دوچرخه",
+        "title": "دوچرخه آماده مسیر، سرویس مطمئن",
+        "subtitle": "مدل مناسب مسیرتان را انتخاب کنید، قبل از تحویل تست و تنظیم بگیرید و سرویس بعدی را همین‌جا رزرو کنید.",
+        "featureTitle": "ETX 200 آماده تست حضوری",
+        "featureSubtitle": "فریم آلومینیوم، ترمز دیسکی و تنظیم کامل قبل از تحویل",
+        "featurePrice": "از ۲۸,۵۰۰,۰۰۰ تومان",
+        "primaryActionLabel": "خرید دوچرخه",
+        "primaryTarget": "shop",
+        "secondaryActionLabel": "رزرو سرویس",
+        "secondaryTarget": "services",
+        "stats": [
+          { "value": "۴ مدل", "label": "آماده تست" },
+          { "value": "امروز", "label": "پذیرش سرویس" },
+          { "value": "تنظیم رایگان", "label": "قبل تحویل" },
+          { "value": "پیگیری زنده", "label": "سفارش و تعمیر" }
+        ]
+      },
+      "layout": { "variant": "bike_shop" },
+      "style": { "emphasis": "high" }
+    },
+    {
+      "id": "quick-actions",
+      "type": "category_grid",
+      "data": {
+        "title": "از کجا شروع کنیم؟",
+        "items": [
+          { "badge": "خرید", "title": "دوچرخه شهری", "subtitle": "رفت‌وآمد روزانه و مسیر کوتاه", "target": "shop" },
+          { "badge": "خرید", "title": "دوچرخه کوهستان", "subtitle": "مسیر خاکی، تمرین و سفر", "target": "shop" },
+          { "badge": "خدمات", "title": "سرویس فوری", "subtitle": "ترمز، دنده، تایر و بازبینی", "target": "services" },
+          { "badge": "لوازم", "title": "قطعات ضروری", "subtitle": "کلاه، قفل، چراغ و تایر", "target": "shop" }
+        ]
+      },
+      "layout": { "columns": 2 },
+      "style": { "cardVariant": "compact" }
+    },
+    {
+      "id": "featured-bikes",
+      "type": "product_row",
+      "data": {
+        "title": "دوچرخه‌های آماده فروش",
+        "items": [
+          { "id": "bike-city-e", "category": "bikes", "availability": "in_stock", "title": "دوچرخه شهری E-City", "subtitle": "سبک برای رفت‌وآمد روزانه", "description": "مناسب مسیرهای شهری، پارک و استفاده روزمره با تحویل سریع.", "price": "۲۲,۰۰۰,۰۰۰ تومان", "stockLabel": "موجود در فروشگاه", "thumbnailText": "CITY", "thumbnailColor": "#D71920", "imageUrl": null },
+          { "id": "bike-etx-200", "category": "bikes", "availability": "low_stock", "title": "دوچرخه کوهستان ETX 200", "subtitle": "فریم مقاوم و ترمز دیسکی", "description": "گزینه مطمئن برای مسیرهای ترکیبی، تمرین و شروع کوهستان.", "price": "۲۸,۵۰۰,۰۰۰ تومان", "stockLabel": "موجودی محدود: ۲ عدد", "thumbnailText": "MTB", "thumbnailColor": "#101114", "imageUrl": null },
+          { "id": "bike-road-r7", "category": "bikes", "availability": "orderable", "title": "دوچرخه جاده R7", "subtitle": "برای تمرین سرعت", "description": "فرمان خم، وزن کمتر و تایر باریک برای مسیر آسفالت.", "price": "۳۶,۰۰۰,۰۰۰ تومان", "stockLabel": "قابل سفارش", "thumbnailText": "ROAD", "thumbnailColor": "#6B1116", "imageUrl": null }
+        ]
+      },
+      "layout": { "presentation": "carousel" },
+      "style": { "cardVariant": "product" }
+    },
+    {
+      "id": "service-promise",
+      "type": "business_info",
+      "data": {
+        "title": "خرید فقط شروع مسیر نیست",
+        "items": [
+          { "title": "انتخاب سایز و مدل", "subtitle": "مشاوره قبل از خرید", "description": "بر اساس قد، نوع مسیر و بودجه، مدل مناسب پیشنهاد می‌شود.", "price": "رایگان" },
+          { "title": "تست و تنظیم قبل تحویل", "subtitle": "برای همه دوچرخه‌ها", "description": "ترمز، دنده، فرمان و ایمنی قبل از تحویل بررسی می‌شود.", "price": "فعال" },
+          { "title": "سرویس سریع امروز", "subtitle": "برای تعمیرات ضروری", "description": "درخواست سرویس را ثبت کنید و نزدیک‌ترین زمان آزاد را انتخاب کنید.", "price": "رزرو کنید" }
+        ]
+      },
+      "layout": {},
+      "style": { "sectionVariant": "trust" }
+    },
+    {
+      "id": "store-status",
+      "type": "business_info",
+      "data": {
+        "title": "وضعیت امروز فروشگاه",
+        "items": [
+          { "title": "باز تا ساعت ۲۰:۰۰", "subtitle": "تحویل حضوری و ارسال شهری فعال است", "description": "برای دوچرخه‌های موجود، تست حضوری و تنظیم قبل تحویل انجام می‌شود.", "price": "باز" }
+        ]
+      },
+      "layout": {},
+      "style": { "sectionVariant": "status" }
+    },
+    {
+      "id": "customer-status",
+      "type": "status_tracker",
+      "data": {
+        "title": "پیگیری فعال شما",
+        "items": [
+          {
+            "id": "home-order-1024",
+            "title": "سفارش ET-1024",
+            "subtitle": "دوچرخه ETX 200 + کلاه AirFit",
+            "status": "در مرحله آماده‌سازی",
+            "currentLocation": "وضعیت فعلی: انبار مرکزی EtokBike",
+            "expandLabel": "مشاهده روند سفارش",
+            "collapseLabel": "بستن روند سفارش",
+            "currentStep": 1,
+            "steps": [
+              { "label": "ثبت سفارش", "detail": "سفارش تایید شد." },
+              { "label": "آماده‌سازی", "detail": "دوچرخه در حال تنظیم و بسته‌بندی است." },
+              { "label": "ارسال", "detail": "کد رهگیری پس از تحویل به پیک نمایش داده می‌شود." },
+              { "label": "تحویل", "detail": "پس از دریافت سفارش تکمیل می‌شود." }
+            ]
+          }
+        ]
+      },
+      "layout": {},
+      "style": { "cardVariant": "compact" }
+    },
+    {
+      "id": "weekly-programs",
+      "type": "offer_sections",
+      "data": {
+        "title": "برنامه‌های این هفته",
+        "defaultSubsection": "rides",
+        "subsections": [
+          {
+            "id": "rides",
+            "label": "رکاب‌زنی",
+            "title": "برنامه‌های رکاب‌زنی این هفته",
+            "items": [
+              { "title": "تمرین مبتدی شهری", "subtitle": "جمعه ۹ صبح - ظرفیت محدود", "description": "مسیر کوتاه شهری با مربی برای شروع امن و کنترل بهتر دوچرخه.", "price": "ثبت‌نام", "thumbnailText": "RIDE", "thumbnailColor": "#D71920", "imageUrl": null },
+              { "title": "رکاب صبحگاهی پارک", "subtitle": "سه‌شنبه ۷ صبح", "description": "تمرین سبک گروهی برای حفظ آمادگی و آشنایی با مسیرهای شهری.", "price": "رایگان", "thumbnailText": "AM", "thumbnailColor": "#101114", "imageUrl": null }
+            ]
+          },
+          {
+            "id": "training",
+            "label": "آموزش",
+            "title": "آموزش‌های این هفته",
+            "items": [
+              { "title": "کلاس تعمیرات پایه", "subtitle": "پنچرگیری و تنظیمات ضروری", "description": "آموزش عملی ابزارهای ضروری، تعویض تیوب و تنظیمات اولیه مسیر.", "price": "ثبت‌نام", "thumbnailText": "FIX", "thumbnailColor": "#101114", "imageUrl": null },
+              { "title": "آموزش کنترل ترمز", "subtitle": "پنجشنبه ۵ عصر", "description": "تمرین ترمزگیری ایمن، تعادل در پیچ و کنترل سرعت برای مسیر شهری.", "price": "ثبت‌نام", "thumbnailText": "STOP", "thumbnailColor": "#D71920", "imageUrl": null }
+            ]
+          },
+          {
+            "id": "camping",
+            "label": "کمپینگ",
+            "title": "برنامه‌های کمپینگ این هفته",
+            "items": [
+              { "title": "تور کمپینگ آخر هفته", "subtitle": "دو روزه، همراه مربی", "description": "برنامه گروهی سبک با پشتیبانی مسیر و آموزش آماده‌سازی تجهیزات.", "price": "رزرو جایگاه", "thumbnailText": "CAMP", "thumbnailColor": "#6B1116", "imageUrl": null },
+              { "title": "کارگاه آماده‌سازی سفر", "subtitle": "چهارشنبه ۶ عصر", "description": "چک‌لیست وسایل، تنظیم دوچرخه و نکات مسیرهای بیرون‌شهری.", "price": "ثبت‌نام", "thumbnailText": "KIT", "thumbnailColor": "#2B2C30", "imageUrl": null }
+            ]
+          }
+        ]
+      },
+      "layout": { "mode": "tabs", "content": "carousel" },
+      "style": { "cardVariant": "compact" }
+    },
+    {
+      "id": "store-info",
+      "type": "business_info",
+      "data": {
+        "title": "اطلاعات فروشگاه",
+        "items": [
+          { "title": "شعبه مرکزی", "subtitle": "تهران، خیابان ولیعصر، پلاک ۱۲", "description": "شنبه تا پنجشنبه ۱۰ تا ۲۰", "price": "تماس سریع" }
+        ]
+      },
+      "layout": {},
+      "style": { "sectionVariant": "info" }
+    }
+  ]
+}
