@@ -37,6 +37,7 @@ class SectionsRelationManager extends RelationManager
                             ->maxLength(255),
                         Select::make('type')
                             ->options(MobileScreenSection::TYPE_OPTIONS)
+                            ->native(false)
                             ->searchable()
                             ->required(),
                         TextInput::make('sort_order')
@@ -50,6 +51,7 @@ class SectionsRelationManager extends RelationManager
                             ->default(true),
                     ]),
                 Section::make('JSON payload')
+                    ->description('Edit only the payload keys consumed by the Android renderer.')
                     ->schema([
                         CodeEditor::make('data_json')
                             ->label('Data')
@@ -100,6 +102,7 @@ class SectionsRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('section_id')
             ->paginated(false)
+            ->striped()
             ->columns([
                 TextColumn::make('sort_order')
                     ->label('#')

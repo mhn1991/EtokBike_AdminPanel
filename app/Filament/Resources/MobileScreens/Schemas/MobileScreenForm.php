@@ -16,11 +16,13 @@ class MobileScreenForm
         return $schema
             ->components([
                 Section::make('App page')
+                    ->description('Enable dynamic screen content served by the mobile API.')
                     ->columns(3)
                     ->schema([
                         Select::make('screen_id')
                             ->label('Screen')
                             ->options(MobileScreen::SCREEN_OPTIONS)
+                            ->native(false)
                             ->required()
                             ->unique(ignoreRecord: true),
                         TextInput::make('title')

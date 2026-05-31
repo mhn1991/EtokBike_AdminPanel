@@ -21,11 +21,13 @@ class ProgramResource extends Resource
 {
     protected static ?string $model = Program::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCalendarDays;
 
     protected static ?string $navigationLabel = 'Programs';
 
     protected static string|\UnitEnum|null $navigationGroup = 'App content';
+
+    protected static ?int $navigationSort = 1;
 
     protected static ?string $modelLabel = 'program';
 

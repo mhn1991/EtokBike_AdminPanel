@@ -18,11 +18,13 @@ class MessageDepartmentResource extends Resource
 {
     protected static ?string $model = MessageDepartment::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedInboxStack;
 
     protected static ?string $navigationLabel = 'Message departments';
 
     protected static string|\UnitEnum|null $navigationGroup = 'Messages';
+
+    protected static ?int $navigationSort = 2;
 
     protected static ?string $modelLabel = 'message department';
 

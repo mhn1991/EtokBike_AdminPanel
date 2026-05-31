@@ -6,10 +6,13 @@ use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
+use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\TextInput;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Resources\RelationManagers\RelationManager;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Filament\Tables\Columns\ColorColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
@@ -21,24 +24,30 @@ class GalleryItemsRelationManager extends RelationManager
     {
         return $schema
             ->components([
-                TextInput::make('thumbnail_text')
-                    ->required()
-                    ->maxLength(255)
-                    ->default('PHOTO'),
-                TextInput::make('thumbnail_color')
-                    ->required()
-                    ->maxLength(16)
-                    ->default('#101114'),
-                TextInput::make('caption')
-                    ->maxLength(255),
-                TextInput::make('image_url')
-                    ->url()
-                    ->maxLength(255),
-                TextInput::make('sort_order')
-                    ->required()
-                    ->integer()
-                    ->minValue(0)
-                    ->default(0),
+                Section::make('Gallery item')
+                    ->description('Photo metadata used when a finished program shows its gallery.')
+                    ->columns(3)
+                    ->schema([
+                        TextInput::make('caption')
+                            ->maxLength(255),
+                        TextInput::make('sort_order')
+                            ->required()
+                            ->integer()
+                            ->minValue(0)
+                            ->default(0),
+                        TextInput::make('thumbnail_text')
+                            ->required()
+                            ->maxLength(255)
+                            ->default('PHOTO'),
+                        ColorPicker::make('thumbnail_color')
+                            ->required()
+                            ->hex()
+                            ->default('#101114'),
+                        TextInput::make('image_url')
+                            ->url()
+                            ->maxLength(255)
+                            ->columnSpan(2),
+                    ]),
             ]);
     }
 
@@ -68,11 +77,12 @@ class GalleryItemsRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('caption')
             ->paginated(false)
+            ->striped()
             ->columns([
                 TextColumn::make('thumbnail_text')
                     ->searchable(),
-                TextColumn::make('thumbnail_color')
-                    ->searchable(),
+                ColorColumn::make('thumbnail_color')
+                    ->label('Color'),
                 TextColumn::make('caption')
                     ->searchable(),
                 TextColumn::make('image_url')

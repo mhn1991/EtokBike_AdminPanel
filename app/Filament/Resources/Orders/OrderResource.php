@@ -27,11 +27,23 @@ class OrderResource extends Resource
 
     protected static string|\UnitEnum|null $navigationGroup = 'Shop';
 
+    protected static ?int $navigationSort = 1;
+
     protected static ?string $modelLabel = 'order';
 
     protected static ?string $pluralModelLabel = 'orders';
 
     protected static ?string $recordTitleAttribute = 'order_number';
+
+    public static function getNavigationBadge(): ?string
+    {
+        return number_format(Order::query()->whereIn('status', ['pending', 'confirmed', 'processing', 'ready'])->count());
+    }
+
+    public static function getNavigationBadgeColor(): string|array|null
+    {
+        return 'warning';
+    }
 
     public static function form(Schema $schema): Schema
     {

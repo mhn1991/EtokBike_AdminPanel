@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Orders\Tables;
 use App\Models\Order;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
+use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
@@ -15,6 +16,7 @@ class OrdersTable
     {
         return $table
             ->paginated(false)
+            ->striped()
             ->columns([
                 TextColumn::make('order_number')
                     ->label('Order')
@@ -22,9 +24,11 @@ class OrdersTable
                     ->sortable(),
                 TextColumn::make('customer_name')
                     ->label('Customer')
+                    ->description(fn (Order $record): ?string => $record->customer_phone)
                     ->searchable(),
-                TextColumn::make('customer_phone')
-                    ->searchable(),
+                TextColumn::make('customer_email')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('status')
                     ->badge()
                     ->formatStateUsing(fn (string $state): string => Order::STATUS_OPTIONS[$state] ?? $state)
@@ -50,6 +54,7 @@ class OrdersTable
                     ->formatStateUsing(fn (string $state): string => Order::FULFILLMENT_METHOD_OPTIONS[$state] ?? $state)
                     ->sortable(),
                 TextColumn::make('total')
+                    ->label('Total')
                     ->formatStateUsing(fn (?int $state): string => number_format($state ?? 0))
                     ->sortable(),
                 TextColumn::make('placed_at')
@@ -64,6 +69,9 @@ class OrdersTable
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
+            ->emptyStateIcon(Heroicon::OutlinedShoppingCart)
+            ->emptyStateHeading('No orders yet')
+            ->emptyStateDescription('Orders placed from the mobile app will appear here for fulfilment.')
             ->filters([
                 SelectFilter::make('status')
                     ->options(Order::STATUS_OPTIONS),

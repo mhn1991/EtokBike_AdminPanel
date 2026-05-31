@@ -20,17 +20,29 @@ class CustomerMessageResource extends Resource
 {
     protected static ?string $model = CustomerMessage::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedEnvelope;
 
     protected static ?string $navigationLabel = 'Customer messages';
 
     protected static string|\UnitEnum|null $navigationGroup = 'Messages';
+
+    protected static ?int $navigationSort = 1;
 
     protected static ?string $modelLabel = 'customer message';
 
     protected static ?string $pluralModelLabel = 'customer messages';
 
     protected static ?string $recordTitleAttribute = 'label';
+
+    public static function getNavigationBadge(): ?string
+    {
+        return number_format(CustomerMessage::query()->where('is_unread', true)->count());
+    }
+
+    public static function getNavigationBadgeColor(): string|array|null
+    {
+        return 'danger';
+    }
 
     public static function form(Schema $schema): Schema
     {

@@ -7,6 +7,8 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\ToggleButtons;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 
 class CustomerMessageForm
@@ -15,29 +17,51 @@ class CustomerMessageForm
     {
         return $schema
             ->components([
-                Select::make('message_department_id')
-                    ->label('Department')
-                    ->relationship('department', 'title')
-                    ->searchable()
-                    ->preload()
-                    ->required(),
-                Select::make('user_id')
-                    ->relationship('user', 'name')
-                    ->searchable()
-                    ->preload(),
-                Select::make('sender')
-                    ->options(CustomerMessage::SENDER_OPTIONS)
-                    ->required()
-                    ->default('client'),
-                TextInput::make('label')
-                    ->required()
-                    ->default(false),
-                Textarea::make('text')
-                    ->required()
-                    ->columnSpanFull(),
-                TextInput::make('time_label'),
-                Toggle::make('is_unread')
-                    ->required(),
+                Section::make('Conversation')
+                    ->description('Route the message to the right department and customer account.')
+                    ->columns(3)
+                    ->schema([
+                        Select::make('message_department_id')
+                            ->label('Department')
+                            ->relationship('department', 'title')
+                            ->native(false)
+                            ->searchable()
+                            ->preload()
+                            ->required(),
+                        Select::make('user_id')
+                            ->label('Linked user')
+                            ->relationship('user', 'name')
+                            ->native(false)
+                            ->searchable()
+                            ->preload(),
+                        ToggleButtons::make('sender')
+                            ->options(CustomerMessage::SENDER_OPTIONS)
+                            ->colors([
+                                'client' => 'warning',
+                                'department' => 'info',
+                            ])
+                            ->inline()
+                            ->required()
+                            ->default('client'),
+                    ]),
+                Section::make('Message')
+                    ->columns(2)
+                    ->schema([
+                        TextInput::make('label')
+                            ->required()
+                            ->maxLength(255)
+                            ->default('Customer message'),
+                        TextInput::make('time_label')
+                            ->maxLength(255),
+                        Textarea::make('text')
+                            ->required()
+                            ->rows(5)
+                            ->columnSpanFull(),
+                        Toggle::make('is_unread')
+                            ->label('Needs response')
+                            ->required()
+                            ->default(true),
+                    ]),
             ]);
     }
 }

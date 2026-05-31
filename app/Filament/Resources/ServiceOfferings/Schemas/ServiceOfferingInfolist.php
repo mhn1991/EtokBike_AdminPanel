@@ -2,9 +2,11 @@
 
 namespace App\Filament\Resources\ServiceOfferings\Schemas;
 
+use Filament\Infolists\Components\ColorEntry;
 use Filament\Infolists\Components\IconEntry;
 use Filament\Infolists\Components\ImageEntry;
 use Filament\Infolists\Components\TextEntry;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 
 class ServiceOfferingInfolist
@@ -13,30 +15,43 @@ class ServiceOfferingInfolist
     {
         return $schema
             ->components([
-                TextEntry::make('service_category_id')
-                    ->numeric(),
-                TextEntry::make('slug'),
-                TextEntry::make('title'),
-                TextEntry::make('subtitle'),
-                TextEntry::make('description')
-                    ->placeholder('-')
-                    ->columnSpanFull(),
-                TextEntry::make('price_label')
-                    ->placeholder('-'),
-                TextEntry::make('thumbnail_text'),
-                TextEntry::make('thumbnail_color'),
-                ImageEntry::make('image_url')
-                    ->placeholder('-'),
-                TextEntry::make('sort_order')
-                    ->numeric(),
-                IconEntry::make('is_active')
-                    ->boolean(),
-                TextEntry::make('created_at')
-                    ->dateTime()
-                    ->placeholder('-'),
-                TextEntry::make('updated_at')
-                    ->dateTime()
-                    ->placeholder('-'),
+                Section::make('Service offering')
+                    ->columns(3)
+                    ->schema([
+                        TextEntry::make('category.label')
+                            ->label('Category'),
+                        TextEntry::make('slug'),
+                        TextEntry::make('sort_order')
+                            ->formatStateUsing(fn (?int $state): string => number_format($state ?? 0)),
+                        TextEntry::make('title'),
+                        TextEntry::make('subtitle'),
+                        TextEntry::make('price_label')
+                            ->placeholder('-'),
+                        TextEntry::make('description')
+                            ->placeholder('-')
+                            ->columnSpanFull(),
+                        IconEntry::make('is_active')
+                            ->label('Visible in app')
+                            ->boolean(),
+                    ]),
+                Section::make('App card')
+                    ->columns(3)
+                    ->schema([
+                        TextEntry::make('thumbnail_text'),
+                        ColorEntry::make('thumbnail_color'),
+                        ImageEntry::make('image_url')
+                            ->placeholder('-'),
+                    ]),
+                Section::make('Audit')
+                    ->columns(2)
+                    ->schema([
+                        TextEntry::make('created_at')
+                            ->dateTime()
+                            ->placeholder('-'),
+                        TextEntry::make('updated_at')
+                            ->dateTime()
+                            ->placeholder('-'),
+                    ]),
             ]);
     }
 }

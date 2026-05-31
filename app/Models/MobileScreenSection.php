@@ -85,20 +85,20 @@ class MobileScreenSection extends Model
 
     protected function dataJson(): Attribute
     {
-        return $this->jsonAttribute('data');
+        return $this->makeJsonAttribute('data');
     }
 
     protected function layoutJson(): Attribute
     {
-        return $this->jsonAttribute('layout');
+        return $this->makeJsonAttribute('layout');
     }
 
     protected function styleJson(): Attribute
     {
-        return $this->jsonAttribute('style');
+        return $this->makeJsonAttribute('style');
     }
 
-    private function jsonAttribute(string $attribute): Attribute
+    private function makeJsonAttribute(string $attribute)
     {
         return Attribute::make(
             get: fn (): string => $this->formatJson($this->{$attribute}),

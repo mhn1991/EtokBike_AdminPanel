@@ -20,11 +20,13 @@ class ServiceOfferingResource extends Resource
 {
     protected static ?string $model = ServiceOffering::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedWrenchScrewdriver;
 
     protected static ?string $navigationLabel = 'Service offerings';
 
     protected static string|\UnitEnum|null $navigationGroup = 'Services';
+
+    protected static ?int $navigationSort = 2;
 
     protected static ?string $modelLabel = 'service offering';
 

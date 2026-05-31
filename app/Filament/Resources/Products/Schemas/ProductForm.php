@@ -3,12 +3,17 @@
 namespace App\Filament\Resources\Products\Schemas;
 
 use App\Models\Product;
+use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\ToggleButtons;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
+use Illuminate\Support\Str;
 
 class ProductForm
 {
@@ -17,23 +22,39 @@ class ProductForm
         return $schema
             ->components([
                 Section::make('Product')
+                    ->description('Core shop listing details shown in the mobile app.')
                     ->columns(3)
                     ->schema([
                         Select::make('product_category_id')
                             ->label('Category')
                             ->relationship('category', 'label')
+                            ->native(false)
                             ->searchable()
                             ->preload()
                             ->required(),
                         TextInput::make('slug')
                             ->required()
+                            ->helperText('Stable product ID used by the mobile app.')
                             ->maxLength(255),
-                        Select::make('availability')
+                        ToggleButtons::make('availability')
                             ->options(Product::AVAILABILITY_OPTIONS)
+                            ->colors([
+                                'in_stock' => 'success',
+                                'low_stock' => 'warning',
+                                'orderable' => 'info',
+                                'out_of_stock' => 'danger',
+                            ])
+                            ->inline()
                             ->required()
                             ->default('in_stock'),
                         TextInput::make('title')
                             ->required()
+                            ->live(onBlur: true)
+                            ->afterStateUpdated(function (Get $get, Set $set, ?string $state): void {
+                                if (blank($get('slug'))) {
+                                    $set('slug', Str::slug($state ?? ''));
+                                }
+                            })
                             ->maxLength(255),
                         TextInput::make('subtitle')
                             ->required()
@@ -51,12 +72,14 @@ class ProductForm
                             ->default(true),
                     ]),
                 Section::make('Pricing and stock')
+                    ->description('Price values are numeric; the label can override the app-facing text.')
                     ->columns(3)
                     ->schema([
                         TextInput::make('price_value')
                             ->required()
                             ->integer()
                             ->minValue(0)
+                            ->suffix('IRR')
                             ->default(0),
                         TextInput::make('price_label')
                             ->maxLength(255)
@@ -65,15 +88,16 @@ class ProductForm
                             ->maxLength(255),
                     ]),
                 Section::make('App card')
+                    ->description('Thumbnail and description used in product lists and detail views.')
                     ->columns(3)
                     ->schema([
                         TextInput::make('thumbnail_text')
                             ->required()
                             ->maxLength(255)
                             ->default('ETOK'),
-                        TextInput::make('thumbnail_color')
+                        ColorPicker::make('thumbnail_color')
                             ->required()
-                            ->maxLength(16)
+                            ->hex()
                             ->default('#101114'),
                         TextInput::make('image_url')
                             ->url()

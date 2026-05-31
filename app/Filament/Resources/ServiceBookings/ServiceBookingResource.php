@@ -20,17 +20,29 @@ class ServiceBookingResource extends Resource
 {
     protected static ?string $model = ServiceBooking::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedClipboardDocumentCheck;
 
     protected static ?string $navigationLabel = 'Service bookings';
 
     protected static string|\UnitEnum|null $navigationGroup = 'Services';
+
+    protected static ?int $navigationSort = 1;
 
     protected static ?string $modelLabel = 'service booking';
 
     protected static ?string $pluralModelLabel = 'service bookings';
 
     protected static ?string $recordTitleAttribute = 'customer_name';
+
+    public static function getNavigationBadge(): ?string
+    {
+        return number_format(ServiceBooking::query()->whereIn('status', ['pending', 'confirmed', 'in_progress'])->count());
+    }
+
+    public static function getNavigationBadgeColor(): string|array|null
+    {
+        return 'info';
+    }
 
     public static function form(Schema $schema): Schema
     {

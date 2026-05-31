@@ -15,7 +15,7 @@ class FilamentOrderResourceTest extends TestCase
     {
         $user = User::factory()->create();
 
-        Order::query()->create([
+        $order = Order::query()->create([
             'customer_name' => 'Panel Customer',
             'status' => 'pending',
             'payment_status' => 'unpaid',
@@ -24,6 +24,11 @@ class FilamentOrderResourceTest extends TestCase
 
         $this->actingAs($user)
             ->get('/admin/orders')
+            ->assertOk()
+            ->assertSee('Panel Customer');
+
+        $this->actingAs($user)
+            ->get("/admin/orders/{$order->id}")
             ->assertOk()
             ->assertSee('Panel Customer');
     }

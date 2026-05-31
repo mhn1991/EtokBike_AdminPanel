@@ -10,6 +10,9 @@ use Filament\Forms\Components\KeyValue;
 use Filament\Forms\Components\TextInput;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Resources\RelationManagers\RelationManager;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -22,36 +25,45 @@ class ItemsRelationManager extends RelationManager
     {
         return $schema
             ->components([
-                TextInput::make('product_id')
-                    ->maxLength(255),
-                TextInput::make('title')
-                    ->required()
-                    ->maxLength(255),
-                TextInput::make('sku')
-                    ->label('SKU')
-                    ->maxLength(255),
-                TextInput::make('quantity')
-                    ->required()
-                    ->integer()
-                    ->minValue(1)
-                    ->live(onBlur: true)
-                    ->numeric()
-                    ->default(1),
-                TextInput::make('unit_price')
-                    ->required()
-                    ->integer()
-                    ->minValue(0)
-                    ->live(onBlur: true)
-                    ->numeric()
-                    ->default(0),
-                TextInput::make('line_total')
-                    ->required()
-                    ->disabled()
-                    ->dehydrated()
-                    ->numeric()
-                    ->default(0),
-                KeyValue::make('metadata')
-                    ->columnSpanFull(),
+                Section::make('Item')
+                    ->description('Line total updates from quantity and unit price.')
+                    ->columns(3)
+                    ->schema([
+                        TextInput::make('title')
+                            ->required()
+                            ->maxLength(255),
+                        TextInput::make('product_id')
+                            ->maxLength(255),
+                        TextInput::make('sku')
+                            ->label('SKU')
+                            ->maxLength(255),
+                        TextInput::make('quantity')
+                            ->required()
+                            ->integer()
+                            ->minValue(1)
+                            ->live(onBlur: true)
+                            ->afterStateUpdated(fn (Get $get, Set $set): mixed => $set('line_total', (int) $get('quantity') * (int) $get('unit_price')))
+                            ->numeric()
+                            ->default(1),
+                        TextInput::make('unit_price')
+                            ->required()
+                            ->integer()
+                            ->minValue(0)
+                            ->live(onBlur: true)
+                            ->afterStateUpdated(fn (Get $get, Set $set): mixed => $set('line_total', (int) $get('quantity') * (int) $get('unit_price')))
+                            ->numeric()
+                            ->suffix('IRR')
+                            ->default(0),
+                        TextInput::make('line_total')
+                            ->required()
+                            ->disabled()
+                            ->dehydrated()
+                            ->numeric()
+                            ->suffix('IRR')
+                            ->default(0),
+                        KeyValue::make('metadata')
+                            ->columnSpanFull(),
+                    ]),
             ]);
     }
 
@@ -89,6 +101,7 @@ class ItemsRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('title')
             ->paginated(false)
+            ->striped()
             ->columns([
                 TextColumn::make('product_id')
                     ->searchable(),
