@@ -57,7 +57,7 @@ class HomeScreenBuilder
                     ->all();
             }
 
-            if (($section['id'] ?? null) === 'customer-status' && ! empty($statusItems)) {
+            if (($section['id'] ?? null) === 'customer-status') {
                 $section['data']['items'] = $statusItems;
             }
         }

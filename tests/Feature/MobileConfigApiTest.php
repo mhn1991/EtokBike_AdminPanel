@@ -10,6 +10,7 @@ use App\Models\Product;
 use App\Models\ProductCategory;
 use App\Models\Program;
 use App\Models\ProgramCategory;
+use App\Models\ServiceBooking;
 use App\Models\ServiceCategory;
 use App\Models\ServiceOffering;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -132,11 +133,20 @@ class MobileConfigApiTest extends TestCase
             'price_label' => 'از ۹۵۰,۰۰۰ تومان',
         ]);
 
+        ServiceBooking::query()->create([
+            'customer_name' => 'Mobile Customer',
+            'service_type' => 'سرویس کامل تست',
+            'bike_label' => 'دوچرخه مشتری',
+            'status' => 'pending',
+        ]);
+
         $this->getJson('/api/mobile/screens/services')
             ->assertOk()
             ->assertJsonPath('screenId', 'services')
             ->assertJsonPath('sections.1.data.defaultSubsection', 'maintenance')
-            ->assertJsonPath('sections.1.data.subsections.0.items.0.title', 'سرویس کامل تست');
+            ->assertJsonPath('sections.1.data.subsections.0.items.0.title', 'سرویس کامل تست')
+            ->assertJsonPath('sections.2.data.services.0', 'سرویس کامل تست')
+            ->assertJsonPath('sections.3.data.items.0.title', 'سرویس کامل تست');
     }
 
     public function test_it_returns_messages_from_the_database_for_the_messages_screen(): void
@@ -208,7 +218,9 @@ class MobileConfigApiTest extends TestCase
             ->assertOk()
             ->assertJsonPath('screenId', 'account')
             ->assertJsonPath('sections.1.data.title', 'سلام، Mobile Customer')
-            ->assertJsonPath('sections.2.data.items.0.title', 'سفارش '.$order->order_number);
+            ->assertJsonPath('sections.2.data.items.0.title', 'سفارش '.$order->order_number)
+            ->assertJsonPath('sections.3.data.items', [])
+            ->assertJsonPath('sections.5.data.items', []);
     }
 
     public function test_it_returns_cart_content_from_database_products(): void

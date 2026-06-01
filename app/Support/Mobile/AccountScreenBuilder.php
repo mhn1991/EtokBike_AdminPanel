@@ -45,11 +45,11 @@ class AccountScreenBuilder
                 $section['data']['fields'] = static::customerFields($customer);
             }
 
-            if (($section['id'] ?? null) === 'purchase-history' && ! empty($historyItems)) {
+            if (($section['id'] ?? null) === 'purchase-history') {
                 $section['data']['items'] = $historyItems;
             }
 
-            if (($section['id'] ?? null) === 'bike-profiles' && ! empty($bikeProfiles)) {
+            if (($section['id'] ?? null) === 'bike-profiles') {
                 $section['data']['items'] = $bikeProfiles;
             }
         }
