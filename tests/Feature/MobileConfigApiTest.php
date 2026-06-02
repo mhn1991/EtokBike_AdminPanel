@@ -32,6 +32,7 @@ class MobileConfigApiTest extends TestCase
             ->assertJsonPath('schemaVersion', 1)
             ->assertJsonPath('appId', 'etokbike')
             ->assertJsonPath('remoteConfig.manifestUrl', 'http://10.0.2.2:8001/api/mobile/manifest')
+            ->assertJsonPath('remoteConfig.telemetryUrl', 'http://10.0.2.2:8001/api/mobile/telemetry')
             ->assertJsonPath('screens.home.url', 'http://10.0.2.2:8001/api/mobile/screens/home');
     }
 

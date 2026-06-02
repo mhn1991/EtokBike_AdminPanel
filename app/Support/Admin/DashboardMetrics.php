@@ -68,6 +68,52 @@ class DashboardMetrics
      * @template TModel of Model
      *
      * @param  class-string<TModel>  $modelClass
+     * @return array<int, int>
+     */
+    public static function distinctCountByDay(string $modelClass, string $field, int $days, ?Closure $queryScope = null, string $column = 'created_at'): array
+    {
+        $dates = static::dateKeysForLastDays($days);
+        $start = CarbonImmutable::now()->subDays($days - 1)->startOfDay();
+
+        /** @var Builder<TModel> $query */
+        $query = $modelClass::query()
+            ->where($column, '>=', $start)
+            ->whereNotNull($field);
+
+        if ($queryScope !== null) {
+            $queryScope($query);
+        }
+
+        /** @var Collection<int, TModel> $records */
+        $records = $query->get();
+        $values = array_fill_keys($dates, []);
+
+        foreach ($records as $record) {
+            $date = $record->{$column};
+
+            if ($date === null) {
+                continue;
+            }
+
+            $key = $date instanceof \DateTimeInterface
+                ? $date->format('Y-m-d')
+                : CarbonImmutable::parse($date)->format('Y-m-d');
+
+            if (array_key_exists($key, $values) && filled($record->{$field})) {
+                $values[$key][(string) $record->{$field}] = true;
+            }
+        }
+
+        return collect($values)
+            ->map(fn (array $distinctValues): int => count($distinctValues))
+            ->values()
+            ->all();
+    }
+
+    /**
+     * @template TModel of Model
+     *
+     * @param  class-string<TModel>  $modelClass
      * @param  Closure(TModel): int  $valueResolver
      * @return array<int, int>
      */

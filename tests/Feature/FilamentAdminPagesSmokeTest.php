@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\CustomerMessage;
 use App\Models\MessageDepartment;
+use App\Models\MobileAnalyticsEvent;
 use App\Models\MobileScreen;
 use App\Models\Order;
 use App\Models\Product;
@@ -102,6 +103,15 @@ class FilamentAdminPagesSmokeTest extends TestCase
             'version' => 1,
         ]);
 
+        $mobileAnalyticsEvent = MobileAnalyticsEvent::query()->create([
+            'device_id' => 'smoke-device',
+            'session_id' => 'smoke-session',
+            'event_name' => 'app_open',
+            'screen_id' => 'home',
+            'platform' => 'android',
+            'occurred_at' => now(),
+        ]);
+
         $paths = [
             '/admin',
             '/admin/orders',
@@ -144,6 +154,8 @@ class FilamentAdminPagesSmokeTest extends TestCase
             '/admin/mobile-screens/create',
             "/admin/mobile-screens/{$screen->id}",
             "/admin/mobile-screens/{$screen->id}/edit",
+            '/admin/mobile-analytics-events',
+            "/admin/mobile-analytics-events/{$mobileAnalyticsEvent->id}",
         ];
 
         foreach ($paths as $path) {

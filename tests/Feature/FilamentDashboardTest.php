@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\CustomerMessage;
 use App\Models\MessageDepartment;
+use App\Models\MobileAnalyticsEvent;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\ProductCategory;
@@ -63,9 +64,21 @@ class FilamentDashboardTest extends TestCase
             'price_value' => 1000000,
         ]);
 
+        MobileAnalyticsEvent::query()->create([
+            'device_id' => 'dashboard-device',
+            'session_id' => 'dashboard-session',
+            'event_name' => 'screen_view',
+            'screen_id' => 'home',
+            'platform' => 'android',
+            'occurred_at' => now(),
+        ]);
+
         $this->actingAs($user)
             ->get('/admin')
             ->assertOk()
+            ->assertSee('Mobile app activity')
+            ->assertSee('Active users')
+            ->assertSee('Mobile usage trend')
             ->assertSee('Operations snapshot')
             ->assertSee('Daily operations')
             ->assertSee('Order status mix')

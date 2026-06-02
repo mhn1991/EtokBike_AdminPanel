@@ -28,7 +28,9 @@ The app only performs `GET` requests right now. Cart, booking, checkout,
 message sending, and program booking actions are currently local UI actions
 that show Toast messages or update in-memory state. The Laravel API now has
 write endpoints for orders, service bookings, and customer messages so the app
-can be moved to real submissions without changing the admin data model.
+can be moved to real submissions without changing the admin data model. It also
+accepts mobile telemetry events so the admin dashboard can show active phone
+users, screen usage, button actions, and app error reports.
 
 ## Endpoints Needed First
 
@@ -42,6 +44,7 @@ Required top-level fields:
 - `appId`: expected value is `etokbike`.
 - `appVersion`: integer. Must increase when any remote screen version changes.
 - `remoteConfig.manifestUrl`: URL for this manifest endpoint.
+- `remoteConfig.telemetryUrl`: URL for mobile app telemetry submissions.
 - `theme`: app theme data.
 - `navigation`: bottom navigation items.
 - `screens`: object keyed by screen ID.
@@ -61,7 +64,8 @@ Example:
   "appId": "etokbike",
   "appVersion": 9,
   "remoteConfig": {
-    "manifestUrl": "http://127.0.0.1:8001/api/mobile/manifest"
+    "manifestUrl": "http://127.0.0.1:8001/api/mobile/manifest",
+    "telemetryUrl": "http://127.0.0.1:8001/api/mobile/telemetry"
   },
   "theme": {
     "brandName": "EtokBike",
@@ -92,6 +96,65 @@ Example:
   }
 }
 ```
+
+### POST `/api/mobile/telemetry`
+
+Stores app activity and phone-side log events for admin analytics. The endpoint
+does not require app authentication; the phone sends a stable anonymous
+`device_id` and a per-launch `session_id`. The server also records request IP
+address and user agent.
+
+Send one event:
+
+```json
+{
+  "device_id": "android-id-or-install-id",
+  "session_id": "launch-session-id",
+  "platform": "android",
+  "app_version": "10",
+  "event_name": "screen_view",
+  "screen_id": "shop",
+  "action": "bottom_navigation",
+  "metadata": {
+    "model": "Pixel 8"
+  }
+}
+```
+
+Or send a batch:
+
+```json
+{
+  "device_id": "android-id-or-install-id",
+  "session_id": "launch-session-id",
+  "platform": "android",
+  "app_version": "10",
+  "events": [
+    { "event_name": "app_open", "screen_id": "home" },
+    { "event_name": "screen_view", "screen_id": "shop", "action": "bottom_navigation" },
+    { "event_name": "error", "screen_id": "home", "action": "config_update", "metadata": { "message": "HTTP 500" } }
+  ]
+}
+```
+
+Response:
+
+```json
+{
+  "data": {
+    "accepted": 3
+  }
+}
+```
+
+Recommended event names:
+
+- `app_open`
+- `heartbeat`
+- `screen_view`
+- `action`
+- `config_update`
+- `error`
 
 ### GET `/api/mobile/screens/{screen}`
 
@@ -204,6 +267,7 @@ These are available in Laravel. The current Android app does not call them yet.
 - `POST /api/orders`
 - `POST /api/service-bookings`
 - `POST /api/messages`
+- `POST /api/mobile/telemetry`
 
 ## Future API Endpoints
 

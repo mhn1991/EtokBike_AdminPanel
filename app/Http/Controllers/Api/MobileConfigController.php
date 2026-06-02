@@ -38,6 +38,7 @@ class MobileConfigController extends Controller
         $screens = Arr::get($manifest, 'screens', []);
 
         Arr::set($manifest, 'remoteConfig.manifestUrl', $this->mobileUrl(route('mobile.manifest', absolute: false)));
+        Arr::set($manifest, 'remoteConfig.telemetryUrl', $this->mobileUrl(route('mobile.telemetry.store', absolute: false)));
 
         foreach (array_keys($screens) as $screenId) {
             Arr::set($manifest, "screens.{$screenId}.url", $this->mobileUrl(route('mobile.screens.show', ['screen' => $screenId], false)));

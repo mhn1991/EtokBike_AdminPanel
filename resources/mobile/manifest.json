@@ -3,7 +3,8 @@
   "appId": "etokbike",
   "appVersion": 10,
   "remoteConfig": {
-    "manifestUrl": ""
+    "manifestUrl": "",
+    "telemetryUrl": ""
   },
   "theme": {
     "brandName": "EtokBike",
