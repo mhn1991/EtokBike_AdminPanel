@@ -2,6 +2,7 @@
 
 namespace App\Support\Mobile;
 
+use App\Models\DeliveryMethod;
 use App\Models\Product;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Schema;
@@ -42,6 +43,10 @@ class CartScreenBuilder
                     ->values()
                     ->all();
             }
+
+            if (($section['id'] ?? null) === 'delivery-options') {
+                $section['data']['items'] = static::deliveryMethods($section['data']['items'] ?? []);
+            }
         }
 
         return $screen;
@@ -53,10 +58,12 @@ class CartScreenBuilder
             return (int) ($fallback['version'] ?? 1);
         }
 
-        $timestamp = Product::query()->max('updated_at');
-        $version = $timestamp ? strtotime((string) $timestamp) : 0;
+        $timestamp = collect([
+            Product::query()->max('updated_at'),
+            Schema::hasTable('delivery_methods') ? DeliveryMethod::query()->max('updated_at') : null,
+        ])->filter()->map(fn ($value): int => strtotime((string) $value) ?: 0)->max();
 
-        return max((int) ($fallback['version'] ?? 1), $version ?: 0);
+        return max((int) ($fallback['version'] ?? 1), $timestamp ?: 0);
     }
 
     private static function canUseDatabase(): bool
@@ -103,6 +110,28 @@ class CartScreenBuilder
             'description' => $product->description ?: 'انتخاب شده از موجودی پنل مدیریت.',
             'price' => $product->price_label ?: static::formatToman($product->price_value),
         ];
+    }
+
+    /**
+     * @param  array<int, array<string, mixed>>  $fallback
+     * @return array<int, array<string, mixed>>
+     */
+    private static function deliveryMethods(array $fallback): array
+    {
+        if (! Schema::hasTable('delivery_methods')) {
+            return $fallback;
+        }
+
+        $methods = DeliveryMethod::query()
+            ->where('is_active', true)
+            ->orderBy('sort_order')
+            ->orderBy('title')
+            ->get()
+            ->map(fn (DeliveryMethod $method): array => $method->toMobilePayload())
+            ->values()
+            ->all();
+
+        return empty($methods) ? $fallback : $methods;
     }
 
     private static function formatToman(?int $value): string

@@ -2,7 +2,10 @@
 
 namespace Tests\Feature;
 
+use App\Models\BikeProfile;
 use App\Models\CustomerMessage;
+use App\Models\CustomerProfile;
+use App\Models\DeliveryMethod;
 use App\Models\MessageDepartment;
 use App\Models\MobileScreen;
 use App\Models\Order;
@@ -13,6 +16,8 @@ use App\Models\ProgramCategory;
 use App\Models\ServiceBooking;
 use App\Models\ServiceCategory;
 use App\Models\ServiceOffering;
+use App\Models\ServiceTimeSlot;
+use App\Models\StoreProfile;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\File;
 use Tests\TestCase;
@@ -106,6 +111,7 @@ class MobileConfigApiTest extends TestCase
             'price_value' => 1230000,
             'price_label' => '۱,۲۳۰,۰۰۰ تومان',
             'thumbnail_text' => 'TEST',
+            'image_url' => 'mobile/products/bike-panel-test.jpg',
         ]);
 
         $this->getJson('/api/mobile/screens/shop')
@@ -115,7 +121,8 @@ class MobileConfigApiTest extends TestCase
             ->assertJsonPath('sections.2.data.defaultCategory', 'bikes')
             ->assertJsonPath('sections.2.data.categories.0.id', 'bikes')
             ->assertJsonPath('sections.2.data.items.0.id', 'bike-panel-test')
-            ->assertJsonPath('sections.2.data.items.0.title', 'دوچرخه پنل');
+            ->assertJsonPath('sections.2.data.items.0.title', 'دوچرخه پنل')
+            ->assertJsonPath('sections.2.data.items.0.imageUrl', 'http://127.0.0.1:8001/storage/mobile/products/bike-panel-test.jpg');
     }
 
     public function test_it_returns_services_from_the_database_for_the_services_screen(): void
@@ -141,12 +148,18 @@ class MobileConfigApiTest extends TestCase
             'status' => 'pending',
         ]);
 
+        ServiceTimeSlot::query()->create([
+            'label' => 'شنبه ۱۰:۰۰',
+            'sort_order' => 1,
+        ]);
+
         $this->getJson('/api/mobile/screens/services')
             ->assertOk()
             ->assertJsonPath('screenId', 'services')
             ->assertJsonPath('sections.1.data.defaultSubsection', 'maintenance')
             ->assertJsonPath('sections.1.data.subsections.0.items.0.title', 'سرویس کامل تست')
             ->assertJsonPath('sections.2.data.services.0', 'سرویس کامل تست')
+            ->assertJsonPath('sections.2.data.timeSlots.0', 'شنبه ۱۰:۰۰')
             ->assertJsonPath('sections.3.data.items.0.title', 'سرویس کامل تست');
     }
 
@@ -177,6 +190,17 @@ class MobileConfigApiTest extends TestCase
 
     public function test_it_returns_home_content_from_database(): void
     {
+        StoreProfile::query()->create([
+            'status_title' => 'Open for test',
+            'status_subtitle' => 'Testing store status',
+            'status_description' => 'Status from admin.',
+            'status_label' => 'Open',
+            'branch_title' => 'Test branch',
+            'address' => 'Test address',
+            'hours' => '10-20',
+            'action_label' => 'Call',
+        ]);
+
         $category = ProductCategory::query()->create([
             'slug' => 'bikes',
             'label' => 'دوچرخه',
@@ -197,11 +221,30 @@ class MobileConfigApiTest extends TestCase
             ->assertOk()
             ->assertJsonPath('screenId', 'home')
             ->assertJsonPath('sections.2.data.items.0.id', 'featured-home-bike')
-            ->assertJsonPath('sections.2.data.items.0.title', 'دوچرخه ویژه خانه');
+            ->assertJsonPath('sections.2.data.items.0.title', 'دوچرخه ویژه خانه')
+            ->assertJsonPath('sections.4.data.items.0.title', 'Open for test')
+            ->assertJsonPath('sections.7.data.items.0.title', 'Test branch');
     }
 
     public function test_it_returns_account_content_from_database(): void
     {
+        $profile = CustomerProfile::query()->create([
+            'name' => 'Panel Customer',
+            'phone' => '+989121111111',
+            'email' => 'panel@example.com',
+            'delivery_address' => 'Tehran test address',
+        ]);
+
+        BikeProfile::query()->create([
+            'customer_profile_id' => $profile->id,
+            'title' => 'Panel Bike',
+            'subtitle' => 'Admin maintained bike',
+            'frame_size' => 'M',
+            'tire_size' => '29',
+            'brake_type' => 'Disc',
+            'next_recommendation' => 'Brake check',
+        ]);
+
         $order = Order::query()->create([
             'customer_name' => 'Mobile Customer',
             'customer_phone' => '+989120000000',
@@ -218,9 +261,10 @@ class MobileConfigApiTest extends TestCase
         $this->getJson('/api/mobile/screens/account')
             ->assertOk()
             ->assertJsonPath('screenId', 'account')
-            ->assertJsonPath('sections.1.data.title', 'سلام، Mobile Customer')
+            ->assertJsonPath('sections.1.data.title', 'سلام، Panel Customer')
             ->assertJsonPath('sections.2.data.items.0.title', 'سفارش '.$order->order_number)
-            ->assertJsonPath('sections.3.data.items', [])
+            ->assertJsonPath('sections.3.data.items.0.title', 'Panel Bike')
+            ->assertJsonPath('sections.4.data.fields.3.value', 'Tehran test address')
             ->assertJsonPath('sections.5.data.items', []);
     }
 
@@ -242,11 +286,19 @@ class MobileConfigApiTest extends TestCase
             'is_featured' => true,
         ]);
 
+        DeliveryMethod::query()->create([
+            'title' => 'Pickup test',
+            'subtitle' => 'Store pickup',
+            'description' => 'Test delivery method',
+            'price_label' => 'Free',
+        ]);
+
         $this->getJson('/api/mobile/screens/cart')
             ->assertOk()
             ->assertJsonPath('screenId', 'cart')
             ->assertJsonPath('sections.1.data.items.0.title', 'محصول سبد تست')
-            ->assertJsonPath('sections.1.data.total', '1,200,000 تومان');
+            ->assertJsonPath('sections.1.data.total', '1,200,000 تومان')
+            ->assertJsonPath('sections.2.data.items.0.title', 'Pickup test');
     }
 
     public function test_it_returns_mobile_page_sections_from_the_database(): void

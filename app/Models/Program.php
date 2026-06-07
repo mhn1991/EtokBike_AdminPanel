@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\Mobile\ImageUrl;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -46,6 +47,22 @@ class Program extends Model
     public function galleryItems(): HasMany
     {
         return $this->hasMany(ProgramGalleryItem::class);
+    }
+
+    public function bookings(): HasMany
+    {
+        return $this->hasMany(ProgramBooking::class);
+    }
+
+    public function refreshReservedCountFromBookings(): void
+    {
+        $reservedCount = $this->bookings()
+            ->whereNotIn('status', ['cancelled', 'no_show'])
+            ->sum('attendees');
+
+        $this->forceFill([
+            'reserved_count' => $reservedCount,
+        ])->saveQuietly();
     }
 
     protected function casts(): array
@@ -98,7 +115,7 @@ class Program extends Model
             'details' => $this->details ?: [],
             'thumbnailText' => $this->thumbnail_text,
             'thumbnailColor' => $this->thumbnail_color,
-            'imageUrl' => $this->image_url,
+            'imageUrl' => ImageUrl::resolve($this->image_url),
         ];
 
         if ($this->program_state === 'future') {

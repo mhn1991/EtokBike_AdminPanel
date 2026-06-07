@@ -5,6 +5,7 @@ namespace App\Support\Mobile;
 use App\Models\ServiceBooking;
 use App\Models\ServiceCategory;
 use App\Models\ServiceOffering;
+use App\Models\ServiceTimeSlot;
 use Illuminate\Support\Facades\Schema;
 
 class ServicesScreenBuilder
@@ -59,6 +60,7 @@ class ServicesScreenBuilder
             if (($section['id'] ?? null) === 'booking-form') {
                 $section['data']['services'] = $serviceTitles;
                 $section['data']['bikes'] = $bikeLabels;
+                $section['data']['timeSlots'] = static::timeSlots($section['data']['timeSlots'] ?? []);
             }
 
             if (($section['id'] ?? null) === 'repair-status') {
@@ -82,6 +84,7 @@ class ServicesScreenBuilder
             ServiceCategory::query()->max('updated_at'),
             ServiceOffering::query()->max('updated_at'),
             static::hasTable('service_bookings') ? ServiceBooking::query()->max('updated_at') : null,
+            static::hasTable('service_time_slots') ? ServiceTimeSlot::query()->max('updated_at') : null,
         ])->filter()->map(fn ($value): int => strtotime((string) $value) ?: 0)->max();
 
         return max((int) ($fallback['version'] ?? 1), $timestamp ?: 0);
@@ -132,6 +135,27 @@ class ServicesScreenBuilder
         $labels[] = 'ثبت دوچرخه جدید';
 
         return array_values(array_unique($labels));
+    }
+
+    /**
+     * @param  array<int, string>  $fallback
+     * @return array<int, string>
+     */
+    private static function timeSlots(array $fallback): array
+    {
+        if (! static::hasTable('service_time_slots')) {
+            return $fallback;
+        }
+
+        $slots = ServiceTimeSlot::query()
+            ->where('is_active', true)
+            ->orderBy('sort_order')
+            ->orderBy('label')
+            ->pluck('label')
+            ->values()
+            ->all();
+
+        return empty($slots) ? $fallback : $slots;
     }
 
     /**

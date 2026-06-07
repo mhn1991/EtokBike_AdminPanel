@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\ServiceOfferings\Schemas;
 
 use Filament\Forms\Components\ColorPicker;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -73,9 +74,16 @@ class ServiceOfferingForm
                             ->required()
                             ->hex()
                             ->default('#101114'),
-                        TextInput::make('image_url')
-                            ->url()
-                            ->maxLength(255),
+                        FileUpload::make('image_url')
+                            ->label('Service image')
+                            ->disk('public')
+                            ->directory('mobile/services')
+                            ->visibility('public')
+                            ->image()
+                            ->imagePreviewHeight('160')
+                            ->openable()
+                            ->downloadable()
+                            ->maxSize(4096),
                     ]),
             ]);
     }

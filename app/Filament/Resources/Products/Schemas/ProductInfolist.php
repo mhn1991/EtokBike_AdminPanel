@@ -62,6 +62,7 @@ class ProductInfolist
                         TextEntry::make('thumbnail_text'),
                         ColorEntry::make('thumbnail_color'),
                         ImageEntry::make('image_url')
+                            ->disk('public')
                             ->placeholder('-'),
                     ]),
                 Section::make('Audit')

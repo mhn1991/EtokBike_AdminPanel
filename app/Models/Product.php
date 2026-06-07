@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\Mobile\ImageUrl;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -64,7 +65,7 @@ class Product extends Model
             'stockLabel' => $this->stock_label,
             'thumbnailText' => $this->thumbnail_text,
             'thumbnailColor' => $this->thumbnail_color,
-            'imageUrl' => $this->image_url,
+            'imageUrl' => ImageUrl::resolve($this->image_url),
         ];
     }
 }

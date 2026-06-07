@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Programs\Schemas;
 use App\Models\Program;
 use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\Textarea;
@@ -90,9 +91,16 @@ class ProgramForm
                             ->required()
                             ->hex()
                             ->default('#101114'),
-                        TextInput::make('image_url')
-                            ->url()
-                            ->maxLength(255),
+                        FileUpload::make('image_url')
+                            ->label('Program image')
+                            ->disk('public')
+                            ->directory('mobile/programs')
+                            ->visibility('public')
+                            ->image()
+                            ->imagePreviewHeight('160')
+                            ->openable()
+                            ->downloadable()
+                            ->maxSize(4096),
                     ]),
                 Section::make('Detail page')
                     ->description('Copy, tags, and labels used after a customer opens the program.')

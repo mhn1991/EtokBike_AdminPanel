@@ -2,6 +2,8 @@
 
 namespace App\Support\Mobile;
 
+use App\Models\BikeProfile;
+use App\Models\CustomerProfile;
 use App\Models\Order;
 use App\Models\ServiceBooking;
 use Illuminate\Support\Facades\Schema;
@@ -17,16 +19,17 @@ class AccountScreenBuilder
             return $fallback;
         }
 
+        $profile = static::latestCustomerProfile();
         $latestOrder = static::latestOrder();
         $latestBooking = static::latestBooking();
 
-        if (! $latestOrder && ! $latestBooking) {
+        if (! $profile && ! $latestOrder && ! $latestBooking) {
             return $fallback;
         }
 
         $screen = $fallback;
         $screen['version'] = static::version($fallback);
-        $customer = static::customerFrom($latestOrder, $latestBooking);
+        $customer = static::customerFrom($profile, $latestOrder, $latestBooking);
         $statusItems = static::statusItems();
         $historyItems = static::historyItems();
         $bikeProfiles = static::bikeProfiles();
@@ -69,6 +72,11 @@ class AccountScreenBuilder
             $timestamps[] = ServiceBooking::query()->max('updated_at');
         }
 
+        if (static::hasTables(['customer_profiles', 'bike_profiles'])) {
+            $timestamps[] = CustomerProfile::query()->max('updated_at');
+            $timestamps[] = BikeProfile::query()->max('updated_at');
+        }
+
         $timestamp = collect($timestamps)
             ->filter()
             ->map(fn ($value): int => strtotime((string) $value) ?: 0)
@@ -79,7 +87,21 @@ class AccountScreenBuilder
 
     private static function canUseDatabase(): bool
     {
-        return static::hasTables(['orders', 'order_items']) || static::hasTables(['service_bookings']);
+        return static::hasTables(['orders', 'order_items'])
+            || static::hasTables(['service_bookings'])
+            || static::hasTables(['customer_profiles', 'bike_profiles']);
+    }
+
+    private static function latestCustomerProfile(): ?CustomerProfile
+    {
+        if (! static::hasTables(['customer_profiles'])) {
+            return null;
+        }
+
+        return CustomerProfile::query()
+            ->where('is_active', true)
+            ->latest('updated_at')
+            ->first();
     }
 
     private static function latestOrder(): ?Order
@@ -106,10 +128,19 @@ class AccountScreenBuilder
     }
 
     /**
-     * @return array{name: string, phone: ?string, email: ?string}
+     * @return array{name: string, phone: ?string, email: ?string, address: ?string}
      */
-    private static function customerFrom(?Order $order, ?ServiceBooking $booking): array
+    private static function customerFrom(?CustomerProfile $profile, ?Order $order, ?ServiceBooking $booking): array
     {
+        if ($profile) {
+            return [
+                'name' => $profile->name,
+                'phone' => $profile->phone,
+                'email' => $profile->email,
+                'address' => $profile->delivery_address,
+            ];
+        }
+
         $orderTimestamp = $order?->updated_at?->getTimestamp() ?? 0;
         $bookingTimestamp = $booking?->updated_at?->getTimestamp() ?? 0;
 
@@ -118,6 +149,7 @@ class AccountScreenBuilder
                 'name' => $booking->customer_name,
                 'phone' => $booking->customer_phone,
                 'email' => $booking->customer_email,
+                'address' => null,
             ];
         }
 
@@ -126,6 +158,7 @@ class AccountScreenBuilder
                 'name' => $order->customer_name,
                 'phone' => $order->customer_phone,
                 'email' => $order->customer_email,
+                'address' => null,
             ];
         }
 
@@ -133,11 +166,12 @@ class AccountScreenBuilder
             'name' => $booking?->customer_name ?: 'مشتری EtokBike',
             'phone' => $booking?->customer_phone,
             'email' => $booking?->customer_email,
+            'address' => null,
         ];
     }
 
     /**
-     * @param  array{name: string, phone: ?string, email: ?string}  $customer
+     * @param  array{name: string, phone: ?string, email: ?string, address: ?string}  $customer
      * @return array<int, array<string, string>>
      */
     private static function customerFields(array $customer): array
@@ -146,6 +180,7 @@ class AccountScreenBuilder
             ['label' => 'نام کامل', 'value' => $customer['name']],
             ['label' => 'شماره تماس', 'value' => $customer['phone'] ?: 'ثبت نشده'],
             ['label' => 'ایمیل', 'value' => $customer['email'] ?: 'ثبت نشده'],
+            ['label' => 'آدرس تحویل', 'value' => $customer['address'] ?: 'ثبت نشده'],
             ['label' => 'منبع اطلاعات', 'value' => 'پنل مدیریت EtokBike'],
         ];
     }
@@ -213,6 +248,21 @@ class AccountScreenBuilder
      */
     private static function bikeProfiles(): array
     {
+        if (static::hasTables(['bike_profiles'])) {
+            $profiles = BikeProfile::query()
+                ->where('is_active', true)
+                ->orderBy('sort_order')
+                ->orderBy('title')
+                ->get()
+                ->map(fn (BikeProfile $profile): array => $profile->toMobilePayload())
+                ->values()
+                ->all();
+
+            if (! empty($profiles)) {
+                return $profiles;
+            }
+        }
+
         if (! static::hasTables(['service_bookings'])) {
             return [];
         }

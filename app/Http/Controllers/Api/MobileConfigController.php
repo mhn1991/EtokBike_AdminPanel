@@ -39,6 +39,13 @@ class MobileConfigController extends Controller
 
         Arr::set($manifest, 'remoteConfig.manifestUrl', $this->mobileUrl(route('mobile.manifest', absolute: false)));
         Arr::set($manifest, 'remoteConfig.telemetryUrl', $this->mobileUrl(route('mobile.telemetry.store', absolute: false)));
+        Arr::set($manifest, 'remoteConfig.stateUrl', $this->mobileUrl(route('mobile.state.show', absolute: false)));
+        Arr::set($manifest, 'remoteConfig.cartUrl', $this->mobileUrl(route('cart.show', absolute: false)));
+        Arr::set($manifest, 'remoteConfig.cartItemsUrl', $this->mobileUrl(route('cart.items.store', absolute: false)));
+        Arr::set($manifest, 'remoteConfig.ordersUrl', $this->mobileUrl(route('orders.store', absolute: false)));
+        Arr::set($manifest, 'remoteConfig.serviceBookingsUrl', $this->mobileUrl(route('service-bookings.store', absolute: false)));
+        Arr::set($manifest, 'remoteConfig.programBookingsUrl', $this->mobileUrl(route('program-bookings.store', absolute: false)));
+        Arr::set($manifest, 'remoteConfig.messagesUrl', $this->mobileUrl(route('messages.store', absolute: false)));
 
         foreach (array_keys($screens) as $screenId) {
             Arr::set($manifest, "screens.{$screenId}.url", $this->mobileUrl(route('mobile.screens.show', ['screen' => $screenId], false)));

@@ -7,6 +7,7 @@ use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\ColorPicker;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\TextInput;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Resources\RelationManagers\RelationManager;
@@ -43,9 +44,16 @@ class GalleryItemsRelationManager extends RelationManager
                             ->required()
                             ->hex()
                             ->default('#101114'),
-                        TextInput::make('image_url')
-                            ->url()
-                            ->maxLength(255)
+                        FileUpload::make('image_url')
+                            ->label('Gallery image')
+                            ->disk('public')
+                            ->directory('mobile/program-galleries')
+                            ->visibility('public')
+                            ->image()
+                            ->imagePreviewHeight('160')
+                            ->openable()
+                            ->downloadable()
+                            ->maxSize(4096)
                             ->columnSpan(2),
                     ]),
             ]);

@@ -8,6 +8,7 @@ use App\Models\Program;
 use App\Models\ProgramCategory;
 use App\Models\ProgramGalleryItem;
 use App\Models\ServiceBooking;
+use App\Models\StoreProfile;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Schema;
 
@@ -25,8 +26,9 @@ class HomeScreenBuilder
         $featuredProducts = static::featuredProducts();
         $programCategories = static::programCategories();
         $statusItems = static::statusItems();
+        $storeProfile = static::storeProfile();
 
-        if ($featuredProducts->isEmpty() && $programCategories->isEmpty() && empty($statusItems)) {
+        if ($featuredProducts->isEmpty() && $programCategories->isEmpty() && empty($statusItems) && ! $storeProfile) {
             return $fallback;
         }
 
@@ -60,6 +62,14 @@ class HomeScreenBuilder
             if (($section['id'] ?? null) === 'customer-status') {
                 $section['data']['items'] = $statusItems;
             }
+
+            if (($section['id'] ?? null) === 'store-status' && $storeProfile) {
+                $section['data']['items'] = [$storeProfile->statusMobilePayload()];
+            }
+
+            if (($section['id'] ?? null) === 'store-info' && $storeProfile) {
+                $section['data']['items'] = [$storeProfile->infoMobilePayload()];
+            }
         }
 
         return $screen;
@@ -87,6 +97,10 @@ class HomeScreenBuilder
             $timestamps[] = ServiceBooking::query()->max('updated_at');
         }
 
+        if (static::hasTables(['store_profiles'])) {
+            $timestamps[] = StoreProfile::query()->max('updated_at');
+        }
+
         $timestamp = collect($timestamps)
             ->filter()
             ->map(fn ($value): int => strtotime((string) $value) ?: 0)
@@ -100,7 +114,20 @@ class HomeScreenBuilder
         return static::hasTables(['product_categories', 'products'])
             || static::hasTables(['program_categories', 'programs', 'program_gallery_items'])
             || static::hasTables(['orders', 'order_items'])
-            || static::hasTables(['service_bookings']);
+            || static::hasTables(['service_bookings'])
+            || static::hasTables(['store_profiles']);
+    }
+
+    private static function storeProfile(): ?StoreProfile
+    {
+        if (! static::hasTables(['store_profiles'])) {
+            return null;
+        }
+
+        return StoreProfile::query()
+            ->where('is_active', true)
+            ->latest('updated_at')
+            ->first();
     }
 
     /**
@@ -202,7 +229,7 @@ class HomeScreenBuilder
             'price' => $program->book_label ?: 'رزرو برنامه',
             'thumbnailText' => $program->thumbnail_text,
             'thumbnailColor' => $program->thumbnail_color,
-            'imageUrl' => $program->image_url,
+            'imageUrl' => ImageUrl::resolve($program->image_url),
         ];
     }
 

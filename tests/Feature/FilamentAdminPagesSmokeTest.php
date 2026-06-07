@@ -2,7 +2,10 @@
 
 namespace Tests\Feature;
 
+use App\Models\BikeProfile;
 use App\Models\CustomerMessage;
+use App\Models\CustomerProfile;
+use App\Models\DeliveryMethod;
 use App\Models\MessageDepartment;
 use App\Models\MobileAnalyticsEvent;
 use App\Models\MobileScreen;
@@ -10,10 +13,13 @@ use App\Models\Order;
 use App\Models\Product;
 use App\Models\ProductCategory;
 use App\Models\Program;
+use App\Models\ProgramBooking;
 use App\Models\ProgramCategory;
 use App\Models\ServiceBooking;
 use App\Models\ServiceCategory;
 use App\Models\ServiceOffering;
+use App\Models\ServiceTimeSlot;
+use App\Models\StoreProfile;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -63,6 +69,13 @@ class FilamentAdminPagesSmokeTest extends TestCase
             'program_state' => 'future',
         ]);
 
+        $programBooking = ProgramBooking::query()->create([
+            'program_id' => $program->id,
+            'customer_name' => 'Smoke Program Customer',
+            'attendees' => 1,
+            'status' => 'pending',
+        ]);
+
         $serviceCategory = ServiceCategory::query()->create([
             'slug' => 'maintenance',
             'label' => 'Maintenance',
@@ -80,6 +93,36 @@ class FilamentAdminPagesSmokeTest extends TestCase
             'customer_name' => 'Smoke Booking Customer',
             'service_type' => 'Tune up',
             'status' => 'pending',
+        ]);
+
+        $serviceTimeSlot = ServiceTimeSlot::query()->create([
+            'label' => 'Tomorrow 10:30',
+        ]);
+
+        $deliveryMethod = DeliveryMethod::query()->create([
+            'title' => 'Pickup',
+            'subtitle' => 'Store pickup',
+            'description' => 'Test delivery method',
+            'price_label' => 'Free',
+        ]);
+
+        $storeProfile = StoreProfile::query()->create([
+            'status_title' => 'Open',
+            'status_subtitle' => 'Smoke status',
+            'branch_title' => 'Smoke branch',
+            'address' => 'Smoke address',
+            'hours' => '10-20',
+        ]);
+
+        $customerProfile = CustomerProfile::query()->create([
+            'name' => 'Smoke Customer Profile',
+            'phone' => '+989120000000',
+        ]);
+
+        $bikeProfile = BikeProfile::query()->create([
+            'customer_profile_id' => $customerProfile->id,
+            'title' => 'Smoke Bike Profile',
+            'subtitle' => 'Smoke bike',
         ]);
 
         $department = MessageDepartment::query()->create([
@@ -132,6 +175,10 @@ class FilamentAdminPagesSmokeTest extends TestCase
             '/admin/programs/create',
             "/admin/programs/{$program->id}",
             "/admin/programs/{$program->id}/edit",
+            '/admin/program-bookings',
+            '/admin/program-bookings/create',
+            "/admin/program-bookings/{$programBooking->id}",
+            "/admin/program-bookings/{$programBooking->id}/edit",
             '/admin/service-categories',
             '/admin/service-categories/create',
             "/admin/service-categories/{$serviceCategory->id}/edit",
@@ -143,6 +190,21 @@ class FilamentAdminPagesSmokeTest extends TestCase
             '/admin/service-bookings/create',
             "/admin/service-bookings/{$serviceBooking->id}",
             "/admin/service-bookings/{$serviceBooking->id}/edit",
+            '/admin/service-time-slots',
+            '/admin/service-time-slots/create',
+            "/admin/service-time-slots/{$serviceTimeSlot->id}/edit",
+            '/admin/delivery-methods',
+            '/admin/delivery-methods/create',
+            "/admin/delivery-methods/{$deliveryMethod->id}/edit",
+            '/admin/store-profiles',
+            '/admin/store-profiles/create',
+            "/admin/store-profiles/{$storeProfile->id}/edit",
+            '/admin/customer-profiles',
+            '/admin/customer-profiles/create',
+            "/admin/customer-profiles/{$customerProfile->id}/edit",
+            '/admin/bike-profiles',
+            '/admin/bike-profiles/create',
+            "/admin/bike-profiles/{$bikeProfile->id}/edit",
             '/admin/message-departments',
             '/admin/message-departments/create',
             "/admin/message-departments/{$department->id}/edit",

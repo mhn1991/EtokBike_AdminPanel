@@ -2,16 +2,22 @@
 
 namespace Database\Seeders;
 
+use App\Models\BikeProfile;
+use App\Models\CustomerProfile;
+use App\Models\DeliveryMethod;
 use App\Models\MessageDepartment;
 use App\Models\MobileScreen;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\ProductCategory;
 use App\Models\Program;
+use App\Models\ProgramBooking;
 use App\Models\ProgramCategory;
 use App\Models\ServiceBooking;
 use App\Models\ServiceCategory;
 use App\Models\ServiceOffering;
+use App\Models\ServiceTimeSlot;
+use App\Models\StoreProfile;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -76,6 +82,9 @@ class DatabaseSeeder extends Seeder
         $this->seedProducts();
         $this->seedServices();
         $this->seedMessages();
+        $this->seedOperations();
+        $this->seedStoreProfile();
+        $this->seedCustomerProfiles();
         $this->seedMobileScreens();
     }
 
@@ -291,6 +300,102 @@ class DatabaseSeeder extends Seeder
                 ]);
             }
         }
+    }
+
+    private function seedOperations(): void
+    {
+        foreach (['امروز ۱۶:۰۰', 'فردا ۱۰:۳۰', 'فردا ۱۸:۰۰', 'پنجشنبه ۱۲:۰۰'] as $index => $label) {
+            ServiceTimeSlot::query()->firstOrCreate(
+                ['label' => $label],
+                [
+                    'sort_order' => $index,
+                    'is_active' => true,
+                ],
+            );
+        }
+
+        $methods = [
+            [
+                'title' => 'تحویل در فروشگاه',
+                'subtitle' => 'تست و تنظیم قبل از تحویل',
+                'description' => 'برای دوچرخه بهترین گزینه است؛ می‌توانید ترمز، دنده و سایز را همان‌جا بررسی کنید.',
+                'price_label' => 'رایگان',
+            ],
+            [
+                'title' => 'ارسال شهری',
+                'subtitle' => 'هماهنگی زمان تحویل',
+                'description' => 'پس از ثبت سفارش، وضعیت ارسال و کد رهگیری در حساب کاربری نمایش داده می‌شود.',
+                'price_label' => 'محاسبه در پرداخت',
+            ],
+        ];
+
+        foreach ($methods as $index => $method) {
+            DeliveryMethod::query()->firstOrCreate(
+                ['title' => $method['title']],
+                [
+                    ...$method,
+                    'sort_order' => $index,
+                    'is_active' => true,
+                ],
+            );
+        }
+    }
+
+    private function seedCustomerProfiles(): void
+    {
+        $profile = CustomerProfile::query()->firstOrCreate(
+            ['email' => 'ali@example.com'],
+            [
+                'name' => 'Ali Rezaei',
+                'phone' => '+989120000000',
+                'delivery_address' => 'تهران، خیابان ولیعصر، پلاک ۱۲',
+                'is_active' => true,
+            ],
+        );
+
+        BikeProfile::query()->firstOrCreate(
+            ['customer_profile_id' => $profile->id, 'title' => 'ETX 200'],
+            [
+                'subtitle' => 'کوهستان - استفاده هفتگی',
+                'frame_size' => 'M',
+                'tire_size' => '۲۹ اینچ',
+                'brake_type' => 'دیسکی',
+                'next_recommendation' => 'بازبینی ترمز و زنجیر',
+                'sort_order' => 0,
+                'is_active' => true,
+            ],
+        );
+
+        $program = Program::query()->where('program_state', 'future')->first();
+
+        if ($program) {
+            ProgramBooking::query()->firstOrCreate(
+                ['program_id' => $program->id, 'customer_email' => 'ali@example.com'],
+                [
+                    'customer_name' => 'Ali Rezaei',
+                    'customer_phone' => '+989120000000',
+                    'attendees' => 1,
+                    'status' => 'pending',
+                ],
+            );
+        }
+    }
+
+    private function seedStoreProfile(): void
+    {
+        StoreProfile::query()->firstOrCreate(
+            ['branch_title' => 'شعبه مرکزی'],
+            [
+                'status_title' => 'باز تا ساعت ۲۰:۰۰',
+                'status_subtitle' => 'تحویل حضوری و ارسال شهری فعال است',
+                'status_description' => 'برای دوچرخه‌های موجود، تست حضوری و تنظیم قبل تحویل انجام می‌شود.',
+                'status_label' => 'باز',
+                'address' => 'تهران، خیابان ولیعصر، پلاک ۱۲',
+                'hours' => 'شنبه تا پنجشنبه ۱۰ تا ۲۰',
+                'action_label' => 'تماس سریع',
+                'is_active' => true,
+            ],
+        );
     }
 
     private function seedMobileScreens(): void

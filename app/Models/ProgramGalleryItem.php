@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\Mobile\ImageUrl;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -37,7 +38,7 @@ class ProgramGalleryItem extends Model
             'thumbnailText' => $this->thumbnail_text,
             'thumbnailColor' => $this->thumbnail_color,
             'caption' => $this->caption,
-            'imageUrl' => $this->image_url,
+            'imageUrl' => ImageUrl::resolve($this->image_url),
         ];
     }
 }

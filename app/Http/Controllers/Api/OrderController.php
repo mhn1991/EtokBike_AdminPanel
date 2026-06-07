@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\MobileCartItem;
 use App\Models\Order;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -18,6 +19,7 @@ class OrderController extends Controller
             'customer_phone' => ['nullable', 'string', 'max:255'],
             'fulfillment_method' => ['nullable', 'string', 'in:pickup,delivery'],
             'customer_notes' => ['nullable', 'string'],
+            'device_id' => ['nullable', 'string', 'max:255'],
             'items' => ['required', 'array', 'min:1'],
             'items.*.product_id' => ['nullable', 'string', 'max:255'],
             'items.*.title' => ['required', 'string', 'max:255'],
@@ -40,6 +42,12 @@ class OrderController extends Controller
 
             foreach ($validated['items'] as $item) {
                 $order->items()->create($item);
+            }
+
+            if (! empty($validated['device_id'])) {
+                MobileCartItem::query()
+                    ->where('device_id', $validated['device_id'])
+                    ->delete();
             }
 
             return $order->fresh(['items']);

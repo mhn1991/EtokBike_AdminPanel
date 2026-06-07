@@ -68,6 +68,7 @@ class ProgramInfolist
                         TextEntry::make('thumbnail_text'),
                         ColorEntry::make('thumbnail_color'),
                         ImageEntry::make('image_url')
+                            ->disk('public')
                             ->placeholder('-'),
                         TextEntry::make('capacity')
                             ->formatStateUsing(fn (?int $state): string => is_null($state) ? '-' : number_format($state))

@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Products\Schemas;
 
 use App\Models\Product;
 use Filament\Forms\Components\ColorPicker;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -99,9 +100,16 @@ class ProductForm
                             ->required()
                             ->hex()
                             ->default('#101114'),
-                        TextInput::make('image_url')
-                            ->url()
-                            ->maxLength(255),
+                        FileUpload::make('image_url')
+                            ->label('Product image')
+                            ->disk('public')
+                            ->directory('mobile/products')
+                            ->visibility('public')
+                            ->image()
+                            ->imagePreviewHeight('160')
+                            ->openable()
+                            ->downloadable()
+                            ->maxSize(4096),
                         Textarea::make('description')
                             ->rows(4)
                             ->columnSpanFull(),
