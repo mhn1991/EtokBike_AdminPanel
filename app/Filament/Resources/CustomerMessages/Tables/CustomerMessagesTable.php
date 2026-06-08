@@ -3,6 +3,8 @@
 namespace App\Filament\Resources\CustomerMessages\Tables;
 
 use App\Models\CustomerMessage;
+use Filament\Actions\Action;
+use Filament\Actions\ActionGroup;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Support\Icons\Heroicon;
@@ -22,23 +24,35 @@ class CustomerMessagesTable
             ->columns([
                 TextColumn::make('department.title')
                     ->label('Department')
-                    ->sortable(),
+                    ->sortable()
+                    ->wrap()
+                    ->extraCellAttributes(['dir' => 'rtl']),
                 TextColumn::make('user.name')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('sender')
                     ->badge()
                     ->formatStateUsing(fn (string $state): string => CustomerMessage::SENDER_OPTIONS[$state] ?? $state)
                     ->color(fn (string $state): string => $state === 'client' ? 'warning' : 'info')
+                    ->visibleFrom('md')
                     ->searchable(),
                 TextColumn::make('label')
-                    ->searchable(),
+                    ->searchable()
+                    ->visibleFrom('md')
+                    ->extraCellAttributes(['dir' => 'rtl']),
                 TextColumn::make('text')
-                    ->limit(60)
-                    ->searchable(),
+                    ->limit(90)
+                    ->lineClamp(2)
+                    ->searchable()
+                    ->wrap()
+                    ->extraCellAttributes(['dir' => 'rtl']),
                 TextColumn::make('time_label')
+                    ->label('Time')
+                    ->visibleFrom('lg')
                     ->searchable(),
                 IconColumn::make('is_unread')
                     ->label('Needs response')
+                    ->visibleFrom('md')
                     ->boolean(),
                 TextColumn::make('created_at')
                     ->dateTime()
@@ -62,10 +76,31 @@ class CustomerMessagesTable
                     ->label('Needs response'),
             ])
             ->defaultSort('created_at', 'desc')
-            ->recordActions([
-                ViewAction::make(),
-                EditAction::make(),
+            ->recordActions(ActionGroup::make([
+                ViewAction::make()
+                    ->label('Open thread'),
+                EditAction::make()
+                    ->label('Edit message'),
+                Action::make('markReplied')
+                    ->label('Mark replied')
+                    ->icon(Heroicon::CheckCircle)
+                    ->color('success')
+                    ->visible(fn (CustomerMessage $record): bool => (bool) $record->is_unread)
+                    ->action(fn (CustomerMessage $record) => $record->update(['is_unread' => false]))
+                    ->successNotificationTitle('Message marked replied'),
+                Action::make('markNeedsResponse')
+                    ->label('Needs response')
+                    ->icon(Heroicon::BellAlert)
+                    ->color('warning')
+                    ->visible(fn (CustomerMessage $record): bool => ! $record->is_unread)
+                    ->action(fn (CustomerMessage $record) => $record->update(['is_unread' => true]))
+                    ->successNotificationTitle('Message marked as needing response'),
             ])
+                ->label('Actions')
+                ->icon(Heroicon::EllipsisHorizontal)
+                ->iconButton()
+                ->color('gray'))
+            ->recordActionsColumnLabel('')
             ->toolbarActions([]);
     }
 }

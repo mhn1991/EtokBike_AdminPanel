@@ -20,7 +20,7 @@ class OperationsStatsWidget extends StatsOverviewWidget
 {
     protected static bool $isLazy = false;
 
-    protected static ?int $sort = 1;
+    protected static ?int $sort = 0;
 
     protected ?string $heading = 'Operations snapshot';
 
@@ -53,8 +53,9 @@ class OperationsStatsWidget extends StatsOverviewWidget
             ->where('is_unread', true)
             ->count();
 
-        $activeProducts = Product::query()
+        $lowStockProducts = Product::query()
             ->where('is_active', true)
+            ->whereIn('availability', ['low_stock', 'out_of_stock'])
             ->count();
 
         return [
@@ -85,14 +86,16 @@ class OperationsStatsWidget extends StatsOverviewWidget
                 ->color($unreadMessages > 0 ? 'danger' : 'success')
                 ->icon(Heroicon::EnvelopeOpen)
                 ->url(CustomerMessageResource::getUrl()),
-            Stat::make('Active products', DashboardMetrics::number($activeProducts))
-                ->description('Visible items in the mobile shop')
+            Stat::make('Low-stock products', DashboardMetrics::number($lowStockProducts))
+                ->description('Items that need stock or visibility review')
                 ->chart(DashboardMetrics::countByDay(
                     Product::class,
                     7,
-                    fn (Builder $query) => $query->where('is_active', true),
+                    fn (Builder $query) => $query
+                        ->where('is_active', true)
+                        ->whereIn('availability', ['low_stock', 'out_of_stock']),
                 ))
-                ->color('success')
+                ->color($lowStockProducts > 0 ? 'warning' : 'success')
                 ->icon(Heroicon::ShoppingBag)
                 ->url(ProductResource::getUrl()),
         ];

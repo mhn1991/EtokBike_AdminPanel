@@ -21,7 +21,7 @@ class MobileAnalyticsEventResource extends Resource
 
     protected static ?string $navigationLabel = 'App analytics logs';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Mobile App';
+    protected static string|\UnitEnum|null $navigationGroup = 'Mobile App Content';
 
     protected static ?int $navigationSort = 2;
 

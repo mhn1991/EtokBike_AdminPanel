@@ -11,7 +11,7 @@ class MobileActivityTrendChart extends ChartWidget
 {
     protected static bool $isLazy = false;
 
-    protected static ?int $sort = 4;
+    protected static ?int $sort = 7;
 
     protected int|string|array $columnSpan = 'full';
 
@@ -19,13 +19,18 @@ class MobileActivityTrendChart extends ChartWidget
 
     protected ?string $description = 'Daily active devices and total phone events over the last two weeks.';
 
-    protected ?string $maxHeight = '320px';
+    protected ?string $maxHeight = '240px';
 
     protected ?string $pollingInterval = null;
 
     protected function getType(): string
     {
         return 'line';
+    }
+
+    public static function canView(): bool
+    {
+        return MobileAnalyticsEvent::query()->exists();
     }
 
     /**

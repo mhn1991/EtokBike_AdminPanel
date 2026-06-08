@@ -27,7 +27,7 @@ class StoreProfileResource extends Resource
 
     protected static ?string $navigationLabel = 'Store profile';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Operations';
+    protected static string|\UnitEnum|null $navigationGroup = 'Settings';
 
     protected static ?int $navigationSort = 1;
 

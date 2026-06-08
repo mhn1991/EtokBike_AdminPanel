@@ -12,7 +12,7 @@ class OperationsTrendChart extends ChartWidget
 {
     protected static bool $isLazy = false;
 
-    protected static ?int $sort = 2;
+    protected static ?int $sort = 5;
 
     protected int|string|array $columnSpan = [
         'md' => 2,
@@ -23,13 +23,20 @@ class OperationsTrendChart extends ChartWidget
 
     protected ?string $description = 'Orders, service bookings, and customer messages created over the last two weeks.';
 
-    protected ?string $maxHeight = '320px';
+    protected ?string $maxHeight = '240px';
 
     protected ?string $pollingInterval = null;
 
     protected function getType(): string
     {
         return 'line';
+    }
+
+    public static function canView(): bool
+    {
+        return Order::query()->exists()
+            || ServiceBooking::query()->exists()
+            || CustomerMessage::query()->exists();
     }
 
     /**

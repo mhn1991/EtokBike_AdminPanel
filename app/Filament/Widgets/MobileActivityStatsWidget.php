@@ -14,13 +14,18 @@ class MobileActivityStatsWidget extends StatsOverviewWidget
 {
     protected static bool $isLazy = false;
 
-    protected static ?int $sort = 0;
+    protected static ?int $sort = 4;
 
     protected ?string $heading = 'Mobile app activity';
 
     protected ?string $description = 'Live app usage from phone telemetry events.';
 
     protected ?string $pollingInterval = null;
+
+    public static function canView(): bool
+    {
+        return MobileAnalyticsEvent::query()->exists();
+    }
 
     /**
      * @return array<Stat>

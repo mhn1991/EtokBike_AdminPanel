@@ -13,7 +13,7 @@ class RecentOrdersWidget extends TableWidget
 {
     protected static bool $isLazy = false;
 
-    protected static ?int $sort = 5;
+    protected static ?int $sort = 1;
 
     protected int|string|array $columnSpan = 'full';
 
@@ -45,6 +45,7 @@ class RecentOrdersWidget extends TableWidget
                     }),
                 TextColumn::make('payment_status')
                     ->badge()
+                    ->visibleFrom('md')
                     ->formatStateUsing(fn (string $state): string => Order::PAYMENT_STATUS_OPTIONS[$state] ?? $state)
                     ->color(fn (string $state): string => match ($state) {
                         'paid' => 'success',
@@ -52,8 +53,10 @@ class RecentOrdersWidget extends TableWidget
                         default => 'warning',
                     }),
                 TextColumn::make('total')
+                    ->visibleFrom('md')
                     ->formatStateUsing(fn (?int $state): string => number_format($state ?? 0)),
                 TextColumn::make('placed_at')
+                    ->visibleFrom('lg')
                     ->dateTime(),
             ])
             ->recordUrl(fn (Order $record): string => OrderResource::getUrl('view', ['record' => $record]));

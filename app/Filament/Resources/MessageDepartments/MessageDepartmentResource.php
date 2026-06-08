@@ -22,7 +22,7 @@ class MessageDepartmentResource extends Resource
 
     protected static ?string $navigationLabel = 'Message departments';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Messages';
+    protected static string|\UnitEnum|null $navigationGroup = 'Inbox';
 
     protected static ?int $navigationSort = 2;
 

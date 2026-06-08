@@ -33,21 +33,6 @@ class ProductForm
                             ->searchable()
                             ->preload()
                             ->required(),
-                        TextInput::make('slug')
-                            ->required()
-                            ->helperText('Stable product ID used by the mobile app.')
-                            ->maxLength(255),
-                        ToggleButtons::make('availability')
-                            ->options(Product::AVAILABILITY_OPTIONS)
-                            ->colors([
-                                'in_stock' => 'success',
-                                'low_stock' => 'warning',
-                                'orderable' => 'info',
-                                'out_of_stock' => 'danger',
-                            ])
-                            ->inline()
-                            ->required()
-                            ->default('in_stock'),
                         TextInput::make('title')
                             ->required()
                             ->live(onBlur: true)
@@ -60,15 +45,40 @@ class ProductForm
                         TextInput::make('subtitle')
                             ->required()
                             ->maxLength(255),
+                        ToggleButtons::make('availability')
+                            ->options(Product::AVAILABILITY_OPTIONS)
+                            ->colors([
+                                'in_stock' => 'success',
+                                'low_stock' => 'warning',
+                                'orderable' => 'info',
+                                'out_of_stock' => 'danger',
+                            ])
+                            ->inline()
+                            ->required()
+                            ->default('in_stock')
+                            ->columnSpanFull(),
+                    ]),
+                Section::make('Publishing controls')
+                    ->description('Visibility and stable app identifiers. Use table drag ordering for day-to-day sorting.')
+                    ->columns(2)
+                    ->schema([
+                        TextInput::make('slug')
+                            ->required()
+                            ->helperText('Stable product ID used by the mobile app.')
+                            ->maxLength(255)
+                            ->columnSpanFull(),
                         TextInput::make('sort_order')
+                            ->label('Sort order')
                             ->required()
                             ->integer()
                             ->minValue(0)
                             ->default(0),
                         Toggle::make('is_featured')
+                            ->label('Featured in app')
                             ->required()
                             ->default(false),
                         Toggle::make('is_active')
+                            ->label('Visible in app')
                             ->required()
                             ->default(true),
                     ]),

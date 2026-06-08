@@ -24,7 +24,7 @@ class CustomerMessageResource extends Resource
 
     protected static ?string $navigationLabel = 'Customer messages';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Messages';
+    protected static string|\UnitEnum|null $navigationGroup = 'Inbox';
 
     protected static ?int $navigationSort = 1;
 

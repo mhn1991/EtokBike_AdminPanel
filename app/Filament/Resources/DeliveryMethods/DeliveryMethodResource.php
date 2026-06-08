@@ -27,7 +27,7 @@ class DeliveryMethodResource extends Resource
 
     protected static ?string $navigationLabel = 'Delivery methods';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Shop';
+    protected static string|\UnitEnum|null $navigationGroup = 'Orders';
 
     protected static ?int $navigationSort = 5;
 

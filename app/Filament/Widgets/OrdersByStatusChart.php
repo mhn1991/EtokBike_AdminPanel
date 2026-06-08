@@ -9,7 +9,7 @@ class OrdersByStatusChart extends ChartWidget
 {
     protected static bool $isLazy = false;
 
-    protected static ?int $sort = 3;
+    protected static ?int $sort = 6;
 
     protected int|string|array $columnSpan = [
         'md' => 1,
@@ -20,13 +20,18 @@ class OrdersByStatusChart extends ChartWidget
 
     protected ?string $description = 'Live distribution of the order queue.';
 
-    protected ?string $maxHeight = '320px';
+    protected ?string $maxHeight = '240px';
 
     protected ?string $pollingInterval = null;
 
     protected function getType(): string
     {
         return 'doughnut';
+    }
+
+    public static function canView(): bool
+    {
+        return Order::query()->exists();
     }
 
     /**

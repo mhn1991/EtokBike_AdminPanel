@@ -25,7 +25,7 @@ class MobileScreenResource extends Resource
 
     protected static ?string $navigationLabel = 'App pages';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Mobile App';
+    protected static string|\UnitEnum|null $navigationGroup = 'Mobile App Content';
 
     protected static ?int $navigationSort = 1;
 

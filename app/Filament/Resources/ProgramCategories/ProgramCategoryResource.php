@@ -22,7 +22,7 @@ class ProgramCategoryResource extends Resource
 
     protected static ?string $navigationLabel = 'Program categories';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'App content';
+    protected static string|\UnitEnum|null $navigationGroup = 'Programs';
 
     protected static ?int $navigationSort = 2;
 
