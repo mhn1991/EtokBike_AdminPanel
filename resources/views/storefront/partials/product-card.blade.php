@@ -2,26 +2,30 @@
     $isUnavailable = $product->availability === 'out_of_stock';
 @endphp
 
-<article class="group overflow-hidden rounded-lg border border-neutral-200 bg-white" itemscope itemtype="https://schema.org/Product">
+<article class="group overflow-hidden rounded-lg border border-neutral-200 bg-white transition hover:border-neutral-300 hover:shadow-sm" itemscope itemtype="https://schema.org/Product">
     <a href="{{ route('storefront.products.show', $product) }}" class="block" itemprop="url">
         @include('storefront.partials.product-visual', ['product' => $product, 'class' => 'aspect-[4/3]', 'loading' => 'lazy'])
     </a>
     <div class="grid gap-4 p-4">
         <div class="grid gap-2">
-            <p class="text-xs font-semibold text-red-700">{{ $product->category?->label }}</p>
-            <h2 class="text-lg font-semibold leading-7 text-neutral-950" itemprop="name">
+            <div class="flex items-center justify-between gap-3">
+                <p class="text-xs font-semibold text-red-700">{{ $product->category?->label }}</p>
+                <p class="rounded-md bg-neutral-100 px-2 py-1 text-xs font-medium text-neutral-600">
+                    {{ $product->stock_label ?: \App\Models\Product::AVAILABILITY_OPTIONS[$product->availability] }}
+                </p>
+            </div>
+            <h2 class="min-h-14 text-lg font-semibold leading-7 text-neutral-950" itemprop="name">
                 <a href="{{ route('storefront.products.show', $product) }}" class="hover:text-red-700">{{ $product->title }}</a>
             </h2>
-            <p class="text-sm leading-6 text-neutral-600" itemprop="description">{{ $product->subtitle }}</p>
+            <p class="min-h-12 text-sm leading-6 text-neutral-600" itemprop="description">{{ $product->subtitle }}</p>
         </div>
 
-        <div class="flex items-center justify-between gap-3">
-            <p class="font-semibold text-neutral-950" itemprop="offers" itemscope itemtype="https://schema.org/Offer">
+        <div class="flex items-end justify-between gap-3 border-t border-neutral-100 pt-3">
+            <p class="text-lg font-bold text-neutral-950" itemprop="offers" itemscope itemtype="https://schema.org/Offer">
                 <meta itemprop="priceCurrency" content="IRR">
                 <meta itemprop="price" content="{{ $product->price_value }}">
                 {{ $product->price_label ?: \App\Support\Storefront\PriceFormatter::format($product->price_value) }}
             </p>
-            <p class="text-xs font-medium text-neutral-500">{{ $product->stock_label ?: \App\Models\Product::AVAILABILITY_OPTIONS[$product->availability] }}</p>
         </div>
 
         <form method="POST" action="{{ route('storefront.cart.items.store', $product) }}">

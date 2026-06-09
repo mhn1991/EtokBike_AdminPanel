@@ -42,6 +42,8 @@
             </style>
         @endif
 
+        @stack('head')
+
         @foreach ($schemas as $schema)
             <script type="application/ld+json">@json($schema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)</script>
         @endforeach

@@ -125,6 +125,31 @@ class MobileConfigApiTest extends TestCase
             ->assertJsonPath('sections.2.data.items.0.imageUrl', 'http://127.0.0.1:8001/storage/mobile/products/bike-panel-test.jpg');
     }
 
+    public function test_cart_screen_does_not_use_featured_products_as_sample_cart_items(): void
+    {
+        $category = ProductCategory::query()->create([
+            'slug' => 'bikes',
+            'label' => 'دوچرخه',
+        ]);
+
+        Product::query()->create([
+            'product_category_id' => $category->id,
+            'slug' => 'featured-cart-bike',
+            'title' => 'دوچرخه نمونه سبد',
+            'subtitle' => 'نباید در سبد نمونه نمایش داده شود',
+            'availability' => 'in_stock',
+            'price_value' => 1200000,
+            'is_featured' => true,
+        ]);
+
+        $this->getJson('/api/mobile/screens/cart')
+            ->assertOk()
+            ->assertJsonPath('screenId', 'cart')
+            ->assertJsonPath('sections.0.data.featurePrice', 'در انتظار انتخاب محصول')
+            ->assertJsonPath('sections.1.data.items', [])
+            ->assertJsonPath('sections.1.data.emptyStateText', 'سبد خرید شما خالی است. از فروشگاه محصول اضافه کنید.');
+    }
+
     public function test_it_returns_services_from_the_database_for_the_services_screen(): void
     {
         $category = ServiceCategory::query()->create([
@@ -268,7 +293,7 @@ class MobileConfigApiTest extends TestCase
             ->assertJsonPath('sections.5.data.items', []);
     }
 
-    public function test_it_returns_cart_content_from_database_products(): void
+    public function test_it_returns_cart_shell_and_delivery_methods_without_sample_products(): void
     {
         $category = ProductCategory::query()->create([
             'slug' => 'parts',
@@ -296,8 +321,9 @@ class MobileConfigApiTest extends TestCase
         $this->getJson('/api/mobile/screens/cart')
             ->assertOk()
             ->assertJsonPath('screenId', 'cart')
-            ->assertJsonPath('sections.1.data.items.0.title', 'محصول سبد تست')
-            ->assertJsonPath('sections.1.data.total', '1,200,000 تومان')
+            ->assertJsonPath('sections.0.data.featurePrice', 'در انتظار انتخاب محصول')
+            ->assertJsonPath('sections.1.data.items', [])
+            ->assertJsonPath('sections.1.data.total', '')
             ->assertJsonPath('sections.2.data.items.0.title', 'Pickup test');
     }
 
