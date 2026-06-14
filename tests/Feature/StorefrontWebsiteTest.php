@@ -5,6 +5,21 @@ namespace Tests\Feature;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\ProductCategory;
+use App\Models\Program;
+use App\Models\ProgramBooking;
+use App\Models\ProgramCategory;
+use App\Models\ServiceBooking;
+use App\Models\ServiceCategory;
+use App\Models\ServiceOffering;
+use App\Models\ServiceTimeSlot;
+use App\Models\MessageDepartment;
+use App\Models\CustomerMessage;
+use App\Models\CustomerProfile;
+use App\Models\BikeProfile;
+use App\Models\DeliveryZone;
+use App\Models\DiscountCode;
+use App\Models\PaymentTransaction;
+use App\Models\Shipment;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -95,6 +110,209 @@ class StorefrontWebsiteTest extends TestCase
             'quantity' => 2,
             'line_total' => 57000000,
         ]);
+    }
+
+    public function test_services_page_creates_admin_service_booking(): void
+    {
+        $category = ServiceCategory::query()->create([
+            'slug' => 'maintenance',
+            'label' => 'Maintenance',
+            'title' => 'Maintenance services',
+        ]);
+
+        ServiceOffering::query()->create([
+            'service_category_id' => $category->id,
+            'slug' => 'full-service',
+            'title' => 'سرویس کامل',
+            'subtitle' => 'تنظیم کامل دوچرخه',
+        ]);
+
+        ServiceTimeSlot::query()->create(['label' => 'فردا ۱۰:۳۰']);
+
+        $this->get(route('storefront.services'))
+            ->assertOk()
+            ->assertSee('سرویس کامل');
+
+        $this->post(route('storefront.services.bookings.store'), [
+            'customer_name' => 'Service Customer',
+            'customer_phone' => '+989121111111',
+            'customer_email' => 'service@example.com',
+            'service_type' => 'سرویس کامل',
+            'bike_label' => 'ETX 200',
+            'preferred_time' => 'فردا ۱۰:۳۰',
+        ])->assertRedirect(route('storefront.services'));
+
+        $this->assertDatabaseHas('service_bookings', [
+            'customer_name' => 'Service Customer',
+            'service_type' => 'سرویس کامل',
+            'status' => 'pending',
+        ]);
+
+        $this->assertDatabaseHas('customer_profiles', [
+            'email' => 'service@example.com',
+            'phone' => '+989121111111',
+        ]);
+    }
+
+    public function test_events_page_creates_program_booking(): void
+    {
+        $category = ProgramCategory::query()->create([
+            'slug' => 'rides',
+            'label' => 'Rides',
+            'title' => 'Ride programs',
+        ]);
+
+        $program = Program::query()->create([
+            'program_category_id' => $category->id,
+            'slug' => 'friday-ride',
+            'title' => 'Friday Ride',
+            'subtitle' => 'Morning route',
+            'date_value' => '2026-07-01',
+            'date_label' => 'Friday morning',
+            'program_state' => 'future',
+            'capacity' => 4,
+        ]);
+
+        $this->get(route('storefront.events'))
+            ->assertOk()
+            ->assertSee('Friday Ride');
+
+        $this->post(route('storefront.events.bookings.store', $program), [
+            'customer_name' => 'Program Customer',
+            'customer_phone' => '+989122222222',
+            'customer_email' => 'program@example.com',
+            'attendees' => 2,
+        ])->assertRedirect(route('storefront.events.show', $program));
+
+        $this->assertDatabaseHas('program_bookings', [
+            'program_id' => $program->id,
+            'customer_name' => 'Program Customer',
+            'attendees' => 2,
+            'status' => 'pending',
+        ]);
+
+        $this->assertSame(2, $program->fresh()->reserved_count);
+    }
+
+    public function test_messages_page_creates_customer_message(): void
+    {
+        $department = MessageDepartment::query()->create([
+            'slug' => 'support',
+            'title' => 'Support',
+            'thread_title' => 'Support thread',
+            'composer_title' => 'Message support',
+            'is_active' => true,
+        ]);
+
+        $this->post(route('storefront.messages.store'), [
+            'message_department_id' => $department->id,
+            'customer_name' => 'Message Customer',
+            'customer_phone' => '+989123333333',
+            'customer_email' => 'message@example.com',
+            'text' => 'Need help with an order.',
+        ])->assertRedirect(route('storefront.messages'));
+
+        $this->assertDatabaseHas('customer_messages', [
+            'message_department_id' => $department->id,
+            'sender' => 'client',
+            'is_unread' => true,
+        ]);
+
+        $this->assertTrue(CustomerMessage::query()->where('text', 'like', '%Need help%')->exists());
+    }
+
+    public function test_account_lookup_shows_customer_orders_services_and_bikes(): void
+    {
+        [$category, $product] = $this->createProduct();
+
+        $profile = CustomerProfile::query()->create([
+            'name' => 'Lookup Customer',
+            'phone' => '+989124444444',
+            'email' => 'lookup@example.com',
+        ]);
+
+        BikeProfile::query()->create([
+            'customer_profile_id' => $profile->id,
+            'title' => 'Lookup Bike',
+            'subtitle' => 'Road bike',
+        ]);
+
+        $order = Order::query()->create([
+            'customer_name' => 'Lookup Customer',
+            'customer_phone' => '+989124444444',
+            'customer_email' => 'lookup@example.com',
+            'status' => 'processing',
+            'payment_status' => 'unpaid',
+            'fulfillment_method' => 'pickup',
+        ]);
+
+        $order->items()->create([
+            'product_id' => $product->slug,
+            'title' => $product->title,
+            'quantity' => 1,
+            'unit_price' => $product->price_value,
+        ]);
+
+        ServiceBooking::query()->create([
+            'customer_name' => 'Lookup Customer',
+            'customer_phone' => '+989124444444',
+            'customer_email' => 'lookup@example.com',
+            'service_type' => 'Tune up',
+            'status' => 'confirmed',
+        ]);
+
+        $this->get(route('storefront.account', ['phone' => '+989124444444']))
+            ->assertOk()
+            ->assertSee('Lookup Customer')
+            ->assertSee($order->order_number)
+            ->assertSee('Tune up')
+            ->assertSee('Lookup Bike');
+    }
+
+    public function test_checkout_applies_delivery_discount_payment_and_shipment_records(): void
+    {
+        [, $product] = $this->createProduct();
+
+        $zone = DeliveryZone::query()->create([
+            'name' => 'Central',
+            'code' => 'central',
+            'fee' => 500000,
+        ]);
+
+        DiscountCode::query()->create([
+            'code' => 'ETOK10',
+            'name' => 'Ten percent',
+            'type' => 'percent',
+            'value' => 10,
+            'is_active' => true,
+        ]);
+
+        $this->post(route('storefront.cart.items.store', $product), [
+            'quantity' => 1,
+        ])->assertRedirect(route('storefront.cart.show'));
+
+        $this->post(route('storefront.checkout.store'), [
+            'customer_name' => 'Delivery Customer',
+            'customer_email' => 'delivery@example.com',
+            'customer_phone' => '+989125555555',
+            'fulfillment_method' => 'delivery',
+            'delivery_zone_id' => $zone->id,
+            'delivery_address' => 'Tehran address',
+            'discount_code' => 'ETOK10',
+            'payment_method' => 'bank_transfer',
+        ])->assertRedirect();
+
+        $this->assertDatabaseHas('orders', [
+            'customer_name' => 'Delivery Customer',
+            'discount_total' => 2850000,
+            'delivery_total' => 500000,
+            'total' => 26150000,
+        ]);
+
+        $order = Order::query()->where('customer_email', 'delivery@example.com')->firstOrFail();
+
+        $this->assertTrue(Shipment::query()->where('order_id', $order->id)->exists());
+        $this->assertTrue(PaymentTransaction::query()->where('order_id', $order->id)->where('provider', 'bank_transfer')->exists());
     }
 
     /**

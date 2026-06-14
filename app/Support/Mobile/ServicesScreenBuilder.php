@@ -13,7 +13,7 @@ class ServicesScreenBuilder
     /**
      * @return array<string, mixed>
      */
-    public static function build(array $fallback): array
+    public static function build(array $fallback, ?\App\Models\User $user = null): array
     {
         if (! static::canUseDatabase()) {
             return $fallback;
@@ -32,13 +32,13 @@ class ServicesScreenBuilder
 
         $screen = $fallback;
         $screen['version'] = static::version($fallback);
-        $activeBookings = static::activeBookings();
+        $activeBookings = static::activeBookings($user);
         $serviceTitles = $categories
             ->flatMap(fn (ServiceCategory $category) => $category->offerings->pluck('title'))
             ->unique()
             ->values()
             ->all();
-        $bikeLabels = static::bikeLabels();
+        $bikeLabels = static::bikeLabels($user);
 
         foreach ($screen['sections'] as &$section) {
             if (($section['id'] ?? null) === 'service-booking') {
@@ -101,13 +101,14 @@ class ServicesScreenBuilder
         return Schema::hasTable($table);
     }
 
-    private static function activeBookings()
+    private static function activeBookings(?\App\Models\User $user = null)
     {
         if (! static::hasTable('service_bookings')) {
             return collect();
         }
 
         return ServiceBooking::query()
+            ->when($user, fn ($query) => $query->where('user_id', $user->id))
             ->whereNotIn('status', ['completed', 'cancelled'])
             ->latest('updated_at')
             ->limit(3)
@@ -117,13 +118,14 @@ class ServicesScreenBuilder
     /**
      * @return array<int, string>
      */
-    private static function bikeLabels(): array
+    private static function bikeLabels(?\App\Models\User $user = null): array
     {
         if (! static::hasTable('service_bookings')) {
             return ['ثبت دوچرخه جدید'];
         }
 
         $labels = ServiceBooking::query()
+            ->when($user, fn ($query) => $query->where('user_id', $user->id))
             ->whereNotNull('bike_label')
             ->latest('updated_at')
             ->pluck('bike_label')

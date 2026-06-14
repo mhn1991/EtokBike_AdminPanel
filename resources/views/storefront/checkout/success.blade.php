@@ -22,9 +22,31 @@
                     <span class="font-semibold text-neutral-950">{{ \App\Support\Storefront\PriceFormatter::format($order->total) }}</span>
                 </div>
 
-                <a href="{{ route('storefront.shop') }}" class="mt-6 inline-flex min-h-10 items-center rounded-md bg-neutral-950 px-4 text-sm font-semibold text-white hover:bg-red-700">
-                    ادامه خرید
-                </a>
+                @if ($order->discount_total > 0 || $order->delivery_total > 0)
+                    <div class="mt-3 grid gap-2 text-sm text-neutral-700">
+                        @if ($order->discount_total > 0)
+                            <div class="flex items-center justify-between">
+                                <span>تخفیف</span>
+                                <span>{{ \App\Support\Storefront\PriceFormatter::format($order->discount_total) }}</span>
+                            </div>
+                        @endif
+                        @if ($order->delivery_total > 0)
+                            <div class="flex items-center justify-between">
+                                <span>هزینه ارسال</span>
+                                <span>{{ \App\Support\Storefront\PriceFormatter::format($order->delivery_total) }}</span>
+                            </div>
+                        @endif
+                    </div>
+                @endif
+
+                <div class="mt-6 flex flex-col gap-3 sm:flex-row">
+                    <a href="{{ route('storefront.account', ['order_number' => $order->order_number]) }}" class="inline-flex min-h-10 items-center justify-center rounded-md bg-neutral-950 px-4 text-sm font-semibold text-white hover:bg-red-700">
+                        پیگیری سفارش
+                    </a>
+                    <a href="{{ route('storefront.shop') }}" class="inline-flex min-h-10 items-center justify-center rounded-md border border-neutral-300 bg-white px-4 text-sm font-semibold text-neutral-950 hover:border-red-700 hover:text-red-700">
+                        ادامه خرید
+                    </a>
+                </div>
             </div>
         </div>
     </section>

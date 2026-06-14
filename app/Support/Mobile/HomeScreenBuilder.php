@@ -17,7 +17,7 @@ class HomeScreenBuilder
     /**
      * @return array<string, mixed>
      */
-    public static function build(array $fallback): array
+    public static function build(array $fallback, ?\App\Models\User $user = null): array
     {
         if (! static::canUseAnyDatabase()) {
             return $fallback;
@@ -25,7 +25,7 @@ class HomeScreenBuilder
 
         $featuredProducts = static::featuredProducts();
         $programCategories = static::programCategories();
-        $statusItems = static::statusItems();
+        $statusItems = static::statusItems($user);
         $storeProfile = static::storeProfile();
 
         if ($featuredProducts->isEmpty() && $programCategories->isEmpty() && empty($statusItems) && ! $storeProfile) {
@@ -189,13 +189,14 @@ class HomeScreenBuilder
     /**
      * @return array<int, array<string, mixed>>
      */
-    private static function statusItems(): array
+    private static function statusItems(?\App\Models\User $user = null): array
     {
         $items = collect();
 
         if (static::hasTables(['orders', 'order_items'])) {
             $orders = Order::query()
                 ->with('items')
+                ->when($user, fn ($query) => $query->where('user_id', $user->id))
                 ->whereNotIn('status', ['completed', 'cancelled'])
                 ->latest('updated_at')
                 ->limit(2)
@@ -206,6 +207,7 @@ class HomeScreenBuilder
 
         if (static::hasTables(['service_bookings'])) {
             $bookings = ServiceBooking::query()
+                ->when($user, fn ($query) => $query->where('user_id', $user->id))
                 ->whereNotIn('status', ['completed', 'cancelled'])
                 ->latest('updated_at')
                 ->limit(2)

@@ -24,13 +24,13 @@ Startup flow:
    from each screen's `url`.
 5. Validate each downloaded screen and cache it in the app's local SQLite DB.
 
-The app only performs `GET` requests right now. Cart, booking, checkout,
-message sending, and program booking actions are currently local UI actions
-that show Toast messages or update in-memory state. The Laravel API now has
-write endpoints for orders, service bookings, and customer messages so the app
-can be moved to real submissions without changing the admin data model. It also
-accepts mobile telemetry events so the admin dashboard can show active phone
-users, screen usage, button actions, and app error reports.
+The app performs server-driven `GET` requests for manifest/screen payloads and
+uses authenticated or device-scoped write requests for cart, checkout, service
+booking, program booking, message sending, account profile updates, and
+telemetry. When a customer logs in or registers, Android sends the Sanctum token
+with API requests so account, cart, messages, orders, and service history can be
+scoped to that customer. Guest/device fallback still works for cart and public
+write flows.
 
 ## Endpoints Needed First
 
@@ -260,49 +260,44 @@ Mostly edited through `App pages`:
 - Repair/service status trackers
 - Cart and checkout summary
 
-## Write API Endpoints
+## Write And Account API Endpoints
 
-These are available in Laravel. The current Android app does not call them yet.
+These are available in Laravel and are used by the Android app when the remote
+manifest exposes the corresponding URLs.
 
+- `POST /api/auth/register`
+- `POST /api/auth/login`
+- `POST /api/auth/logout`
+- `GET /api/auth/user`
+- `GET /api/account`
+- `PATCH /api/account`
+- `GET /api/cart`
+- `POST /api/cart/items`
+- `PATCH /api/cart/items/{id}`
+- `DELETE /api/cart/items/{id}`
 - `POST /api/orders`
 - `POST /api/service-bookings`
+- `POST /api/program-bookings`
 - `POST /api/messages`
 - `POST /api/mobile/telemetry`
 
 ## Future API Endpoints
 
-These are not available yet, but will be needed when the app moves from
-mock/local state to authenticated server state.
-
-Authentication and user:
-
-- `POST /api/auth/login`
-- `POST /api/auth/logout`
-- `GET /api/user`
+These are not available yet, but may be useful as the customer experience gets
+richer.
 
 Shop and products:
 
 - `GET /api/products`
 - `GET /api/products/{id}`
 
-Cart:
-
-- `GET /api/cart`
-- `POST /api/cart/items`
-- `PATCH /api/cart/items/{id}`
-- `DELETE /api/cart/items/{id}`
-
-Programs:
-
-- `POST /api/program-bookings`
-
 Messages:
 
-- `GET /api/messages`
+- `GET /api/messages` for a dedicated conversation screen beyond the current
+  server-driven message payload and `/api/account` summary.
 
 Account:
 
-- `GET /api/account`
 - `GET /api/account/bikes`
 - `GET /api/account/orders`
 - `GET /api/account/repairs`

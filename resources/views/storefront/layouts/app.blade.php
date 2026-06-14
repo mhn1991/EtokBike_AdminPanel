@@ -65,6 +65,10 @@
                 <nav class="hidden items-center gap-6 text-sm font-medium text-neutral-700 md:flex" aria-label="Main navigation">
                     <a href="{{ route('storefront.home') }}" class="hover:text-red-700 @if(request()->routeIs('storefront.home')) text-red-700 @endif">خانه</a>
                     <a href="{{ route('storefront.shop') }}" class="hover:text-red-700 @if(request()->routeIs('storefront.shop', 'storefront.categories.show', 'storefront.products.show')) text-red-700 @endif">فروشگاه</a>
+                    <a href="{{ route('storefront.services') }}" class="hover:text-red-700 @if(request()->routeIs('storefront.services')) text-red-700 @endif">خدمات</a>
+                    <a href="{{ route('storefront.events') }}" class="hover:text-red-700 @if(request()->routeIs('storefront.events', 'storefront.events.show')) text-red-700 @endif">برنامه‌ها</a>
+                    <a href="{{ route('storefront.messages') }}" class="hover:text-red-700 @if(request()->routeIs('storefront.messages')) text-red-700 @endif">پیام</a>
+                    <a href="{{ route('storefront.account') }}" class="hover:text-red-700 @if(request()->routeIs('storefront.account')) text-red-700 @endif">پیگیری</a>
                 </nav>
 
                 <a href="{{ route('storefront.cart.show') }}" class="inline-flex min-h-10 items-center gap-2 rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm font-semibold text-neutral-950 hover:border-red-700 hover:text-red-700">
@@ -97,11 +101,15 @@
                     <div class="mt-3 grid gap-2">
                         <a class="hover:text-red-700" href="{{ route('storefront.shop') }}">همه محصولات</a>
                         <a class="hover:text-red-700" href="{{ route('storefront.cart.show') }}">سبد خرید</a>
+                        <a class="hover:text-red-700" href="{{ route('storefront.account') }}">پیگیری سفارش</a>
                     </div>
                 </div>
                 <div>
-                    <p class="font-semibold text-neutral-950">اطلاعات سایت</p>
+                    <p class="font-semibold text-neutral-950">خدمات مشتری</p>
                     <div class="mt-3 grid gap-2">
+                        <a class="hover:text-red-700" href="{{ route('storefront.services') }}">رزرو خدمات</a>
+                        <a class="hover:text-red-700" href="{{ route('storefront.events') }}">برنامه‌ها</a>
+                        <a class="hover:text-red-700" href="{{ route('storefront.messages') }}">ارسال پیام</a>
                         <a class="hover:text-red-700" href="{{ route('storefront.sitemap') }}">نقشه سایت</a>
                     </div>
                 </div>

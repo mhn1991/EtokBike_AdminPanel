@@ -13,15 +13,15 @@ class AccountScreenBuilder
     /**
      * @return array<string, mixed>
      */
-    public static function build(array $fallback): array
+    public static function build(array $fallback, ?\App\Models\User $user = null): array
     {
         if (! static::canUseDatabase()) {
             return $fallback;
         }
 
-        $profile = static::latestCustomerProfile();
-        $latestOrder = static::latestOrder();
-        $latestBooking = static::latestBooking();
+        $profile = static::latestCustomerProfile($user);
+        $latestOrder = static::latestOrder($user);
+        $latestBooking = static::latestBooking($user);
 
         if (! $profile && ! $latestOrder && ! $latestBooking) {
             return $fallback;
@@ -30,9 +30,9 @@ class AccountScreenBuilder
         $screen = $fallback;
         $screen['version'] = static::version($fallback);
         $customer = static::customerFrom($profile, $latestOrder, $latestBooking);
-        $statusItems = static::statusItems();
-        $historyItems = static::historyItems();
-        $bikeProfiles = static::bikeProfiles();
+        $statusItems = static::statusItems($user);
+        $historyItems = static::historyItems($user);
+        $bikeProfiles = static::bikeProfiles($user);
 
         foreach ($screen['sections'] as &$section) {
             if (($section['id'] ?? null) === 'profile-summary') {
@@ -92,19 +92,20 @@ class AccountScreenBuilder
             || static::hasTables(['customer_profiles', 'bike_profiles']);
     }
 
-    private static function latestCustomerProfile(): ?CustomerProfile
+    private static function latestCustomerProfile(?\App\Models\User $user = null): ?CustomerProfile
     {
         if (! static::hasTables(['customer_profiles'])) {
             return null;
         }
 
         return CustomerProfile::query()
+            ->when($user, fn ($query) => $query->where('user_id', $user->id))
             ->where('is_active', true)
             ->latest('updated_at')
             ->first();
     }
 
-    private static function latestOrder(): ?Order
+    private static function latestOrder(?\App\Models\User $user = null): ?Order
     {
         if (! static::hasTables(['orders', 'order_items'])) {
             return null;
@@ -112,17 +113,19 @@ class AccountScreenBuilder
 
         return Order::query()
             ->with('items')
+            ->when($user, fn ($query) => $query->where('user_id', $user->id))
             ->latest('updated_at')
             ->first();
     }
 
-    private static function latestBooking(): ?ServiceBooking
+    private static function latestBooking(?\App\Models\User $user = null): ?ServiceBooking
     {
         if (! static::hasTables(['service_bookings'])) {
             return null;
         }
 
         return ServiceBooking::query()
+            ->when($user, fn ($query) => $query->where('user_id', $user->id))
             ->latest('updated_at')
             ->first();
     }
@@ -188,13 +191,14 @@ class AccountScreenBuilder
     /**
      * @return array<int, array<string, mixed>>
      */
-    private static function statusItems(): array
+    private static function statusItems(?\App\Models\User $user = null): array
     {
         $items = collect();
 
         if (static::hasTables(['orders', 'order_items'])) {
             $items = $items->merge(Order::query()
                 ->with('items')
+                ->when($user, fn ($query) => $query->where('user_id', $user->id))
                 ->whereNotIn('status', ['completed', 'cancelled'])
                 ->latest('updated_at')
                 ->limit(3)
@@ -204,6 +208,7 @@ class AccountScreenBuilder
 
         if (static::hasTables(['service_bookings'])) {
             $items = $items->merge(ServiceBooking::query()
+                ->when($user, fn ($query) => $query->where('user_id', $user->id))
                 ->whereNotIn('status', ['completed', 'cancelled'])
                 ->latest('updated_at')
                 ->limit(3)
@@ -217,13 +222,14 @@ class AccountScreenBuilder
     /**
      * @return array<int, array<string, string>>
      */
-    private static function historyItems(): array
+    private static function historyItems(?\App\Models\User $user = null): array
     {
         $items = collect();
 
         if (static::hasTables(['orders', 'order_items'])) {
             $items = $items->merge(Order::query()
                 ->with('items')
+                ->when($user, fn ($query) => $query->where('user_id', $user->id))
                 ->whereIn('status', ['completed', 'cancelled'])
                 ->latest('updated_at')
                 ->limit(5)
@@ -233,6 +239,7 @@ class AccountScreenBuilder
 
         if (static::hasTables(['service_bookings'])) {
             $items = $items->merge(ServiceBooking::query()
+                ->when($user, fn ($query) => $query->where('user_id', $user->id))
                 ->whereIn('status', ['completed', 'cancelled'])
                 ->latest('updated_at')
                 ->limit(5)
@@ -246,10 +253,11 @@ class AccountScreenBuilder
     /**
      * @return array<int, array<string, mixed>>
      */
-    private static function bikeProfiles(): array
+    private static function bikeProfiles(?\App\Models\User $user = null): array
     {
         if (static::hasTables(['bike_profiles'])) {
             $profiles = BikeProfile::query()
+                ->when($user, fn ($query) => $query->whereHas('customerProfile', fn ($profileQuery) => $profileQuery->where('user_id', $user->id)))
                 ->where('is_active', true)
                 ->orderBy('sort_order')
                 ->orderBy('title')
@@ -268,6 +276,7 @@ class AccountScreenBuilder
         }
 
         return ServiceBooking::query()
+            ->when($user, fn ($query) => $query->where('user_id', $user->id))
             ->whereNotNull('bike_label')
             ->latest('updated_at')
             ->get()

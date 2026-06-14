@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\AccountController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CustomerMessageController;
 use App\Http\Controllers\Api\MobileCartController;
@@ -34,6 +35,9 @@ Route::post('orders', [OrderController::class, 'store'])
 Route::prefix('auth')
     ->name('auth.')
     ->group(function (): void {
+        Route::post('register', [AuthController::class, 'register'])
+            ->name('register');
+
         Route::post('login', [AuthController::class, 'login'])
             ->name('login');
 
@@ -44,6 +48,17 @@ Route::prefix('auth')
             Route::post('logout', [AuthController::class, 'logout'])
                 ->name('logout');
         });
+    });
+
+Route::middleware('auth:sanctum')
+    ->prefix('account')
+    ->name('account.')
+    ->group(function (): void {
+        Route::get('/', [AccountController::class, 'show'])
+            ->name('show');
+
+        Route::patch('/', [AccountController::class, 'update'])
+            ->name('update');
     });
 
 Route::get('cart', [MobileCartController::class, 'show'])

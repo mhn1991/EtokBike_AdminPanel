@@ -11,7 +11,9 @@ use App\Support\Mobile\HomeScreenBuilder;
 use App\Support\Mobile\MessagesScreenBuilder;
 use App\Support\Mobile\ServicesScreenBuilder;
 use App\Support\Mobile\ShopScreenBuilder;
+use App\Support\Api\OptionalSanctumUser;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Response;
@@ -46,6 +48,10 @@ class MobileConfigController extends Controller
         Arr::set($manifest, 'remoteConfig.serviceBookingsUrl', $this->mobileUrl(route('service-bookings.store', absolute: false)));
         Arr::set($manifest, 'remoteConfig.programBookingsUrl', $this->mobileUrl(route('program-bookings.store', absolute: false)));
         Arr::set($manifest, 'remoteConfig.messagesUrl', $this->mobileUrl(route('messages.store', absolute: false)));
+        Arr::set($manifest, 'remoteConfig.accountUrl', $this->mobileUrl(route('account.show', absolute: false)));
+        Arr::set($manifest, 'remoteConfig.accountUpdateUrl', $this->mobileUrl(route('account.update', absolute: false)));
+        Arr::set($manifest, 'remoteConfig.loginUrl', $this->mobileUrl(route('auth.login', absolute: false)));
+        Arr::set($manifest, 'remoteConfig.registerUrl', $this->mobileUrl(route('auth.register', absolute: false)));
 
         foreach (array_keys($screens) as $screenId) {
             Arr::set($manifest, "screens.{$screenId}.url", $this->mobileUrl(route('mobile.screens.show', ['screen' => $screenId], false)));
@@ -67,12 +73,12 @@ class MobileConfigController extends Controller
         return $this->mobileJson($manifest);
     }
 
-    public function screen(string $screen): JsonResponse
+    public function screen(Request $request, string $screen): JsonResponse
     {
         $payload = DatabaseScreenBuilder::build($this->readScreenJson($screen));
 
         if (array_key_exists($screen, self::SCREEN_BUILDERS)) {
-            $payload = self::SCREEN_BUILDERS[$screen]::build($payload);
+            $payload = self::SCREEN_BUILDERS[$screen]::build($payload, OptionalSanctumUser::resolve($request));
         }
 
         if (($payload['screenId'] ?? null) !== $screen) {

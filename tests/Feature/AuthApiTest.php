@@ -40,4 +40,44 @@ class AuthApiTest extends TestCase
             ->assertOk()
             ->assertJsonPath('data.revoked', true);
     }
+
+    public function test_it_registers_customer_and_exposes_account_profile(): void
+    {
+        $register = $this->postJson('/api/auth/register', [
+            'name' => 'Registered Customer',
+            'email' => 'registered@example.com',
+            'password' => 'password123',
+            'phone' => '+989126666666',
+            'delivery_address' => 'Customer address',
+            'device_name' => 'android',
+        ]);
+
+        $register
+            ->assertCreated()
+            ->assertJsonPath('data.user.email', 'registered@example.com')
+            ->assertJsonPath('data.user.profile.phone', '+989126666666');
+
+        $token = $register->json('data.token');
+
+        $this->withToken($token)
+            ->patchJson('/api/account', [
+                'name' => 'Updated Customer',
+                'email' => 'registered@example.com',
+                'phone' => '+989126666666',
+                'delivery_address' => 'Updated address',
+            ])
+            ->assertOk()
+            ->assertJsonPath('data.profile.name', 'Updated Customer')
+            ->assertJsonPath('data.profile.delivery_address', 'Updated address');
+
+        $this->withToken($token)
+            ->getJson('/api/account')
+            ->assertOk()
+            ->assertJsonPath('data.profile.name', 'Updated Customer');
+
+        $this->assertDatabaseHas('customer_profiles', [
+            'email' => 'registered@example.com',
+            'delivery_address' => 'Updated address',
+        ]);
+    }
 }

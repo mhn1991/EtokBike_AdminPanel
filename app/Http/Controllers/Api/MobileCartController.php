@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\MobileCartItem;
 use App\Models\Product;
+use App\Models\User;
+use App\Support\Api\OptionalSanctumUser;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -16,8 +18,10 @@ class MobileCartController extends Controller
             'device_id' => ['required', 'string', 'max:255'],
         ]);
 
+        $user = OptionalSanctumUser::resolve($request);
+
         return response()->json([
-            'data' => $this->cartPayload($validated['device_id']),
+            'data' => $this->cartPayload($validated['device_id'], $user),
         ]);
     }
 
@@ -31,6 +35,7 @@ class MobileCartController extends Controller
         ]);
 
         $product = $this->findProduct($validated);
+        $user = OptionalSanctumUser::resolve($request);
 
         if (! $product) {
             return response()->json([
@@ -42,8 +47,7 @@ class MobileCartController extends Controller
         }
 
         $quantity = (int) ($validated['quantity'] ?? 1);
-        $existingQuantity = (int) MobileCartItem::query()
-            ->where('device_id', $validated['device_id'])
+        $existingQuantity = (int) $this->cartQuery($validated['device_id'], $user)
             ->where('product_id', $product->id)
             ->value('quantity');
 
@@ -57,15 +61,16 @@ class MobileCartController extends Controller
         }
 
         $item = MobileCartItem::query()->firstOrNew([
-            'device_id' => $validated['device_id'],
+            'device_id' => $this->storedDeviceId($validated['device_id'], $user),
             'product_id' => $product->id,
         ]);
 
+        $item->user_id = $user?->id;
         $item->quantity = max(1, ($item->exists ? $item->quantity : 0) + $quantity);
         $item->save();
 
         return response()->json([
-            'data' => $this->cartPayload($validated['device_id']),
+            'data' => $this->cartPayload($validated['device_id'], $user),
         ], 201);
     }
 
@@ -76,7 +81,9 @@ class MobileCartController extends Controller
             'quantity' => ['required', 'integer', 'min:1'],
         ]);
 
-        abort_unless($item->device_id === $validated['device_id'], 404);
+        $user = OptionalSanctumUser::resolve($request);
+
+        abort_unless($this->ownsCartItem($item, $validated['device_id'], $user), 404);
 
         if ($item->product && ! $item->product->hasEnoughStock((int) $validated['quantity'])) {
             return response()->json([
@@ -92,7 +99,7 @@ class MobileCartController extends Controller
         ]);
 
         return response()->json([
-            'data' => $this->cartPayload($validated['device_id']),
+            'data' => $this->cartPayload($validated['device_id'], $user),
         ]);
     }
 
@@ -102,22 +109,23 @@ class MobileCartController extends Controller
             'device_id' => ['required', 'string', 'max:255'],
         ]);
 
-        abort_unless($item->device_id === $validated['device_id'], 404);
+        $user = OptionalSanctumUser::resolve($request);
+
+        abort_unless($this->ownsCartItem($item, $validated['device_id'], $user), 404);
 
         $item->delete();
 
         return response()->json([
-            'data' => $this->cartPayload($validated['device_id']),
+            'data' => $this->cartPayload($validated['device_id'], $user),
         ]);
     }
 
     /**
      * @return array<string, mixed>
      */
-    private function cartPayload(string $deviceId): array
+    private function cartPayload(string $deviceId, ?User $user): array
     {
-        $items = MobileCartItem::query()
-            ->where('device_id', $deviceId)
+        $items = $this->cartQuery($deviceId, $user)
             ->with('product.category')
             ->latest()
             ->get();
@@ -138,6 +146,30 @@ class MobileCartController extends Controller
             'subtotal' => $subtotal,
             'total' => $subtotal,
         ];
+    }
+
+    private function cartQuery(string $deviceId, ?User $user)
+    {
+        return MobileCartItem::query()
+            ->when(
+                $user,
+                fn ($query) => $query->where('user_id', $user->id),
+                fn ($query) => $query->where('device_id', $deviceId),
+            );
+    }
+
+    private function storedDeviceId(string $deviceId, ?User $user): string
+    {
+        return $user ? 'user:'.$user->id : $deviceId;
+    }
+
+    private function ownsCartItem(MobileCartItem $item, string $deviceId, ?User $user): bool
+    {
+        if ($user) {
+            return (int) $item->user_id === (int) $user->id;
+        }
+
+        return $item->device_id === $deviceId;
     }
 
     /**

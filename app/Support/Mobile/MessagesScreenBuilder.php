@@ -11,7 +11,7 @@ class MessagesScreenBuilder
     /**
      * @return array<string, mixed>
      */
-    public static function build(array $fallback): array
+    public static function build(array $fallback, ?\App\Models\User $user = null): array
     {
         if (! static::canUseDatabase()) {
             return $fallback;
@@ -19,7 +19,9 @@ class MessagesScreenBuilder
 
         $departments = MessageDepartment::query()
             ->where('is_active', true)
-            ->with(['messages' => fn ($query) => $query->latest()])
+            ->with(['messages' => fn ($query) => $query
+                ->when($user, fn ($query) => $query->where('user_id', $user->id))
+                ->latest()])
             ->orderBy('sort_order')
             ->orderBy('title')
             ->get();

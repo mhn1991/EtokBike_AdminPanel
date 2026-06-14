@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Product;
 use App\Models\ProductCategory;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -85,5 +86,49 @@ class MobileCartApiTest extends TestCase
             ->assertOk()
             ->assertJsonPath('data.cart_count', 2)
             ->assertJsonPath('data.unread_message_count', 0);
+    }
+
+    public function test_authenticated_cart_is_scoped_to_user(): void
+    {
+        $category = ProductCategory::query()->create([
+            'slug' => 'bikes',
+            'label' => 'Bikes',
+        ]);
+
+        Product::query()->create([
+            'product_category_id' => $category->id,
+            'slug' => 'bike-user-cart-test',
+            'title' => 'Bike User Cart Test',
+            'subtitle' => 'User cart product',
+            'availability' => 'in_stock',
+            'price_value' => 1000,
+            'stock_quantity' => 10,
+        ]);
+
+        $user = User::factory()->create();
+        $token = $user->createToken('android')->plainTextToken;
+
+        $this->withToken($token)
+            ->postJson('/api/cart/items', [
+                'device_id' => 'device-a',
+                'product' => 'bike-user-cart-test',
+                'quantity' => 2,
+            ])
+            ->assertCreated()
+            ->assertJsonPath('data.count', 2);
+
+        $this->withToken($token)
+            ->getJson('/api/cart?device_id=device-b')
+            ->assertOk()
+            ->assertJsonPath('data.count', 2);
+
+        $otherUser = User::factory()->create();
+        $otherToken = $otherUser->createToken('android')->plainTextToken;
+
+        $this->flushHeaders()
+            ->withHeaders(['Authorization' => 'Bearer '.$otherToken])
+            ->getJson('/api/cart?device_id=device-b')
+            ->assertOk()
+            ->assertJsonPath('data.count', 0);
     }
 }

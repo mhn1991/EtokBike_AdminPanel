@@ -12,7 +12,7 @@ class EventsScreenBuilder
     /**
      * @return array<string, mixed>
      */
-    public static function build(array $fallback): array
+    public static function build(array $fallback, ?\App\Models\User $user = null): array
     {
         if (! static::canUseDatabase()) {
             return $fallback;

@@ -4,12 +4,14 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\ServiceBooking;
+use App\Support\Api\OptionalSanctumUser;
+use App\Support\Customers\CustomerProfileUpdater;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class ServiceBookingController extends Controller
 {
-    public function store(Request $request): JsonResponse
+    public function store(Request $request, CustomerProfileUpdater $profiles): JsonResponse
     {
         $validated = $request->validate([
             'customer_name' => ['required', 'string', 'max:255'],
@@ -21,8 +23,12 @@ class ServiceBookingController extends Controller
             'problem_description' => ['nullable', 'string'],
         ]);
 
+        $user = OptionalSanctumUser::resolve($request);
+        $profiles->update($user, $validated);
+
         $booking = ServiceBooking::query()->create([
             ...$validated,
+            'user_id' => $user?->id,
             'status' => 'pending',
         ]);
 

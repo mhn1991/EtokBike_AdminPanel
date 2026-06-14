@@ -4,16 +4,21 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\MessageDepartment;
+use App\Support\Api\OptionalSanctumUser;
+use App\Support\Customers\CustomerProfileUpdater;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class CustomerMessageController extends Controller
 {
-    public function store(Request $request): JsonResponse
+    public function store(Request $request, CustomerProfileUpdater $profiles): JsonResponse
     {
         $validated = $request->validate([
             'department' => ['nullable', 'string', 'max:255'],
             'message_department_id' => ['nullable', 'integer'],
+            'customer_name' => ['nullable', 'string', 'max:255'],
+            'customer_phone' => ['nullable', 'string', 'max:255'],
+            'customer_email' => ['nullable', 'email', 'max:255'],
             'label' => ['nullable', 'string', 'max:255'],
             'text' => ['required', 'string'],
         ]);
@@ -29,9 +34,13 @@ class CustomerMessageController extends Controller
             ], 422);
         }
 
+        $user = OptionalSanctumUser::resolve($request);
+        $profile = $profiles->update($user, $validated);
+
         $message = $department->messages()->create([
+            'user_id' => $user?->id,
             'sender' => 'client',
-            'label' => $validated['label'] ?? 'مشتری',
+            'label' => $validated['label'] ?? $profile?->name ?? $user?->name ?? 'مشتری',
             'text' => $validated['text'],
             'time_label' => 'اکنون',
             'is_unread' => true,

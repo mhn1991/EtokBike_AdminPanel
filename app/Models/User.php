@@ -11,7 +11,9 @@ use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Schema;
 use Laravel\Sanctum\HasApiTokens;
+use Spatie\Permission\Models\Role;
 use Spatie\Permission\Traits\HasRoles;
 
 #[Fillable(['name', 'email', 'password'])]
@@ -36,6 +38,19 @@ class User extends Authenticatable implements FilamentUser
 
     public function canAccessPanel(Panel $panel): bool
     {
-        return $panel->getId() === 'admin';
+        if ($panel->getId() !== 'admin') {
+            return false;
+        }
+
+        if (! Schema::hasTable('roles')) {
+            return true;
+        }
+
+        $adminRoleExists = Role::query()
+            ->where('name', 'admin')
+            ->where('guard_name', 'web')
+            ->exists();
+
+        return ! $adminRoleExists || $this->hasRole('admin');
     }
 }
