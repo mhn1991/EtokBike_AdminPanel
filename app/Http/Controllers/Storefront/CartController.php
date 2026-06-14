@@ -33,7 +33,16 @@ class CartController extends Controller
             'quantity' => ['nullable', 'integer', 'min:1', 'max:20'],
         ]);
 
-        $cart->add($product, (int) ($validated['quantity'] ?? 1));
+        $quantity = (int) ($validated['quantity'] ?? 1);
+        $requestedQuantity = ($cart->contents()[$product->id] ?? 0) + $quantity;
+
+        if (! $product->hasEnoughStock($requestedQuantity)) {
+            return back()->withErrors([
+                'quantity' => 'در حال حاضر موجودی کافی برای این محصول وجود ندارد.',
+            ]);
+        }
+
+        $cart->add($product, $quantity);
 
         return redirect()
             ->route('storefront.cart.show')
@@ -47,6 +56,12 @@ class CartController extends Controller
         $validated = $request->validate([
             'quantity' => ['required', 'integer', 'min:1', 'max:20'],
         ]);
+
+        if (! $product->hasEnoughStock((int) $validated['quantity'])) {
+            return back()->withErrors([
+                'quantity' => 'در حال حاضر موجودی کافی برای این محصول وجود ندارد.',
+            ]);
+        }
 
         $cart->update($product, (int) $validated['quantity']);
 

@@ -23,6 +23,11 @@ class OrderItem extends Model
         return $this->belongsTo(Order::class);
     }
 
+    public function product(): BelongsToRelation
+    {
+        return $this->belongsTo(Product::class, 'product_id', 'slug');
+    }
+
     protected function casts(): array
     {
         return [
@@ -41,5 +46,7 @@ class OrderItem extends Model
 
         static::saved(fn (OrderItem $item) => $item->order?->refreshTotals());
         static::deleted(fn (OrderItem $item) => $item->order?->refreshTotals());
+        static::saved(fn (OrderItem $item) => app(\App\Support\Inventory\InventoryManager::class)->syncDeductedOrderItem($item));
+        static::deleting(fn (OrderItem $item) => app(\App\Support\Inventory\InventoryManager::class)->restoreDeductedOrderItem($item));
     }
 }

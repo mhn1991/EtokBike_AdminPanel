@@ -16,16 +16,24 @@
         <url>
             <loc>{{ route('storefront.categories.show', $category) }}</loc>
             <lastmod>{{ $category->updated_at->toAtomString() }}</lastmod>
-            <changefreq>weekly</changefreq>
-            <priority>0.8</priority>
+            <changefreq>{{ $category->sitemap_change_frequency }}</changefreq>
+            <priority>{{ $category->sitemap_priority }}</priority>
         </url>
     @endforeach
     @foreach ($products as $product)
         <url>
             <loc>{{ route('storefront.products.show', $product) }}</loc>
             <lastmod>{{ $product->updated_at->toAtomString() }}</lastmod>
-            <changefreq>weekly</changefreq>
-            <priority>0.7</priority>
+            <changefreq>{{ $product->sitemap_change_frequency }}</changefreq>
+            <priority>{{ $product->sitemap_priority }}</priority>
+        </url>
+    @endforeach
+    @foreach ($pages as $page)
+        <url>
+            <loc>{{ route('storefront.pages.show', $page) }}</loc>
+            <lastmod>{{ $page->updated_at->toAtomString() }}</lastmod>
+            <changefreq>{{ $page->sitemap_change_frequency }}</changefreq>
+            <priority>{{ $page->sitemap_priority }}</priority>
         </url>
     @endforeach
 </urlset>

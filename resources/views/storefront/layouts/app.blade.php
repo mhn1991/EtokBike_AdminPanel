@@ -5,6 +5,8 @@
     $canonical = $meta['canonical'] ?? url()->current();
     $robots = $meta['robots'] ?? 'index,follow';
     $image = $meta['image'] ?? asset('images/storefront/hero-shop.png');
+    $ogTitle = $meta['ogTitle'] ?? $title;
+    $ogDescription = $meta['ogDescription'] ?? $description;
     $schemas = collect($structuredData ?? [])->filter()->values();
 @endphp
 <!DOCTYPE html>
@@ -19,13 +21,13 @@
 
         <meta property="og:type" content="@yield('og_type', 'website')">
         <meta property="og:site_name" content="{{ $siteName }}">
-        <meta property="og:title" content="{{ $title }}">
-        <meta property="og:description" content="{{ $description }}">
+        <meta property="og:title" content="{{ $ogTitle }}">
+        <meta property="og:description" content="{{ $ogDescription }}">
         <meta property="og:url" content="{{ $canonical }}">
         <meta property="og:image" content="{{ $image }}">
         <meta name="twitter:card" content="summary_large_image">
-        <meta name="twitter:title" content="{{ $title }}">
-        <meta name="twitter:description" content="{{ $description }}">
+        <meta name="twitter:title" content="{{ $ogTitle }}">
+        <meta name="twitter:description" content="{{ $ogDescription }}">
         <meta name="twitter:image" content="{{ $image }}">
 
         <title>{{ $title }}</title>

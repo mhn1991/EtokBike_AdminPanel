@@ -22,6 +22,9 @@ class ProductInfolist
                         TextEntry::make('category.label')
                             ->label('Category'),
                         TextEntry::make('slug'),
+                        TextEntry::make('sku')
+                            ->label('SKU')
+                            ->placeholder('-'),
                         TextEntry::make('availability')
                             ->badge()
                             ->formatStateUsing(fn (string $state): string => Product::AVAILABILITY_OPTIONS[$state] ?? $state)
@@ -41,7 +44,7 @@ class ProductInfolist
                             ->columnSpanFull(),
                     ]),
                 Section::make('Pricing and stock')
-                    ->columns(3)
+                    ->columns(4)
                     ->schema([
                         TextEntry::make('price_value')
                             ->label('Price')
@@ -49,6 +52,18 @@ class ProductInfolist
                         TextEntry::make('price_label')
                             ->placeholder('-'),
                         TextEntry::make('stock_label')
+                            ->placeholder('-'),
+                        TextEntry::make('stock_quantity')
+                            ->label('On hand')
+                            ->formatStateUsing(fn (?int $state): string => number_format($state ?? 0)),
+                        TextEntry::make('reserved_quantity')
+                            ->label('Reserved')
+                            ->formatStateUsing(fn (?int $state): string => number_format($state ?? 0)),
+                        TextEntry::make('minimum_stock')
+                            ->label('Low stock alert')
+                            ->formatStateUsing(fn (?int $state): string => number_format($state ?? 0)),
+                        TextEntry::make('warehouse_location')
+                            ->label('Location')
                             ->placeholder('-'),
                         IconEntry::make('is_featured')
                             ->boolean(),

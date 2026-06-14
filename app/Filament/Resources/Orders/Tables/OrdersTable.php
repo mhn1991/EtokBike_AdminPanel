@@ -2,7 +2,9 @@
 
 namespace App\Filament\Resources\Orders\Tables;
 
+use App\Filament\Resources\Receipts\ReceiptResource;
 use App\Models\Order;
+use App\Support\Receipts\ReceiptGenerator;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\EditAction;
@@ -131,6 +133,41 @@ class OrdersTable
                     ->visible(fn (Order $record): bool => ! in_array($record->status, ['completed', 'cancelled'], true))
                     ->action(fn (Order $record) => $record->update(['status' => 'completed']))
                     ->successNotificationTitle('Order completed'),
+                Action::make('generateReceipt')
+                    ->label('Generate receipt')
+                    ->icon(Heroicon::DocumentCheck)
+                    ->color('success')
+                    ->action(function (Order $record) {
+                        $receipt = app(ReceiptGenerator::class)->forOrder($record, 'receipt');
+
+                        return redirect(ReceiptResource::getUrl('view', ['record' => $receipt]));
+                    }),
+                Action::make('generateInvoice')
+                    ->label('Generate invoice')
+                    ->icon(Heroicon::DocumentCurrencyDollar)
+                    ->color('info')
+                    ->action(function (Order $record) {
+                        $receipt = app(ReceiptGenerator::class)->forOrder($record, 'invoice');
+
+                        return redirect(ReceiptResource::getUrl('view', ['record' => $receipt]));
+                    }),
+                Action::make('openReceipt')
+                    ->label('Open receipt')
+                    ->icon(Heroicon::ReceiptPercent)
+                    ->color('gray')
+                    ->visible(fn (Order $record): bool => $record->receipts()
+                        ->where('type', 'receipt')
+                        ->where('status', '!=', 'cancelled')
+                        ->exists())
+                    ->url(function (Order $record): string {
+                        $receipt = $record->receipts()
+                            ->where('type', 'receipt')
+                            ->where('status', '!=', 'cancelled')
+                            ->latest()
+                            ->firstOrFail();
+
+                        return ReceiptResource::getUrl('view', ['record' => $receipt]);
+                    }),
                 Action::make('callCustomer')
                     ->label('Call customer')
                     ->icon(Heroicon::Phone)

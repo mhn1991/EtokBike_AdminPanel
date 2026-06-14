@@ -25,6 +25,7 @@ class MobileCartApiTest extends TestCase
             'subtitle' => 'Cart product',
             'availability' => 'in_stock',
             'price_value' => 1000,
+            'stock_quantity' => 10,
         ]);
 
         $addResponse = $this->postJson('/api/cart/items', [
@@ -71,6 +72,7 @@ class MobileCartApiTest extends TestCase
             'subtitle' => 'State product',
             'availability' => 'in_stock',
             'price_value' => 1000,
+            'stock_quantity' => 10,
         ]);
 
         $this->postJson('/api/cart/items', [

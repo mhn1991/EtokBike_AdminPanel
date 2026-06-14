@@ -3,10 +3,13 @@
 namespace App\Filament\Resources\Products\Tables;
 
 use App\Models\Product;
+use App\Support\Inventory\InventoryManager;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\ColorColumn;
 use Filament\Tables\Columns\IconColumn;
@@ -54,6 +57,21 @@ class ProductsTable
                     ->formatStateUsing(fn (?int $state): string => number_format($state ?? 0))
                     ->visibleFrom('lg')
                     ->sortable(),
+                TextColumn::make('stock_quantity')
+                    ->label('On hand')
+                    ->badge()
+                    ->formatStateUsing(fn (?int $state): string => number_format($state ?? 0))
+                    ->color(fn (Product $record): string => match (true) {
+                        $record->stock_quantity <= 0 => 'danger',
+                        $record->minimum_stock > 0 && $record->stock_quantity <= $record->minimum_stock => 'warning',
+                        default => 'success',
+                    })
+                    ->sortable(),
+                TextColumn::make('warehouse_location')
+                    ->label('Location')
+                    ->placeholder('-')
+                    ->visibleFrom('xl')
+                    ->searchable(),
                 TextColumn::make('stock_label')
                     ->visibleFrom('xl')
                     ->searchable(),
@@ -101,6 +119,53 @@ class ProductsTable
                 ViewAction::make()
                     ->label('Open details'),
                 EditAction::make(),
+                Action::make('stockIn')
+                    ->label('Add stock')
+                    ->icon(Heroicon::PlusCircle)
+                    ->color('success')
+                    ->form([
+                        TextInput::make('quantity')
+                            ->required()
+                            ->integer()
+                            ->minValue(1)
+                            ->default(1),
+                        Textarea::make('reason')
+                            ->rows(3)
+                            ->placeholder('Supplier delivery, return, correction...')
+                            ->maxLength(255),
+                    ])
+                    ->action(fn (Product $record, array $data) => app(InventoryManager::class)->adjust(
+                        product: $record,
+                        quantityDelta: (int) $data['quantity'],
+                        type: 'stock_in',
+                        reason: $data['reason'] ?? null,
+                        userId: auth()->id(),
+                    ))
+                    ->successNotificationTitle('Stock added'),
+                Action::make('stockOut')
+                    ->label('Remove stock')
+                    ->icon(Heroicon::MinusCircle)
+                    ->color('danger')
+                    ->requiresConfirmation()
+                    ->form([
+                        TextInput::make('quantity')
+                            ->required()
+                            ->integer()
+                            ->minValue(1)
+                            ->default(1),
+                        Textarea::make('reason')
+                            ->rows(3)
+                            ->placeholder('Damaged, lost, internal use, correction...')
+                            ->maxLength(255),
+                    ])
+                    ->action(fn (Product $record, array $data) => app(InventoryManager::class)->adjust(
+                        product: $record,
+                        quantityDelta: -((int) $data['quantity']),
+                        type: 'manual_removal',
+                        reason: $data['reason'] ?? null,
+                        userId: auth()->id(),
+                    ))
+                    ->successNotificationTitle('Stock removed'),
                 Action::make('feature')
                     ->label('Feature in app')
                     ->icon(Heroicon::Fire)

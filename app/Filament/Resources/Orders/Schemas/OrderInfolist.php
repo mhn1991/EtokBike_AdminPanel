@@ -28,6 +28,10 @@ class OrderInfolist
                         TextEntry::make('placed_at')
                             ->dateTime()
                             ->placeholder('-'),
+                        TextEntry::make('stock_deducted_at')
+                            ->label('Stock deducted')
+                            ->dateTime()
+                            ->placeholder('Not deducted yet'),
                         TextEntry::make('user.name')
                             ->label('Linked user')
                             ->placeholder('-'),

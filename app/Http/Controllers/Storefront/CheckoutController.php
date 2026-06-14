@@ -52,6 +52,16 @@ class CheckoutController extends Controller
             return redirect()->route('storefront.shop');
         }
 
+        foreach ($lines as $line) {
+            if (! $line['product']->hasEnoughStock($line['quantity'])) {
+                return redirect()
+                    ->route('storefront.cart.show')
+                    ->withErrors([
+                        'stock' => 'برخی محصولات سبد خرید موجودی کافی ندارند.',
+                    ]);
+            }
+        }
+
         $order = DB::transaction(function () use ($validated, $lines): Order {
             $order = Order::query()->create([
                 'customer_name' => $validated['customer_name'],

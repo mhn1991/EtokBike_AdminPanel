@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\MobileCartItem;
 use App\Models\Order;
+use App\Models\Product;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -28,6 +29,19 @@ class OrderController extends Controller
             'items.*.unit_price' => ['required', 'integer', 'min:0'],
             'items.*.metadata' => ['nullable', 'array'],
         ]);
+
+        foreach ($validated['items'] as $item) {
+            $product = $this->findProductForItem($item);
+
+            if ($product && ! $product->hasEnoughStock((int) $item['quantity'])) {
+                return response()->json([
+                    'message' => "Not enough stock for {$product->title}.",
+                    'errors' => [
+                        'items' => ["Not enough stock for {$product->title}."],
+                    ],
+                ], 422);
+            }
+        }
 
         $order = DB::transaction(function () use ($validated): Order {
             $order = Order::query()->create([
@@ -64,5 +78,33 @@ class OrderController extends Controller
                 'items' => $order->items,
             ],
         ], 201);
+    }
+
+    /**
+     * @param  array<string, mixed>  $item
+     */
+    private function findProductForItem(array $item): ?Product
+    {
+        $metadataProductId = $item['metadata']['product_database_id'] ?? null;
+
+        if ($metadataProductId) {
+            return Product::query()->find($metadataProductId);
+        }
+
+        if (! empty($item['product_id'])) {
+            return Product::query()
+                ->where('slug', $item['product_id'])
+                ->orWhere('sku', $item['product_id'])
+                ->first();
+        }
+
+        if (! empty($item['sku'])) {
+            return Product::query()
+                ->where('sku', $item['sku'])
+                ->orWhere('slug', $item['sku'])
+                ->first();
+        }
+
+        return null;
     }
 }

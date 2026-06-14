@@ -42,6 +42,19 @@ class MobileCartController extends Controller
         }
 
         $quantity = (int) ($validated['quantity'] ?? 1);
+        $existingQuantity = (int) MobileCartItem::query()
+            ->where('device_id', $validated['device_id'])
+            ->where('product_id', $product->id)
+            ->value('quantity');
+
+        if (! $product->hasEnoughStock($existingQuantity + $quantity)) {
+            return response()->json([
+                'message' => 'Not enough stock for this product.',
+                'errors' => [
+                    'quantity' => ['Not enough stock for this product.'],
+                ],
+            ], 422);
+        }
 
         $item = MobileCartItem::query()->firstOrNew([
             'device_id' => $validated['device_id'],
@@ -64,6 +77,15 @@ class MobileCartController extends Controller
         ]);
 
         abort_unless($item->device_id === $validated['device_id'], 404);
+
+        if ($item->product && ! $item->product->hasEnoughStock((int) $validated['quantity'])) {
+            return response()->json([
+                'message' => 'Not enough stock for this product.',
+                'errors' => [
+                    'quantity' => ['Not enough stock for this product.'],
+                ],
+            ], 422);
+        }
 
         $item->update([
             'quantity' => $validated['quantity'],

@@ -117,6 +117,8 @@ class StorefrontWebsiteTest extends TestCase
             'price_value' => 28500000,
             'price_label' => '۲۸,۵۰۰,۰۰۰ تومان',
             'stock_label' => 'موجودی محدود',
+            'stock_quantity' => 4,
+            'minimum_stock' => 2,
             'thumbnail_text' => 'MTB',
             'thumbnail_color' => '#101114',
             'is_featured' => true,

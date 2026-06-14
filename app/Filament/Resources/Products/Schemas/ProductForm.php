@@ -67,6 +67,11 @@ class ProductForm
                             ->helperText('Stable product ID used by the mobile app.')
                             ->maxLength(255)
                             ->columnSpanFull(),
+                        TextInput::make('sku')
+                            ->label('SKU')
+                            ->helperText('Optional warehouse SKU or barcode used for stock matching.')
+                            ->maxLength(255)
+                            ->unique(ignoreRecord: true),
                         TextInput::make('sort_order')
                             ->label('Sort order')
                             ->required()
@@ -98,6 +103,32 @@ class ProductForm
                         TextInput::make('stock_label')
                             ->maxLength(255),
                     ]),
+                Section::make('Warehouse')
+                    ->description('Use stock movements to change quantity after a product is created.')
+                    ->columns(4)
+                    ->schema([
+                        TextInput::make('stock_quantity')
+                            ->label('On hand')
+                            ->disabled()
+                            ->dehydrated(false)
+                            ->formatStateUsing(fn (?int $state): string => number_format($state ?? 0)),
+                        TextInput::make('reserved_quantity')
+                            ->label('Reserved')
+                            ->required()
+                            ->integer()
+                            ->minValue(0)
+                            ->default(0),
+                        TextInput::make('minimum_stock')
+                            ->label('Low stock alert')
+                            ->required()
+                            ->integer()
+                            ->minValue(0)
+                            ->default(0),
+                        TextInput::make('warehouse_location')
+                            ->label('Location')
+                            ->placeholder('Main warehouse / Aisle A1')
+                            ->maxLength(255),
+                    ]),
                 Section::make('App card')
                     ->description('Thumbnail and description used in product lists and detail views.')
                     ->columns(3)
@@ -123,6 +154,56 @@ class ProductForm
                         Textarea::make('description')
                             ->rows(4)
                             ->columnSpanFull(),
+                    ]),
+                Section::make('SEO')
+                    ->description('Controls the public product page metadata, social preview, and sitemap settings.')
+                    ->columns(3)
+                    ->schema([
+                        TextInput::make('seo_title')
+                            ->label('Meta title')
+                            ->maxLength(255)
+                            ->columnSpanFull(),
+                        Textarea::make('seo_description')
+                            ->label('Meta description')
+                            ->rows(3)
+                            ->maxLength(500)
+                            ->columnSpanFull(),
+                        TextInput::make('canonical_url')
+                            ->maxLength(255),
+                        Select::make('robots')
+                            ->options(Product::ROBOTS_OPTIONS)
+                            ->native(false)
+                            ->required()
+                            ->default('index,follow'),
+                        Toggle::make('include_in_sitemap')
+                            ->label('Include in sitemap')
+                            ->default(true),
+                        TextInput::make('og_title')
+                            ->label('Social title')
+                            ->maxLength(255),
+                        Textarea::make('og_description')
+                            ->label('Social description')
+                            ->rows(3)
+                            ->maxLength(500),
+                        FileUpload::make('og_image')
+                            ->label('Social image')
+                            ->disk('public')
+                            ->directory('seo/products')
+                            ->visibility('public')
+                            ->image()
+                            ->imagePreviewHeight('140')
+                            ->openable()
+                            ->downloadable(),
+                        TextInput::make('sitemap_priority')
+                            ->numeric()
+                            ->minValue(0)
+                            ->maxValue(1)
+                            ->default(0.7),
+                        Select::make('sitemap_change_frequency')
+                            ->options(Product::CHANGE_FREQUENCY_OPTIONS)
+                            ->native(false)
+                            ->required()
+                            ->default('weekly'),
                     ]),
             ]);
     }

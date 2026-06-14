@@ -36,7 +36,16 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->navigationGroups([
                 NavigationGroup::make('Inbox'),
+                NavigationGroup::make('SEO'),
+                NavigationGroup::make('Warehouse'),
+                NavigationGroup::make('Purchasing'),
+                NavigationGroup::make('Finance'),
                 NavigationGroup::make('Orders'),
+                NavigationGroup::make('Shipping'),
+                NavigationGroup::make('Marketing'),
+                NavigationGroup::make('Notifications'),
+                NavigationGroup::make('Reports'),
+                NavigationGroup::make('Audit'),
                 NavigationGroup::make('Catalog'),
                 NavigationGroup::make('Services'),
                 NavigationGroup::make('Programs'),

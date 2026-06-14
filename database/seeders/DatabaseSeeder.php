@@ -190,6 +190,7 @@ class DatabaseSeeder extends Seeder
                 ['slug' => $item['id']],
                 [
                     'product_category_id' => $category->id,
+                    'sku' => str($item['id'])->upper()->toString(),
                     'title' => $item['title'],
                     'subtitle' => $item['subtitle'],
                     'description' => $item['description'] ?? null,
@@ -197,6 +198,13 @@ class DatabaseSeeder extends Seeder
                     'price_value' => $item['priceValue'] ?? 0,
                     'price_label' => $item['price'] ?? null,
                     'stock_label' => $item['stockLabel'] ?? null,
+                    'stock_quantity' => match ($item['availability'] ?? 'in_stock') {
+                        'out_of_stock' => 0,
+                        'low_stock' => 2,
+                        default => 8,
+                    },
+                    'minimum_stock' => 2,
+                    'warehouse_location' => 'Main warehouse',
                     'thumbnail_text' => $item['thumbnailText'] ?? 'ETOK',
                     'thumbnail_color' => $item['thumbnailColor'] ?? '#101114',
                     'image_url' => $item['imageUrl'] ?? null,

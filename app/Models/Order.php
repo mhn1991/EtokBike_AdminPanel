@@ -25,6 +25,7 @@ use Illuminate\Support\Str;
     'customer_notes',
     'admin_notes',
     'placed_at',
+    'stock_deducted_at',
 ])]
 class Order extends Model
 {
@@ -59,10 +60,36 @@ class Order extends Model
         return $this->hasMany(OrderItem::class);
     }
 
+    public function shipments(): HasManyRelation
+    {
+        return $this->hasMany(Shipment::class);
+    }
+
+    public function returnRequests(): HasManyRelation
+    {
+        return $this->hasMany(ReturnRequest::class);
+    }
+
+    public function financialTransactions(): HasManyRelation
+    {
+        return $this->hasMany(FinancialTransaction::class);
+    }
+
+    public function paymentTransactions(): HasManyRelation
+    {
+        return $this->hasMany(PaymentTransaction::class);
+    }
+
+    public function receipts(): HasManyRelation
+    {
+        return $this->hasMany(Receipt::class);
+    }
+
     protected function casts(): array
     {
         return [
             'placed_at' => 'datetime',
+            'stock_deducted_at' => 'datetime',
             'subtotal' => 'integer',
             'discount_total' => 'integer',
             'delivery_total' => 'integer',
@@ -82,6 +109,11 @@ class Order extends Model
 
         static::saving(function (Order $order): void {
             $order->total = max(0, $order->subtotal - $order->discount_total + $order->delivery_total);
+            app(\App\Support\Inventory\InventoryManager::class)->ensureOrderCanBeDeducted($order);
+        });
+
+        static::saved(function (Order $order): void {
+            app(\App\Support\Inventory\InventoryManager::class)->reconcileOrder($order);
         });
     }
 

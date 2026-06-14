@@ -33,10 +33,10 @@ class HomeController extends Controller
             'featuredProducts' => $featuredProducts,
             'storeProfile' => StoreProfile::query()->where('is_active', true)->first(),
             'meta' => [
-                'title' => 'EtokBike | فروشگاه دوچرخه و لوازم دوچرخه',
-                'description' => 'خرید دوچرخه شهری، کوهستان، جاده، قطعات و لوازم جانبی از فروشگاه EtokBike با موجودی و سفارش مستقیم.',
+                'title' => Seo::defaultTitle('EtokBike | فروشگاه دوچرخه و لوازم دوچرخه'),
+                'description' => Seo::defaultDescription('خرید دوچرخه شهری، کوهستان، جاده، قطعات و لوازم جانبی از فروشگاه EtokBike با موجودی و سفارش مستقیم.'),
                 'canonical' => route('storefront.home'),
-                'image' => asset('images/storefront/hero-shop.png'),
+                'image' => Seo::defaultImage(),
             ],
             'structuredData' => [
                 Seo::organization(),

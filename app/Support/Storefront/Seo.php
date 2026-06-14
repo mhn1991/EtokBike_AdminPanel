@@ -4,6 +4,7 @@ namespace App\Support\Storefront;
 
 use App\Models\Product;
 use App\Models\ProductCategory;
+use App\Models\SeoSetting;
 use App\Support\Mobile\ImageUrl;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
@@ -30,6 +31,61 @@ class Seo
         return asset('images/storefront/hero-shop.png');
     }
 
+    public static function setting(): ?SeoSetting
+    {
+        return SeoSetting::active();
+    }
+
+    public static function siteName(): string
+    {
+        return static::setting()?->site_name ?: 'EtokBike';
+    }
+
+    public static function defaultTitle(string $fallback = 'EtokBike'): string
+    {
+        return static::setting()?->default_title ?: $fallback;
+    }
+
+    public static function defaultDescription(string $fallback = 'فروشگاه دوچرخه، قطعات و لوازم جانبی EtokBike.'): string
+    {
+        return static::setting()?->default_description ?: $fallback;
+    }
+
+    public static function defaultImage(): string
+    {
+        return static::image(static::setting()?->default_og_image);
+    }
+
+    public static function productTitle(Product $product): string
+    {
+        return $product->seo_title ?: $product->title.' | '.static::siteName();
+    }
+
+    public static function productDescription(Product $product): string
+    {
+        return static::description($product->seo_description, $product->description ?: $product->subtitle);
+    }
+
+    public static function productImage(Product $product): string
+    {
+        return static::image($product->og_image ?: ImageUrl::resolve($product->image_url));
+    }
+
+    public static function categoryDescription(?ProductCategory $category = null): string
+    {
+        if ($category) {
+            return static::description(
+                $category->seo_description,
+                'خرید محصولات دسته '.$category->label.' از فروشگاه EtokBike با موجودی، قیمت و ثبت سفارش آنلاین.',
+            );
+        }
+
+        return static::description(
+            static::setting()?->default_description,
+            'خرید دوچرخه، قطعات و لوازم جانبی از فروشگاه EtokBike با فیلتر موجودی، قیمت و دسته‌بندی.',
+        );
+    }
+
     /**
      * @return array<string, mixed>
      */
@@ -38,10 +94,10 @@ class Seo
         return [
             '@context' => 'https://schema.org',
             '@type' => 'Store',
-            'name' => 'EtokBike',
+            'name' => static::siteName(),
             'url' => route('storefront.home'),
-            'image' => asset('images/storefront/hero-shop.png'),
-            'sameAs' => [],
+            'image' => static::defaultImage(),
+            'sameAs' => array_values(array_filter(static::setting()?->social_profiles ?? [])),
         ];
     }
 
@@ -92,15 +148,13 @@ class Seo
      */
     public static function product(Product $product): array
     {
-        $image = ImageUrl::resolve($product->image_url);
-
         return [
             '@context' => 'https://schema.org',
             '@type' => 'Product',
             'name' => $product->title,
-            'description' => self::description($product->description, $product->subtitle),
-            'image' => [self::image($image)],
-            'sku' => $product->slug,
+            'description' => self::productDescription($product),
+            'image' => [self::productImage($product)],
+            'sku' => $product->sku ?: $product->slug,
             'category' => $product->category?->label,
             'offers' => [
                 '@type' => 'Offer',
@@ -116,8 +170,8 @@ class Seo
     public static function categoryTitle(?ProductCategory $category = null): string
     {
         return $category
-            ? $category->label.' | فروشگاه EtokBike'
-            : 'فروشگاه دوچرخه EtokBike';
+            ? ($category->seo_title ?: $category->label.' | فروشگاه '.static::siteName())
+            : static::defaultTitle('فروشگاه دوچرخه '.static::siteName());
     }
 
     private static function availability(string $availability): string

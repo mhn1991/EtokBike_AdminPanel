@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Storefront;
 use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Models\ProductCategory;
-use App\Support\Mobile\ImageUrl;
 use App\Support\Storefront\Seo;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
@@ -39,16 +38,17 @@ class ShopController extends Controller
             ->limit(4)
             ->get();
 
-        $image = ImageUrl::resolve($product->image_url);
-
         return view('storefront.shop.show', [
             'product' => $product,
             'relatedProducts' => $relatedProducts,
             'meta' => [
-                'title' => $product->title.' | EtokBike',
-                'description' => Seo::description($product->description, $product->subtitle),
-                'canonical' => route('storefront.products.show', $product),
-                'image' => Seo::image($image),
+                'title' => Seo::productTitle($product),
+                'description' => Seo::productDescription($product),
+                'canonical' => $product->canonical_url ?: route('storefront.products.show', $product),
+                'robots' => $product->robots ?: 'index,follow',
+                'image' => Seo::productImage($product),
+                'ogTitle' => $product->og_title ?: Seo::productTitle($product),
+                'ogDescription' => $product->og_description ?: Seo::productDescription($product),
             ],
             'structuredData' => [
                 Seo::product($product),
@@ -128,12 +128,12 @@ class ShopController extends Controller
             'filters' => $validated,
             'meta' => [
                 'title' => Seo::categoryTitle($category),
-                'description' => $category
-                    ? 'خرید محصولات دسته '.$category->label.' از فروشگاه EtokBike با موجودی، قیمت و ثبت سفارش آنلاین.'
-                    : 'خرید دوچرخه، قطعات و لوازم جانبی از فروشگاه EtokBike با فیلتر موجودی، قیمت و دسته‌بندی.',
-                'canonical' => $canonical,
-                'robots' => $hasFilters ? 'noindex,follow' : 'index,follow',
-                'image' => asset('images/storefront/hero-shop.png'),
+                'description' => Seo::categoryDescription($category),
+                'canonical' => $category?->canonical_url ?: $canonical,
+                'robots' => $hasFilters ? 'noindex,follow' : ($category?->robots ?: 'index,follow'),
+                'image' => Seo::image($category?->og_image),
+                'ogTitle' => $category?->og_title ?: Seo::categoryTitle($category),
+                'ogDescription' => $category?->og_description ?: Seo::categoryDescription($category),
             ],
             'structuredData' => [
                 Seo::breadcrumbs(array_filter([
