@@ -28,8 +28,8 @@ class ServiceQueueWidget extends TableWidget
         $activeStatuses = ['pending', 'confirmed', 'in_progress'];
 
         return $table
-            ->heading('Service queue')
-            ->description('Bookings that still need workshop action.')
+            ->heading(__('Service queue'))
+            ->description(__('Bookings that still need workshop action.'))
             ->query(fn (): Builder => ServiceBooking::query()
                 ->whereIn('status', $activeStatuses)
                 ->latest()
@@ -50,7 +50,7 @@ class ServiceQueueWidget extends TableWidget
                     ->visibleFrom('lg'),
                 TextColumn::make('status')
                     ->badge()
-                    ->formatStateUsing(fn (string $state): string => ServiceBooking::STATUS_OPTIONS[$state] ?? $state)
+                    ->formatStateUsing(fn (string $state): string => __(ServiceBooking::STATUS_OPTIONS[$state] ?? $state))
                     ->color(fn (string $state): string => match ($state) {
                         'pending' => 'warning',
                         'confirmed' => 'info',
@@ -62,7 +62,7 @@ class ServiceQueueWidget extends TableWidget
                     ->visibleFrom('md'),
             ])
             ->emptyStateIcon(Heroicon::OutlinedWrenchScrewdriver)
-            ->emptyStateHeading('No active service bookings')
+            ->emptyStateHeading(__('No active service bookings'))
             ->recordActions(ActionGroup::make([
                 Action::make('openBooking')
                     ->label('Open booking')
@@ -74,28 +74,28 @@ class ServiceQueueWidget extends TableWidget
                     ->color('gray')
                     ->visible(fn (ServiceBooking $record): bool => $record->user_id !== auth()->id())
                     ->action(fn (ServiceBooking $record) => $record->update(['user_id' => auth()->id()]))
-                    ->successNotificationTitle('Booking assigned to you'),
+                    ->successNotificationTitle(__('Booking assigned to you')),
                 Action::make('confirm')
                     ->label('Confirm')
                     ->icon(Heroicon::CheckCircle)
                     ->color('info')
                     ->visible(fn (ServiceBooking $record): bool => $record->status === 'pending')
                     ->action(fn (ServiceBooking $record) => $record->update(['status' => 'confirmed']))
-                    ->successNotificationTitle('Booking confirmed'),
+                    ->successNotificationTitle(__('Booking confirmed')),
                 Action::make('startWork')
                     ->label('Start work')
                     ->icon(Heroicon::WrenchScrewdriver)
                     ->color('primary')
                     ->visible(fn (ServiceBooking $record): bool => in_array($record->status, ['pending', 'confirmed'], true))
                     ->action(fn (ServiceBooking $record) => $record->update(['status' => 'in_progress']))
-                    ->successNotificationTitle('Booking moved to in progress'),
+                    ->successNotificationTitle(__('Booking moved to in progress')),
                 Action::make('complete')
                     ->label('Complete')
                     ->icon(Heroicon::CheckBadge)
                     ->color('success')
                     ->visible(fn (ServiceBooking $record): bool => $record->status !== 'completed')
                     ->action(fn (ServiceBooking $record) => $record->update(['status' => 'completed']))
-                    ->successNotificationTitle('Service booking completed'),
+                    ->successNotificationTitle(__('Service booking completed')),
             ])
                 ->label('Actions')
                 ->icon(Heroicon::EllipsisHorizontal)

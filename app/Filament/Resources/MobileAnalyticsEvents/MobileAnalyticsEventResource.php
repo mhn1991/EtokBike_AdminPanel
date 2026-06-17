@@ -19,15 +19,15 @@ class MobileAnalyticsEventResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedChartBar;
 
-    protected static ?string $navigationLabel = 'App analytics logs';
+    protected static ?string $navigationLabel = 'لاگ‌های تحلیل اپ';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Mobile App Content';
+    protected static string|\UnitEnum|null $navigationGroup = 'محتوای اپ موبایل';
 
     protected static ?int $navigationSort = 2;
 
-    protected static ?string $modelLabel = 'app analytics log';
+    protected static ?string $modelLabel = 'لاگ تحلیل اپ';
 
-    protected static ?string $pluralModelLabel = 'app analytics logs';
+    protected static ?string $pluralModelLabel = 'لاگ‌های تحلیل اپ';
 
     protected static ?string $recordTitleAttribute = 'event_name';
 

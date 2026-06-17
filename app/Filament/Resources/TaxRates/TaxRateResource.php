@@ -25,9 +25,9 @@ class TaxRateResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedReceiptPercent;
 
-    protected static ?string $navigationLabel = 'Tax rates';
+    protected static ?string $navigationLabel = 'نرخ‌های مالیات';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Finance';
+    protected static string|\UnitEnum|null $navigationGroup = 'مالی';
 
     protected static ?int $navigationSort = 4;
 
@@ -35,7 +35,7 @@ class TaxRateResource extends Resource
     {
         return $schema->components([
             Section::make('Tax rate')
-                ->description('Define VAT/tax rates for future order and invoice calculations.')
+                ->description(__('Define VAT/tax rates for future order and invoice calculations.'))
                 ->columns(3)
                 ->schema([
                     TextInput::make('name')->required()->maxLength(255),
@@ -56,8 +56,8 @@ class TaxRateResource extends Resource
             IconColumn::make('is_inclusive')->label('Inclusive')->boolean(),
             IconColumn::make('is_active')->label('Active')->boolean(),
         ])->emptyStateIcon(Heroicon::OutlinedReceiptPercent)
-            ->emptyStateHeading('No tax rates yet')
-            ->emptyStateDescription('Create tax/VAT rates before applying tax to invoices.')
+            ->emptyStateHeading(__('No tax rates yet'))
+            ->emptyStateDescription(__('Create tax/VAT rates before applying tax to invoices.'))
             ->defaultSort('name')
             ->recordActions([EditAction::make()])
             ->toolbarActions([]);

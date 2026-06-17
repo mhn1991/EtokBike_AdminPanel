@@ -6,6 +6,7 @@ use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
+use Filament\FontProviders\LocalFontProvider;
 use Filament\Navigation\NavigationGroup;
 use Filament\Pages\Dashboard;
 use Filament\Panel;
@@ -28,30 +29,31 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
-            ->brandName('EtokBike Admin')
+            ->brandName('مدیریت EtokBike')
+            ->font('Tahoma', provider: LocalFontProvider::class)
             ->sidebarWidth('18rem')
             ->collapsibleNavigationGroups(false)
             ->colors([
                 'primary' => Color::Amber,
             ])
             ->navigationGroups([
-                NavigationGroup::make('Inbox'),
+                NavigationGroup::make('پیام‌ها'),
                 NavigationGroup::make('SEO'),
-                NavigationGroup::make('Warehouse'),
-                NavigationGroup::make('Purchasing'),
-                NavigationGroup::make('Finance'),
-                NavigationGroup::make('Orders'),
-                NavigationGroup::make('Shipping'),
-                NavigationGroup::make('Marketing'),
-                NavigationGroup::make('Notifications'),
-                NavigationGroup::make('Reports'),
-                NavigationGroup::make('Audit'),
-                NavigationGroup::make('Catalog'),
-                NavigationGroup::make('Services'),
-                NavigationGroup::make('Programs'),
-                NavigationGroup::make('Mobile App Content'),
-                NavigationGroup::make('Customers'),
-                NavigationGroup::make('Settings'),
+                NavigationGroup::make('انبار'),
+                NavigationGroup::make('خرید'),
+                NavigationGroup::make('مالی'),
+                NavigationGroup::make('سفارش‌ها'),
+                NavigationGroup::make('ارسال'),
+                NavigationGroup::make('بازاریابی'),
+                NavigationGroup::make('اعلان‌ها'),
+                NavigationGroup::make('گزارش‌ها'),
+                NavigationGroup::make('ممیزی'),
+                NavigationGroup::make('کاتالوگ'),
+                NavigationGroup::make('خدمات'),
+                NavigationGroup::make('برنامه‌ها'),
+                NavigationGroup::make('محتوای اپ موبایل'),
+                NavigationGroup::make('مشتریان'),
+                NavigationGroup::make('تنظیمات'),
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')

@@ -33,7 +33,7 @@ class ProgramsTable
                     ->sortable(),
                 TextColumn::make('program_state')
                     ->badge()
-                    ->formatStateUsing(fn (string $state): string => Program::STATE_OPTIONS[$state] ?? $state)
+                    ->formatStateUsing(fn (string $state): string => __(Program::STATE_OPTIONS[$state] ?? $state))
                     ->color(fn (string $state): string => match ($state) {
                         'future' => 'success',
                         'finished' => 'gray',
@@ -66,14 +66,14 @@ class ProgramsTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->emptyStateIcon(Heroicon::OutlinedCalendarDays)
-            ->emptyStateHeading('No programs yet')
-            ->emptyStateDescription('Create rides, events, and programs to publish them in the app.')
+            ->emptyStateHeading(__('No programs yet'))
+            ->emptyStateDescription(__('Create rides, events, and programs to publish them in the app.'))
             ->filters([
                 SelectFilter::make('program_category_id')
                     ->label('Category')
                     ->relationship('category', 'label'),
                 SelectFilter::make('program_state')
-                    ->options(Program::STATE_OPTIONS),
+                    ->options(\App\Support\Admin\FilamentLocalization::options(Program::STATE_OPTIONS)),
                 TernaryFilter::make('is_active')
                     ->label('Visible in app'),
             ])

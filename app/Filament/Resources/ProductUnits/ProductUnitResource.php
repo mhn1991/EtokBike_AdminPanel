@@ -26,22 +26,22 @@ class ProductUnitResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedTag;
 
-    protected static ?string $navigationLabel = 'Product units';
+    protected static ?string $navigationLabel = 'واحدهای کالا';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Warehouse';
+    protected static string|\UnitEnum|null $navigationGroup = 'انبار';
 
     protected static ?int $navigationSort = 3;
 
-    protected static ?string $modelLabel = 'product unit';
+    protected static ?string $modelLabel = 'واحد کالا';
 
-    protected static ?string $pluralModelLabel = 'product units';
+    protected static ?string $pluralModelLabel = 'واحدهای کالا';
 
     public static function form(Schema $schema): Schema
     {
         return $schema
             ->components([
                 Section::make('Unit conversion')
-                    ->description('Define packaging as a quantity of the product base unit.')
+                    ->description(__('Define packaging as a quantity of the product base unit.'))
                     ->columns(3)
                     ->schema([
                         Select::make('product_id')
@@ -52,15 +52,15 @@ class ProductUnitResource extends Resource
                             ->preload()
                             ->required(),
                         TextInput::make('name')
-                            ->placeholder('Piece, box, pallet')
+                            ->placeholder(__('Piece, box, pallet'))
                             ->required()
                             ->maxLength(255),
                         TextInput::make('abbreviation')
-                            ->placeholder('pc, box, plt')
+                            ->placeholder(__('pc, box, plt'))
                             ->maxLength(32),
                         TextInput::make('quantity_in_base_units')
                             ->label('Base-unit quantity')
-                            ->helperText('Example: box = 20 pieces, pallet = 2000 pieces.')
+                            ->helperText(__('Example: box = 20 pieces, pallet = 2000 pieces.'))
                             ->required()
                             ->integer()
                             ->minValue(1)
@@ -104,8 +104,8 @@ class ProductUnitResource extends Resource
                     ->sortable(),
             ])
             ->emptyStateIcon(Heroicon::OutlinedTag)
-            ->emptyStateHeading('No product units yet')
-            ->emptyStateDescription('Create piece, box, pallet, or other product-specific units.')
+            ->emptyStateHeading(__('No product units yet'))
+            ->emptyStateDescription(__('Create piece, box, pallet, or other product-specific units.'))
             ->filters([
                 SelectFilter::make('product_id')
                     ->label('Product')

@@ -23,7 +23,7 @@ class ProductForm
         return $schema
             ->components([
                 Section::make('Product')
-                    ->description('Core shop listing details shown in the mobile app.')
+                    ->description(__('Core shop listing details shown in the mobile app.'))
                     ->columns(3)
                     ->schema([
                         Select::make('product_category_id')
@@ -46,7 +46,7 @@ class ProductForm
                             ->required()
                             ->maxLength(255),
                         ToggleButtons::make('availability')
-                            ->options(Product::AVAILABILITY_OPTIONS)
+                            ->options(\App\Support\Admin\FilamentLocalization::options(Product::AVAILABILITY_OPTIONS))
                             ->colors([
                                 'in_stock' => 'success',
                                 'low_stock' => 'warning',
@@ -59,17 +59,17 @@ class ProductForm
                             ->columnSpanFull(),
                     ]),
                 Section::make('Publishing controls')
-                    ->description('Visibility and stable app identifiers. Use table drag ordering for day-to-day sorting.')
+                    ->description(__('Visibility and stable app identifiers. Use table drag ordering for day-to-day sorting.'))
                     ->columns(2)
                     ->schema([
                         TextInput::make('slug')
                             ->required()
-                            ->helperText('Stable product ID used by the mobile app.')
+                            ->helperText(__('Stable product ID used by the mobile app.'))
                             ->maxLength(255)
                             ->columnSpanFull(),
                         TextInput::make('sku')
                             ->label('SKU')
-                            ->helperText('Optional warehouse SKU or barcode used for stock matching.')
+                            ->helperText(__('Optional warehouse SKU or barcode used for stock matching.'))
                             ->maxLength(255)
                             ->unique(ignoreRecord: true),
                         TextInput::make('sort_order')
@@ -88,7 +88,7 @@ class ProductForm
                             ->default(true),
                     ]),
                 Section::make('Pricing and stock')
-                    ->description('Price values are numeric; the label can override the app-facing text.')
+                    ->description(__('Price values are numeric; the label can override the app-facing text.'))
                     ->columns(3)
                     ->schema([
                         TextInput::make('price_value')
@@ -99,12 +99,12 @@ class ProductForm
                             ->default(0),
                         TextInput::make('price_label')
                             ->maxLength(255)
-                            ->helperText('Shown in the app. Leave blank to format from price value.'),
+                            ->helperText(__('Shown in the app. Leave blank to format from price value.')),
                         TextInput::make('stock_label')
                             ->maxLength(255),
                     ]),
                 Section::make('Warehouse')
-                    ->description('Use stock movements to change quantity after a product is created.')
+                    ->description(__('Use stock movements to change quantity after a product is created.'))
                     ->columns(4)
                     ->schema([
                         TextInput::make('stock_quantity')
@@ -126,11 +126,11 @@ class ProductForm
                             ->default(0),
                         TextInput::make('warehouse_location')
                             ->label('Location')
-                            ->placeholder('Main warehouse / Aisle A1')
+                            ->placeholder(__('Main warehouse / Aisle A1'))
                             ->maxLength(255),
                     ]),
                 Section::make('App card')
-                    ->description('Thumbnail and description used in product lists and detail views.')
+                    ->description(__('Thumbnail and description used in product lists and detail views.'))
                     ->columns(3)
                     ->schema([
                         TextInput::make('thumbnail_text')
@@ -156,7 +156,7 @@ class ProductForm
                             ->columnSpanFull(),
                     ]),
                 Section::make('SEO')
-                    ->description('Controls the public product page metadata, social preview, and sitemap settings.')
+                    ->description(__('Controls the public product page metadata, social preview, and sitemap settings.'))
                     ->columns(3)
                     ->schema([
                         TextInput::make('seo_title')
@@ -171,7 +171,7 @@ class ProductForm
                         TextInput::make('canonical_url')
                             ->maxLength(255),
                         Select::make('robots')
-                            ->options(Product::ROBOTS_OPTIONS)
+                            ->options(\App\Support\Admin\FilamentLocalization::options(Product::ROBOTS_OPTIONS))
                             ->native(false)
                             ->required()
                             ->default('index,follow'),
@@ -200,7 +200,7 @@ class ProductForm
                             ->maxValue(1)
                             ->default(0.7),
                         Select::make('sitemap_change_frequency')
-                            ->options(Product::CHANGE_FREQUENCY_OPTIONS)
+                            ->options(\App\Support\Admin\FilamentLocalization::options(Product::CHANGE_FREQUENCY_OPTIONS))
                             ->native(false)
                             ->required()
                             ->default('weekly'),

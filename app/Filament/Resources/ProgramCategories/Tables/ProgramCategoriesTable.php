@@ -42,8 +42,8 @@ class ProgramCategoriesTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->emptyStateIcon(Heroicon::OutlinedCalendarDays)
-            ->emptyStateHeading('No program categories yet')
-            ->emptyStateDescription('Categories group rides and events in the mobile app.')
+            ->emptyStateHeading(__('No program categories yet'))
+            ->emptyStateDescription(__('Categories group rides and events in the mobile app.'))
             ->filters([
                 TernaryFilter::make('is_active')
                     ->label('Visible in app'),

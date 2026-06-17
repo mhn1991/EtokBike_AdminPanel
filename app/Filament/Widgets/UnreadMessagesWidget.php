@@ -26,8 +26,8 @@ class UnreadMessagesWidget extends TableWidget
     public function table(Table $table): Table
     {
         return $table
-            ->heading('Messages needing response')
-            ->description('Unread customer conversations sorted for quick follow-up.')
+            ->heading(__('Messages needing response'))
+            ->description(__('Unread customer conversations sorted for quick follow-up.'))
             ->query(fn (): Builder => CustomerMessage::query()
                 ->with('department')
                 ->where('is_unread', true)
@@ -51,7 +51,7 @@ class UnreadMessagesWidget extends TableWidget
                     ->visibleFrom('lg'),
             ])
             ->emptyStateIcon(Heroicon::OutlinedEnvelope)
-            ->emptyStateHeading('No messages need a response')
+            ->emptyStateHeading(__('No messages need a response'))
             ->recordActions(ActionGroup::make([
                 Action::make('openThread')
                     ->label('Open thread')
@@ -62,7 +62,7 @@ class UnreadMessagesWidget extends TableWidget
                     ->icon(Heroicon::CheckCircle)
                     ->color('success')
                     ->action(fn (CustomerMessage $record) => $record->update(['is_unread' => false]))
-                    ->successNotificationTitle('Message marked replied'),
+                    ->successNotificationTitle(__('Message marked replied')),
             ])
                 ->label('Actions')
                 ->icon(Heroicon::EllipsisHorizontal)

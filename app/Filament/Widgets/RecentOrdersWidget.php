@@ -20,8 +20,8 @@ class RecentOrdersWidget extends TableWidget
     public function table(Table $table): Table
     {
         return $table
-            ->heading('Recent orders')
-            ->description('The newest customer purchases, ready for quick triage.')
+            ->heading(__('Recent orders'))
+            ->description(__('The newest customer purchases, ready for quick triage.'))
             ->query(fn (): Builder => Order::query()->latest('placed_at')->limit(8))
             ->paginated(false)
             ->striped()
@@ -34,7 +34,7 @@ class RecentOrdersWidget extends TableWidget
                     ->searchable(),
                 TextColumn::make('status')
                     ->badge()
-                    ->formatStateUsing(fn (string $state): string => Order::STATUS_OPTIONS[$state] ?? $state)
+                    ->formatStateUsing(fn (string $state): string => __(Order::STATUS_OPTIONS[$state] ?? $state))
                     ->color(fn (string $state): string => match ($state) {
                         'pending' => 'warning',
                         'confirmed', 'processing' => 'info',
@@ -46,7 +46,7 @@ class RecentOrdersWidget extends TableWidget
                 TextColumn::make('payment_status')
                     ->badge()
                     ->visibleFrom('md')
-                    ->formatStateUsing(fn (string $state): string => Order::PAYMENT_STATUS_OPTIONS[$state] ?? $state)
+                    ->formatStateUsing(fn (string $state): string => __(Order::PAYMENT_STATUS_OPTIONS[$state] ?? $state))
                     ->color(fn (string $state): string => match ($state) {
                         'paid' => 'success',
                         'failed', 'refunded' => 'danger',

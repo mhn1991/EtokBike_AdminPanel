@@ -27,7 +27,7 @@ class SeoSettingResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedMagnifyingGlass;
 
-    protected static ?string $navigationLabel = 'SEO settings';
+    protected static ?string $navigationLabel = 'تنظیمات SEO';
 
     protected static string|\UnitEnum|null $navigationGroup = 'SEO';
 
@@ -37,7 +37,7 @@ class SeoSettingResource extends Resource
     {
         return $schema->components([
             Section::make('Defaults')
-                ->description('Fallback metadata used when a page, category, or product does not define its own SEO fields.')
+                ->description(__('Fallback metadata used when a page, category, or product does not define its own SEO fields.'))
                 ->columns(2)
                 ->schema([
                     TextInput::make('site_name')->required()->maxLength(255)->default('EtokBike'),
@@ -53,7 +53,7 @@ class SeoSettingResource extends Resource
                         ->imagePreviewHeight('140')
                         ->openable()
                         ->downloadable(),
-                    TextInput::make('twitter_handle')->placeholder('@etokbike')->maxLength(255),
+                    TextInput::make('twitter_handle')->placeholder(__('@etokbike'))->maxLength(255),
                     KeyValue::make('social_profiles')
                         ->keyLabel('Network')
                         ->valueLabel('URL')
@@ -69,13 +69,13 @@ class SeoSettingResource extends Resource
             ->striped()
             ->columns([
                 TextColumn::make('site_name')->searchable()->sortable(),
-                TextColumn::make('default_title')->placeholder('-')->wrap(),
+                TextColumn::make('default_title')->placeholder(__('-'))->wrap(),
                 IconColumn::make('is_active')->boolean(),
                 TextColumn::make('updated_at')->dateTime()->sortable()->visibleFrom('lg'),
             ])
             ->emptyStateIcon(Heroicon::OutlinedMagnifyingGlass)
-            ->emptyStateHeading('No SEO settings yet')
-            ->emptyStateDescription('Create one active settings record for site-wide SEO defaults.')
+            ->emptyStateHeading(__('No SEO settings yet'))
+            ->emptyStateDescription(__('Create one active settings record for site-wide SEO defaults.'))
             ->defaultSort('updated_at', 'desc')
             ->recordActions([EditAction::make()])
             ->toolbarActions([]);

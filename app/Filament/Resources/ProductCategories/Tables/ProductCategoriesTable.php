@@ -40,8 +40,8 @@ class ProductCategoriesTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->emptyStateIcon(Heroicon::OutlinedTag)
-            ->emptyStateHeading('No product categories yet')
-            ->emptyStateDescription('Categories organize the mobile shop filters and sections.')
+            ->emptyStateHeading(__('No product categories yet'))
+            ->emptyStateDescription(__('Categories organize the mobile shop filters and sections.'))
             ->filters([
                 TernaryFilter::make('is_active')
                     ->label('Visible in app'),

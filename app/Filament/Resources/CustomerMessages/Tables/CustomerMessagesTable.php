@@ -32,7 +32,7 @@ class CustomerMessagesTable
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('sender')
                     ->badge()
-                    ->formatStateUsing(fn (string $state): string => CustomerMessage::SENDER_OPTIONS[$state] ?? $state)
+                    ->formatStateUsing(fn (string $state): string => __(CustomerMessage::SENDER_OPTIONS[$state] ?? $state))
                     ->color(fn (string $state): string => $state === 'client' ? 'warning' : 'info')
                     ->visibleFrom('md')
                     ->searchable(),
@@ -64,14 +64,14 @@ class CustomerMessagesTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->emptyStateIcon(Heroicon::OutlinedEnvelope)
-            ->emptyStateHeading('No customer messages yet')
-            ->emptyStateDescription('Incoming and department messages will appear here.')
+            ->emptyStateHeading(__('No customer messages yet'))
+            ->emptyStateDescription(__('Incoming and department messages will appear here.'))
             ->filters([
                 SelectFilter::make('message_department_id')
                     ->label('Department')
                     ->relationship('department', 'title'),
                 SelectFilter::make('sender')
-                    ->options(CustomerMessage::SENDER_OPTIONS),
+                    ->options(\App\Support\Admin\FilamentLocalization::options(CustomerMessage::SENDER_OPTIONS)),
                 TernaryFilter::make('is_unread')
                     ->label('Needs response'),
             ])
@@ -87,14 +87,14 @@ class CustomerMessagesTable
                     ->color('success')
                     ->visible(fn (CustomerMessage $record): bool => (bool) $record->is_unread)
                     ->action(fn (CustomerMessage $record) => $record->update(['is_unread' => false]))
-                    ->successNotificationTitle('Message marked replied'),
+                    ->successNotificationTitle(__('Message marked replied')),
                 Action::make('markNeedsResponse')
                     ->label('Needs response')
                     ->icon(Heroicon::BellAlert)
                     ->color('warning')
                     ->visible(fn (CustomerMessage $record): bool => ! $record->is_unread)
                     ->action(fn (CustomerMessage $record) => $record->update(['is_unread' => true]))
-                    ->successNotificationTitle('Message marked as needing response'),
+                    ->successNotificationTitle(__('Message marked as needing response')),
             ])
                 ->label('Actions')
                 ->icon(Heroicon::EllipsisHorizontal)

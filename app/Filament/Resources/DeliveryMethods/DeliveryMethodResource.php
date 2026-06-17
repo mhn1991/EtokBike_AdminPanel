@@ -25,15 +25,15 @@ class DeliveryMethodResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedTruck;
 
-    protected static ?string $navigationLabel = 'Delivery methods';
+    protected static ?string $navigationLabel = 'روش‌های تحویل';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Orders';
+    protected static string|\UnitEnum|null $navigationGroup = 'سفارش‌ها';
 
     protected static ?int $navigationSort = 5;
 
-    protected static ?string $modelLabel = 'delivery method';
+    protected static ?string $modelLabel = 'روش تحویل';
 
-    protected static ?string $pluralModelLabel = 'delivery methods';
+    protected static ?string $pluralModelLabel = 'روش‌های تحویل';
 
     protected static ?string $recordTitleAttribute = 'title';
 
@@ -42,7 +42,7 @@ class DeliveryMethodResource extends Resource
         return $schema
             ->components([
                 Section::make('Delivery method')
-                    ->description('Shown as cards on the mobile cart page.')
+                    ->description(__('Shown as cards on the mobile cart page.'))
                     ->columns(3)
                     ->schema([
                         TextInput::make('title')
@@ -80,7 +80,7 @@ class DeliveryMethodResource extends Resource
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('price_label')
-                    ->placeholder('-'),
+                    ->placeholder(__('-')),
                 TextColumn::make('sort_order')
                     ->formatStateUsing(fn (?int $state): string => number_format($state ?? 0))
                     ->sortable(),

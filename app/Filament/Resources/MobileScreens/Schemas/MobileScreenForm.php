@@ -16,12 +16,12 @@ class MobileScreenForm
         return $schema
             ->components([
                 Section::make('App page')
-                    ->description('Enable dynamic screen content served by the mobile API.')
+                    ->description(__('Enable dynamic screen content served by the mobile API.'))
                     ->columns(3)
                     ->schema([
                         Select::make('screen_id')
                             ->label('Screen')
-                            ->options(MobileScreen::SCREEN_OPTIONS)
+                            ->options(\App\Support\Admin\FilamentLocalization::options(MobileScreen::SCREEN_OPTIONS))
                             ->native(false)
                             ->required()
                             ->unique(ignoreRecord: true),
@@ -33,7 +33,7 @@ class MobileScreenForm
                             ->integer()
                             ->minValue(1)
                             ->default(1)
-                            ->helperText('Manual base version. The API also increases this from edit timestamps.'),
+                            ->helperText(__('Manual base version. The API also increases this from edit timestamps.')),
                         Toggle::make('hide_title')
                             ->label('Hide page title in app')
                             ->required()

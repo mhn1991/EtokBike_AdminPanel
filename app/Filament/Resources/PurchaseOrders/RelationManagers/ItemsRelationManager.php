@@ -24,7 +24,7 @@ class ItemsRelationManager extends RelationManager
         return $schema
             ->components([
                 Section::make('Purchase item')
-                    ->description('Quantities are captured in the selected purchase unit.')
+                    ->description(__('Quantities are captured in the selected purchase unit.'))
                     ->columns(3)
                     ->schema([
                         Select::make('product_id')

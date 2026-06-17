@@ -21,7 +21,7 @@ class ProductCategoryForm
         return $schema
             ->components([
                 Section::make('Category')
-                    ->description('Organizes product lists in the mobile shop.')
+                    ->description(__('Organizes product lists in the mobile shop.'))
                     ->columns(3)
                     ->schema([
                         TextInput::make('label')
@@ -47,7 +47,7 @@ class ProductCategoryForm
                             ->default(true),
                     ]),
                 Section::make('SEO')
-                    ->description('Controls category page metadata, social preview, and sitemap settings.')
+                    ->description(__('Controls category page metadata, social preview, and sitemap settings.'))
                     ->columns(3)
                     ->schema([
                         TextInput::make('seo_title')
@@ -62,7 +62,7 @@ class ProductCategoryForm
                         TextInput::make('canonical_url')
                             ->maxLength(255),
                         Select::make('robots')
-                            ->options(ProductCategory::ROBOTS_OPTIONS)
+                            ->options(\App\Support\Admin\FilamentLocalization::options(ProductCategory::ROBOTS_OPTIONS))
                             ->native(false)
                             ->required()
                             ->default('index,follow'),
@@ -91,7 +91,7 @@ class ProductCategoryForm
                             ->maxValue(1)
                             ->default(0.8),
                         Select::make('sitemap_change_frequency')
-                            ->options(ProductCategory::CHANGE_FREQUENCY_OPTIONS)
+                            ->options(\App\Support\Admin\FilamentLocalization::options(ProductCategory::CHANGE_FREQUENCY_OPTIONS))
                             ->native(false)
                             ->required()
                             ->default('weekly'),

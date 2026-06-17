@@ -22,9 +22,9 @@ class OperationsStatsWidget extends StatsOverviewWidget
 
     protected static ?int $sort = 0;
 
-    protected ?string $heading = 'Operations snapshot';
+    protected ?string $heading = 'نمای عملیات';
 
-    protected ?string $description = 'Current work across shop orders, services, messages, and catalogue health.';
+    protected ?string $description = 'وضعیت فعلی سفارش‌ها، خدمات، پیام‌ها و سلامت کاتالوگ.';
 
     protected ?string $pollingInterval = null;
 
@@ -59,15 +59,15 @@ class OperationsStatsWidget extends StatsOverviewWidget
             ->count();
 
         return [
-            Stat::make('Open orders', DashboardMetrics::number($openOrders))
-                ->description(DashboardMetrics::money($todayRevenue).' placed today')
+            Stat::make(__('Open orders'), DashboardMetrics::number($openOrders))
+                ->description(__('Placed today: :amount', ['amount' => DashboardMetrics::money($todayRevenue)]))
                 ->descriptionIcon(Heroicon::ArrowTrendingUp)
                 ->chart(DashboardMetrics::countByDay(Order::class, 7))
                 ->color('warning')
                 ->icon(Heroicon::ShoppingCart)
                 ->url(OrderResource::getUrl()),
-            Stat::make('Service queue', DashboardMetrics::number($openBookings))
-                ->description('Bookings still needing workshop action')
+            Stat::make(__('Service queue'), DashboardMetrics::number($openBookings))
+                ->description(__('Bookings still needing workshop action'))
                 ->chart(DashboardMetrics::countByDay(
                     ServiceBooking::class,
                     7,
@@ -76,8 +76,8 @@ class OperationsStatsWidget extends StatsOverviewWidget
                 ->color('info')
                 ->icon(Heroicon::WrenchScrewdriver)
                 ->url(ServiceBookingResource::getUrl()),
-            Stat::make('Unread messages', DashboardMetrics::number($unreadMessages))
-                ->description('Customer conversations waiting for a reply')
+            Stat::make(__('Unread messages'), DashboardMetrics::number($unreadMessages))
+                ->description(__('Customer conversations waiting for a reply'))
                 ->chart(DashboardMetrics::countByDay(
                     CustomerMessage::class,
                     7,
@@ -86,8 +86,8 @@ class OperationsStatsWidget extends StatsOverviewWidget
                 ->color($unreadMessages > 0 ? 'danger' : 'success')
                 ->icon(Heroicon::EnvelopeOpen)
                 ->url(CustomerMessageResource::getUrl()),
-            Stat::make('Low-stock products', DashboardMetrics::number($lowStockProducts))
-                ->description('Items that need stock or visibility review')
+            Stat::make(__('Low-stock products'), DashboardMetrics::number($lowStockProducts))
+                ->description(__('Items that need stock or visibility review'))
                 ->chart(DashboardMetrics::countByDay(
                     Product::class,
                     7,

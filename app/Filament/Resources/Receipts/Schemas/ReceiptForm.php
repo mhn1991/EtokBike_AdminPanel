@@ -18,19 +18,19 @@ class ReceiptForm
         return $schema
             ->components([
                 Section::make('Receipt')
-                    ->description('Receipt identity, linked records, and issue status.')
+                    ->description(__('Receipt identity, linked records, and issue status.'))
                     ->columns(3)
                     ->schema([
                         TextInput::make('receipt_number')
-                            ->helperText('Leave blank to auto-generate.')
+                            ->helperText(__('Leave blank to auto-generate.'))
                             ->maxLength(255),
                         Select::make('type')
-                            ->options(Receipt::TYPE_OPTIONS)
+                            ->options(\App\Support\Admin\FilamentLocalization::options(Receipt::TYPE_OPTIONS))
                             ->native(false)
                             ->required()
                             ->default('receipt'),
                         ToggleButtons::make('status')
-                            ->options(Receipt::STATUS_OPTIONS)
+                            ->options(\App\Support\Admin\FilamentLocalization::options(Receipt::STATUS_OPTIONS))
                             ->colors([
                                 'draft' => 'warning',
                                 'issued' => 'success',

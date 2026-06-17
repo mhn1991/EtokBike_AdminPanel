@@ -27,26 +27,26 @@ class FinancialTransactionResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::CurrencyDollar;
 
-    protected static ?string $navigationLabel = 'Finance';
+    protected static ?string $navigationLabel = 'مالی';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Finance';
+    protected static string|\UnitEnum|null $navigationGroup = 'مالی';
 
     protected static ?int $navigationSort = 1;
 
-    protected static ?string $modelLabel = 'financial transaction';
+    protected static ?string $modelLabel = 'تراکنش مالی';
 
-    protected static ?string $pluralModelLabel = 'financial transactions';
+    protected static ?string $pluralModelLabel = 'تراکنش‌های مالی';
 
     public static function form(Schema $schema): Schema
     {
         return $schema
             ->components([
                 Section::make('Transaction')
-                    ->description('Track money moving in or out of the ecommerce operation.')
+                    ->description(__('Track money moving in or out of the ecommerce operation.'))
                     ->columns(3)
                     ->schema([
                         ToggleButtons::make('direction')
-                            ->options(FinancialTransaction::DIRECTION_OPTIONS)
+                            ->options(\App\Support\Admin\FilamentLocalization::options(FinancialTransaction::DIRECTION_OPTIONS))
                             ->colors([
                                 'income' => 'success',
                                 'expense' => 'danger',
@@ -55,12 +55,12 @@ class FinancialTransactionResource extends Resource
                             ->required()
                             ->default('income'),
                         Select::make('type')
-                            ->options(FinancialTransaction::TYPE_OPTIONS)
+                            ->options(\App\Support\Admin\FilamentLocalization::options(FinancialTransaction::TYPE_OPTIONS))
                             ->native(false)
                             ->required()
                             ->default('sale_income'),
                         ToggleButtons::make('status')
-                            ->options(FinancialTransaction::STATUS_OPTIONS)
+                            ->options(\App\Support\Admin\FilamentLocalization::options(FinancialTransaction::STATUS_OPTIONS))
                             ->colors([
                                 'pending' => 'warning',
                                 'posted' => 'success',
@@ -83,10 +83,10 @@ class FinancialTransactionResource extends Resource
                             ->seconds(false)
                             ->default(now()),
                         TextInput::make('payment_method')
-                            ->placeholder('Cash, card, bank transfer')
+                            ->placeholder(__('Cash, card, bank transfer'))
                             ->maxLength(255),
                         TextInput::make('reference')
-                            ->placeholder('Receipt, bank ref, invoice')
+                            ->placeholder(__('Receipt, bank ref, invoice'))
                             ->maxLength(255),
                     ]),
                 Section::make('Links')
@@ -125,11 +125,11 @@ class FinancialTransactionResource extends Resource
             ->columns([
                 TextColumn::make('occurred_at')
                     ->dateTime()
-                    ->placeholder('-')
+                    ->placeholder(__('-'))
                     ->sortable(),
                 TextColumn::make('type')
                     ->badge()
-                    ->formatStateUsing(fn (string $state): string => FinancialTransaction::TYPE_OPTIONS[$state] ?? $state)
+                    ->formatStateUsing(fn (string $state): string => __(FinancialTransaction::TYPE_OPTIONS[$state] ?? $state))
                     ->color(fn (string $state): string => match ($state) {
                         'sale_income' => 'success',
                         'refund', 'supplier_payment', 'expense' => 'danger',
@@ -142,7 +142,7 @@ class FinancialTransactionResource extends Resource
                     ->sortable(),
                 TextColumn::make('status')
                     ->badge()
-                    ->formatStateUsing(fn (string $state): string => FinancialTransaction::STATUS_OPTIONS[$state] ?? $state)
+                    ->formatStateUsing(fn (string $state): string => __(FinancialTransaction::STATUS_OPTIONS[$state] ?? $state))
                     ->color(fn (string $state): string => match ($state) {
                         'posted' => 'success',
                         'void' => 'danger',
@@ -151,29 +151,29 @@ class FinancialTransactionResource extends Resource
                     ->sortable(),
                 TextColumn::make('order.order_number')
                     ->label('Order')
-                    ->placeholder('-')
+                    ->placeholder(__('-'))
                     ->searchable()
                     ->visibleFrom('lg'),
                 TextColumn::make('supplier.name')
                     ->label('Supplier')
-                    ->placeholder('-')
+                    ->placeholder(__('-'))
                     ->searchable()
                     ->visibleFrom('lg'),
                 TextColumn::make('reference')
-                    ->placeholder('-')
+                    ->placeholder(__('-'))
                     ->searchable()
                     ->visibleFrom('xl'),
             ])
             ->emptyStateIcon(Heroicon::CurrencyDollar)
-            ->emptyStateHeading('No finance records yet')
-            ->emptyStateDescription('Record sales income, refunds, supplier payments, and expenses.')
+            ->emptyStateHeading(__('No finance records yet'))
+            ->emptyStateDescription(__('Record sales income, refunds, supplier payments, and expenses.'))
             ->filters([
                 SelectFilter::make('type')
-                    ->options(FinancialTransaction::TYPE_OPTIONS),
+                    ->options(\App\Support\Admin\FilamentLocalization::options(FinancialTransaction::TYPE_OPTIONS)),
                 SelectFilter::make('direction')
-                    ->options(FinancialTransaction::DIRECTION_OPTIONS),
+                    ->options(\App\Support\Admin\FilamentLocalization::options(FinancialTransaction::DIRECTION_OPTIONS)),
                 SelectFilter::make('status')
-                    ->options(FinancialTransaction::STATUS_OPTIONS),
+                    ->options(\App\Support\Admin\FilamentLocalization::options(FinancialTransaction::STATUS_OPTIONS)),
             ])
             ->defaultSort('occurred_at', 'desc')
             ->recordActions([

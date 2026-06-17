@@ -24,10 +24,10 @@ class ProductInfolist
                         TextEntry::make('slug'),
                         TextEntry::make('sku')
                             ->label('SKU')
-                            ->placeholder('-'),
+                            ->placeholder(__('-')),
                         TextEntry::make('availability')
                             ->badge()
-                            ->formatStateUsing(fn (string $state): string => Product::AVAILABILITY_OPTIONS[$state] ?? $state)
+                            ->formatStateUsing(fn (string $state): string => __(Product::AVAILABILITY_OPTIONS[$state] ?? $state))
                             ->color(fn (string $state): string => match ($state) {
                                 'in_stock' => 'success',
                                 'low_stock' => 'warning',
@@ -40,7 +40,7 @@ class ProductInfolist
                         TextEntry::make('sort_order')
                             ->formatStateUsing(fn (?int $state): string => number_format($state ?? 0)),
                         TextEntry::make('description')
-                            ->placeholder('-')
+                            ->placeholder(__('-'))
                             ->columnSpanFull(),
                     ]),
                 Section::make('Pricing and stock')
@@ -50,9 +50,9 @@ class ProductInfolist
                             ->label('Price')
                             ->formatStateUsing(fn (?int $state): string => number_format($state ?? 0)),
                         TextEntry::make('price_label')
-                            ->placeholder('-'),
+                            ->placeholder(__('-')),
                         TextEntry::make('stock_label')
-                            ->placeholder('-'),
+                            ->placeholder(__('-')),
                         TextEntry::make('stock_quantity')
                             ->label('On hand')
                             ->formatStateUsing(fn (?int $state): string => number_format($state ?? 0)),
@@ -64,7 +64,7 @@ class ProductInfolist
                             ->formatStateUsing(fn (?int $state): string => number_format($state ?? 0)),
                         TextEntry::make('warehouse_location')
                             ->label('Location')
-                            ->placeholder('-'),
+                            ->placeholder(__('-')),
                         IconEntry::make('is_featured')
                             ->boolean(),
                         IconEntry::make('is_active')
@@ -78,17 +78,17 @@ class ProductInfolist
                         ColorEntry::make('thumbnail_color'),
                         ImageEntry::make('image_url')
                             ->disk('public')
-                            ->placeholder('-'),
+                            ->placeholder(__('-')),
                     ]),
                 Section::make('Audit')
                     ->columns(2)
                     ->schema([
                         TextEntry::make('created_at')
                             ->dateTime()
-                            ->placeholder('-'),
+                            ->placeholder(__('-')),
                         TextEntry::make('updated_at')
                             ->dateTime()
-                            ->placeholder('-'),
+                            ->placeholder(__('-')),
                     ]),
             ]);
     }

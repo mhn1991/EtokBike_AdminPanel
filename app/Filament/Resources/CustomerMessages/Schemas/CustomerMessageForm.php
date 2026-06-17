@@ -18,7 +18,7 @@ class CustomerMessageForm
         return $schema
             ->components([
                 Section::make('Conversation')
-                    ->description('Route the message to the right department and customer account.')
+                    ->description(__('Route the message to the right department and customer account.'))
                     ->columns(3)
                     ->schema([
                         Select::make('message_department_id')
@@ -35,7 +35,7 @@ class CustomerMessageForm
                             ->searchable()
                             ->preload(),
                         ToggleButtons::make('sender')
-                            ->options(CustomerMessage::SENDER_OPTIONS)
+                            ->options(\App\Support\Admin\FilamentLocalization::options(CustomerMessage::SENDER_OPTIONS))
                             ->colors([
                                 'client' => 'warning',
                                 'department' => 'info',

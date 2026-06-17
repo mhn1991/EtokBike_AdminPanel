@@ -16,9 +16,9 @@ class OrdersByStatusChart extends ChartWidget
         'xl' => 1,
     ];
 
-    protected ?string $heading = 'Order status mix';
+    protected ?string $heading = 'ترکیب وضعیت سفارش‌ها';
 
-    protected ?string $description = 'Live distribution of the order queue.';
+    protected ?string $description = 'توزیع زنده صف سفارش‌ها.';
 
     protected ?string $maxHeight = '240px';
 
@@ -63,7 +63,7 @@ class OrdersByStatusChart extends ChartWidget
                 ],
             ],
             'labels' => collect($statuses)
-                ->map(fn (string $status): string => Order::STATUS_OPTIONS[$status])
+                ->map(fn (string $status): string => __(Order::STATUS_OPTIONS[$status]))
                 ->all(),
         ];
     }

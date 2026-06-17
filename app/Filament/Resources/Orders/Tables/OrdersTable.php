@@ -36,7 +36,7 @@ class OrdersTable
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('status')
                     ->badge()
-                    ->formatStateUsing(fn (string $state): string => Order::STATUS_OPTIONS[$state] ?? $state)
+                    ->formatStateUsing(fn (string $state): string => __(Order::STATUS_OPTIONS[$state] ?? $state))
                     ->color(fn (string $state): string => match ($state) {
                         'pending' => 'warning',
                         'confirmed', 'processing' => 'info',
@@ -49,7 +49,7 @@ class OrdersTable
                 TextColumn::make('payment_status')
                     ->label('Payment')
                     ->badge()
-                    ->formatStateUsing(fn (string $state): string => Order::PAYMENT_STATUS_OPTIONS[$state] ?? $state)
+                    ->formatStateUsing(fn (string $state): string => __(Order::PAYMENT_STATUS_OPTIONS[$state] ?? $state))
                     ->color(fn (string $state): string => match ($state) {
                         'paid' => 'success',
                         'failed', 'refunded' => 'danger',
@@ -59,7 +59,7 @@ class OrdersTable
                     ->sortable(),
                 TextColumn::make('fulfillment_method')
                     ->label('Fulfilment')
-                    ->formatStateUsing(fn (string $state): string => Order::FULFILLMENT_METHOD_OPTIONS[$state] ?? $state)
+                    ->formatStateUsing(fn (string $state): string => __(Order::FULFILLMENT_METHOD_OPTIONS[$state] ?? $state))
                     ->visibleFrom('lg')
                     ->toggleable()
                     ->sortable(),
@@ -83,15 +83,15 @@ class OrdersTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->emptyStateIcon(Heroicon::OutlinedShoppingCart)
-            ->emptyStateHeading('No orders yet')
-            ->emptyStateDescription('Orders placed from the mobile app will appear here for fulfilment.')
+            ->emptyStateHeading(__('No orders yet'))
+            ->emptyStateDescription(__('Orders placed from the mobile app will appear here for fulfilment.'))
             ->filters([
                 SelectFilter::make('status')
-                    ->options(Order::STATUS_OPTIONS),
+                    ->options(\App\Support\Admin\FilamentLocalization::options(Order::STATUS_OPTIONS)),
                 SelectFilter::make('payment_status')
-                    ->options(Order::PAYMENT_STATUS_OPTIONS),
+                    ->options(\App\Support\Admin\FilamentLocalization::options(Order::PAYMENT_STATUS_OPTIONS)),
                 SelectFilter::make('fulfillment_method')
-                    ->options(Order::FULFILLMENT_METHOD_OPTIONS),
+                    ->options(\App\Support\Admin\FilamentLocalization::options(Order::FULFILLMENT_METHOD_OPTIONS)),
             ])
             ->defaultSort('placed_at', 'desc')
             ->recordActions(ActionGroup::make([
@@ -104,35 +104,35 @@ class OrdersTable
                     ->color('gray')
                     ->visible(fn (Order $record): bool => $record->user_id !== auth()->id())
                     ->action(fn (Order $record) => $record->update(['user_id' => auth()->id()]))
-                    ->successNotificationTitle('Order assigned to you'),
+                    ->successNotificationTitle(__('Order assigned to you')),
                 Action::make('markPaid')
                     ->label('Mark paid')
                     ->icon(Heroicon::CurrencyDollar)
                     ->color('success')
                     ->visible(fn (Order $record): bool => $record->payment_status !== 'paid')
                     ->action(fn (Order $record) => $record->update(['payment_status' => 'paid']))
-                    ->successNotificationTitle('Order marked paid'),
+                    ->successNotificationTitle(__('Order marked paid')),
                 Action::make('confirm')
                     ->label('Confirm order')
                     ->icon(Heroicon::CheckCircle)
                     ->color('info')
                     ->visible(fn (Order $record): bool => $record->status === 'pending')
                     ->action(fn (Order $record) => $record->update(['status' => 'confirmed']))
-                    ->successNotificationTitle('Order confirmed'),
+                    ->successNotificationTitle(__('Order confirmed')),
                 Action::make('markReady')
                     ->label('Mark ready')
                     ->icon(Heroicon::ArchiveBox)
                     ->color('primary')
                     ->visible(fn (Order $record): bool => in_array($record->status, ['confirmed', 'processing'], true))
                     ->action(fn (Order $record) => $record->update(['status' => 'ready']))
-                    ->successNotificationTitle('Order marked ready'),
+                    ->successNotificationTitle(__('Order marked ready')),
                 Action::make('complete')
                     ->label('Complete')
                     ->icon(Heroicon::CheckBadge)
                     ->color('success')
                     ->visible(fn (Order $record): bool => ! in_array($record->status, ['completed', 'cancelled'], true))
                     ->action(fn (Order $record) => $record->update(['status' => 'completed']))
-                    ->successNotificationTitle('Order completed'),
+                    ->successNotificationTitle(__('Order completed')),
                 Action::make('generateReceipt')
                     ->label('Generate receipt')
                     ->icon(Heroicon::DocumentCheck)

@@ -26,10 +26,10 @@ class MobileAnalyticsEventsTable
                 TextColumn::make('screen_id')
                     ->label('Screen')
                     ->badge()
-                    ->placeholder('-')
+                    ->placeholder(__('-'))
                     ->searchable(),
                 TextColumn::make('action')
-                    ->placeholder('-')
+                    ->placeholder(__('-'))
                     ->searchable(),
                 TextColumn::make('device_id')
                     ->label('Device')
@@ -42,11 +42,11 @@ class MobileAnalyticsEventsTable
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('platform')
                     ->badge()
-                    ->placeholder('-')
+                    ->placeholder(__('-'))
                     ->searchable(),
                 TextColumn::make('app_version')
                     ->label('App version')
-                    ->placeholder('-')
+                    ->placeholder(__('-'))
                     ->searchable(),
                 TextColumn::make('occurred_at')
                     ->dateTime()
@@ -60,12 +60,12 @@ class MobileAnalyticsEventsTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->emptyStateIcon(Heroicon::OutlinedChartBar)
-            ->emptyStateHeading('No app analytics logs yet')
-            ->emptyStateDescription('Telemetry events from the Android app will appear here.')
+            ->emptyStateHeading(__('No app analytics logs yet'))
+            ->emptyStateDescription(__('Telemetry events from the Android app will appear here.'))
             ->filters([
                 SelectFilter::make('event_name')
                     ->label('Event')
-                    ->options(MobileAnalyticsEvent::EVENT_OPTIONS),
+                    ->options(\App\Support\Admin\FilamentLocalization::options(MobileAnalyticsEvent::EVENT_OPTIONS)),
                 SelectFilter::make('screen_id')
                     ->label('Screen')
                     ->options(fn (): array => MobileAnalyticsEvent::query()

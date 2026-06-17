@@ -15,9 +15,9 @@ class MobileActivityTrendChart extends ChartWidget
 
     protected int|string|array $columnSpan = 'full';
 
-    protected ?string $heading = 'Mobile usage trend';
+    protected ?string $heading = 'روند استفاده از موبایل';
 
-    protected ?string $description = 'Daily active devices and total phone events over the last two weeks.';
+    protected ?string $description = 'دستگاه‌های فعال روزانه و مجموع رویدادهای موبایل در دو هفته گذشته.';
 
     protected ?string $maxHeight = '240px';
 
@@ -43,21 +43,21 @@ class MobileActivityTrendChart extends ChartWidget
         return [
             'datasets' => [
                 [
-                    'label' => 'Active devices',
+                    'label' => __('Active devices'),
                     'data' => DashboardMetrics::distinctCountByDay(MobileAnalyticsEvent::class, 'device_id', $days, column: 'occurred_at'),
                     'borderColor' => '#16a34a',
                     'backgroundColor' => 'rgba(22, 163, 74, 0.12)',
                     'tension' => 0.35,
                 ],
                 [
-                    'label' => 'Events',
+                    'label' => __('Events'),
                     'data' => DashboardMetrics::countByDay(MobileAnalyticsEvent::class, $days, column: 'occurred_at'),
                     'borderColor' => '#2563eb',
                     'backgroundColor' => 'rgba(37, 99, 235, 0.12)',
                     'tension' => 0.35,
                 ],
                 [
-                    'label' => 'Errors',
+                    'label' => __('Errors'),
                     'data' => DashboardMetrics::countByDay(
                         MobileAnalyticsEvent::class,
                         $days,

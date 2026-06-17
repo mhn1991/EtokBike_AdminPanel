@@ -17,7 +17,7 @@ class ProgramBookingForm
         return $schema
             ->components([
                 Section::make('Program')
-                    ->description('The ride, class, or event the customer wants to attend.')
+                    ->description(__('The ride, class, or event the customer wants to attend.'))
                     ->columns(3)
                     ->schema([
                         Select::make('program_id')
@@ -33,7 +33,7 @@ class ProgramBookingForm
                             ->minValue(1)
                             ->default(1),
                         ToggleButtons::make('status')
-                            ->options(ProgramBooking::STATUS_OPTIONS)
+                            ->options(\App\Support\Admin\FilamentLocalization::options(ProgramBooking::STATUS_OPTIONS))
                             ->colors([
                                 'pending' => 'warning',
                                 'confirmed' => 'info',
@@ -46,7 +46,7 @@ class ProgramBookingForm
                             ->default('pending'),
                     ]),
                 Section::make('Customer')
-                    ->description('Contact details used to confirm attendance and meeting point.')
+                    ->description(__('Contact details used to confirm attendance and meeting point.'))
                     ->columns(3)
                     ->schema([
                         Select::make('user_id')

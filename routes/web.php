@@ -12,7 +12,40 @@ use App\Http\Controllers\Storefront\SeoController;
 use App\Http\Controllers\Storefront\SeoRedirectController;
 use App\Http\Controllers\Storefront\ServiceController;
 use App\Http\Controllers\Storefront\ShopController;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+
+Route::get('{assetPath}', function (Request $request, string $assetPath): BinaryFileResponse {
+    abort_unless(str_contains($request->getBaseUrl(), 'index.php'), 404);
+
+    $publicPath = realpath(public_path());
+    $filePath = realpath(public_path($assetPath));
+
+    abort_if($publicPath === false || $filePath === false, 404);
+    abort_unless(str_starts_with($filePath, $publicPath.DIRECTORY_SEPARATOR), 404);
+    abort_unless(is_file($filePath), 404);
+
+    $contentType = match (strtolower(pathinfo($filePath, PATHINFO_EXTENSION))) {
+        'css' => 'text/css; charset=UTF-8',
+        'js' => 'application/javascript; charset=UTF-8',
+        'json' => 'application/json; charset=UTF-8',
+        'png' => 'image/png',
+        'jpg', 'jpeg' => 'image/jpeg',
+        'svg' => 'image/svg+xml',
+        'webp' => 'image/webp',
+        'ico' => 'image/x-icon',
+        'woff2' => 'font/woff2',
+        default => 'application/octet-stream',
+    };
+
+    return response()
+        ->file($filePath, ['Content-Type' => $contentType])
+        ->setMaxAge(604800)
+        ->setPublic();
+})
+    ->where('assetPath', '(?:build|css|fonts|images|js)/.*|favicon\.ico')
+    ->name('public-assets.indexed');
 
 Route::middleware('auth')->prefix('admin')->group(function (): void {
     Route::get('receipts/{receipt}/print', ReceiptPrintController::class)

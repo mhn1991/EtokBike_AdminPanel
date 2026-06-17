@@ -20,15 +20,15 @@ class ServiceCategoryResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedTag;
 
-    protected static ?string $navigationLabel = 'Service categories';
+    protected static ?string $navigationLabel = 'دسته‌های خدمات';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Services';
+    protected static string|\UnitEnum|null $navigationGroup = 'خدمات';
 
     protected static ?int $navigationSort = 3;
 
-    protected static ?string $modelLabel = 'service category';
+    protected static ?string $modelLabel = 'دسته خدمات';
 
-    protected static ?string $pluralModelLabel = 'service categories';
+    protected static ?string $pluralModelLabel = 'دسته‌های خدمات';
 
     protected static ?string $recordTitleAttribute = 'label';
 

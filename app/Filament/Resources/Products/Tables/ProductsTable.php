@@ -42,7 +42,7 @@ class ProductsTable
                     ->sortable(),
                 TextColumn::make('availability')
                     ->badge()
-                    ->formatStateUsing(fn (string $state): string => Product::AVAILABILITY_OPTIONS[$state] ?? $state)
+                    ->formatStateUsing(fn (string $state): string => __(Product::AVAILABILITY_OPTIONS[$state] ?? $state))
                     ->color(fn (string $state): string => match ($state) {
                         'in_stock' => 'success',
                         'low_stock' => 'warning',
@@ -69,7 +69,7 @@ class ProductsTable
                     ->sortable(),
                 TextColumn::make('warehouse_location')
                     ->label('Location')
-                    ->placeholder('-')
+                    ->placeholder(__('-'))
                     ->visibleFrom('xl')
                     ->searchable(),
                 TextColumn::make('stock_label')
@@ -100,14 +100,14 @@ class ProductsTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->emptyStateIcon(Heroicon::OutlinedShoppingBag)
-            ->emptyStateHeading('No products yet')
-            ->emptyStateDescription('Create products to publish them into the mobile shop.')
+            ->emptyStateHeading(__('No products yet'))
+            ->emptyStateDescription(__('Create products to publish them into the mobile shop.'))
             ->filters([
                 SelectFilter::make('product_category_id')
                     ->label('Category')
                     ->relationship('category', 'label'),
                 SelectFilter::make('availability')
-                    ->options(Product::AVAILABILITY_OPTIONS),
+                    ->options(\App\Support\Admin\FilamentLocalization::options(Product::AVAILABILITY_OPTIONS)),
                 TernaryFilter::make('is_featured')
                     ->label('Featured'),
                 TernaryFilter::make('is_active')
@@ -131,7 +131,7 @@ class ProductsTable
                             ->default(1),
                         Textarea::make('reason')
                             ->rows(3)
-                            ->placeholder('Supplier delivery, return, correction...')
+                            ->placeholder(__('Supplier delivery, return, correction...'))
                             ->maxLength(255),
                     ])
                     ->action(fn (Product $record, array $data) => app(InventoryManager::class)->adjust(
@@ -141,7 +141,7 @@ class ProductsTable
                         reason: $data['reason'] ?? null,
                         userId: auth()->id(),
                     ))
-                    ->successNotificationTitle('Stock added'),
+                    ->successNotificationTitle(__('Stock added')),
                 Action::make('stockOut')
                     ->label('Remove stock')
                     ->icon(Heroicon::MinusCircle)
@@ -155,7 +155,7 @@ class ProductsTable
                             ->default(1),
                         Textarea::make('reason')
                             ->rows(3)
-                            ->placeholder('Damaged, lost, internal use, correction...')
+                            ->placeholder(__('Damaged, lost, internal use, correction...'))
                             ->maxLength(255),
                     ])
                     ->action(fn (Product $record, array $data) => app(InventoryManager::class)->adjust(
@@ -165,21 +165,21 @@ class ProductsTable
                         reason: $data['reason'] ?? null,
                         userId: auth()->id(),
                     ))
-                    ->successNotificationTitle('Stock removed'),
+                    ->successNotificationTitle(__('Stock removed')),
                 Action::make('feature')
                     ->label('Feature in app')
                     ->icon(Heroicon::Fire)
                     ->color('warning')
                     ->visible(fn (Product $record): bool => ! $record->is_featured)
                     ->action(fn (Product $record) => $record->update(['is_featured' => true]))
-                    ->successNotificationTitle('Product marked featured'),
+                    ->successNotificationTitle(__('Product marked featured')),
                 Action::make('unfeature')
                     ->label('Remove featured')
                     ->icon(Heroicon::NoSymbol)
                     ->color('gray')
                     ->visible(fn (Product $record): bool => (bool) $record->is_featured)
                     ->action(fn (Product $record) => $record->update(['is_featured' => false]))
-                    ->successNotificationTitle('Product removed from featured'),
+                    ->successNotificationTitle(__('Product removed from featured')),
                 Action::make('hideFromApp')
                     ->label('Hide from app')
                     ->icon(Heroicon::EyeSlash)
@@ -187,14 +187,14 @@ class ProductsTable
                     ->visible(fn (Product $record): bool => (bool) $record->is_active)
                     ->requiresConfirmation()
                     ->action(fn (Product $record) => $record->update(['is_active' => false]))
-                    ->successNotificationTitle('Product hidden from the app'),
+                    ->successNotificationTitle(__('Product hidden from the app')),
                 Action::make('showInApp')
                     ->label('Show in app')
                     ->icon(Heroicon::Eye)
                     ->color('success')
                     ->visible(fn (Product $record): bool => ! $record->is_active)
                     ->action(fn (Product $record) => $record->update(['is_active' => true]))
-                    ->successNotificationTitle('Product visible in the app'),
+                    ->successNotificationTitle(__('Product visible in the app')),
             ])
                 ->label('Actions')
                 ->icon(Heroicon::EllipsisHorizontal)

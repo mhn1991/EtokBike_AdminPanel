@@ -25,9 +25,9 @@ class DeliveryZoneResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedTruck;
 
-    protected static ?string $navigationLabel = 'Delivery zones';
+    protected static ?string $navigationLabel = 'مناطق ارسال';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Shipping';
+    protected static string|\UnitEnum|null $navigationGroup = 'ارسال';
 
     protected static ?int $navigationSort = 1;
 
@@ -38,7 +38,7 @@ class DeliveryZoneResource extends Resource
         return $schema
             ->components([
                 Section::make('Delivery zone')
-                    ->description('Delivery fee and timing rules for a city, region, or service area.')
+                    ->description(__('Delivery fee and timing rules for a city, region, or service area.'))
                     ->columns(3)
                     ->schema([
                         TextInput::make('name')
@@ -104,8 +104,8 @@ class DeliveryZoneResource extends Resource
                     ->boolean(),
             ])
             ->emptyStateIcon(Heroicon::OutlinedTruck)
-            ->emptyStateHeading('No delivery zones yet')
-            ->emptyStateDescription('Create delivery zones for shipping fees and estimated delivery timing.')
+            ->emptyStateHeading(__('No delivery zones yet'))
+            ->emptyStateDescription(__('Create delivery zones for shipping fees and estimated delivery timing.'))
             ->defaultSort('name')
             ->recordActions([
                 EditAction::make(),

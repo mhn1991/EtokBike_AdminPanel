@@ -23,15 +23,15 @@ class ProgramResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCalendarDays;
 
-    protected static ?string $navigationLabel = 'Programs';
+    protected static ?string $navigationLabel = 'برنامه‌ها';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Programs';
+    protected static string|\UnitEnum|null $navigationGroup = 'برنامه‌ها';
 
     protected static ?int $navigationSort = 1;
 
-    protected static ?string $modelLabel = 'program';
+    protected static ?string $modelLabel = 'برنامه';
 
-    protected static ?string $pluralModelLabel = 'programs';
+    protected static ?string $pluralModelLabel = 'برنامه‌ها';
 
     protected static ?string $recordTitleAttribute = 'title';
 

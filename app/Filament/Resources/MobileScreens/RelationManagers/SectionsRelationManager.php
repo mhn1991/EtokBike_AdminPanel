@@ -50,7 +50,7 @@ class SectionsRelationManager extends RelationManager
                             ->required()
                             ->maxLength(255),
                         Select::make('type')
-                            ->options(MobileScreenSection::TYPE_OPTIONS)
+                            ->options(\App\Support\Admin\FilamentLocalization::options(MobileScreenSection::TYPE_OPTIONS))
                             ->native(false)
                             ->searchable()
                             ->live()
@@ -66,7 +66,7 @@ class SectionsRelationManager extends RelationManager
                             ->default(true),
                     ]),
                 Section::make('Hero content')
-                    ->description('Structured fields for the hero renderer.')
+                    ->description(__('Structured fields for the hero renderer.'))
                     ->columns(3)
                     ->visible(fn (Get $get): bool => $get('type') === 'hero')
                     ->schema([
@@ -108,7 +108,7 @@ class SectionsRelationManager extends RelationManager
                             ->columnSpanFull(),
                     ]),
                 Section::make('Card content')
-                    ->description('Structured cards for shortcut grids and business information sections.')
+                    ->description(__('Structured cards for shortcut grids and business information sections.'))
                     ->columns(2)
                     ->visible(fn (Get $get): bool => in_array($get('type'), ['category_grid', 'business_info'], true))
                     ->schema([
@@ -127,7 +127,7 @@ class SectionsRelationManager extends RelationManager
                                     ->required(),
                                 TextInput::make('subtitle'),
                                 TextInput::make('target')
-                                    ->helperText('Mobile screen id such as shop, services, messages, or account.'),
+                                    ->helperText(__('Mobile screen id such as shop, services, messages, or account.')),
                                 Textarea::make('description')
                                     ->rows(2)
                                     ->columnSpanFull(),
@@ -137,7 +137,7 @@ class SectionsRelationManager extends RelationManager
                             ->columnSpanFull(),
                     ]),
                 Section::make('Service booking form')
-                    ->description('Labels and option lists used by the mobile booking form.')
+                    ->description(__('Labels and option lists used by the mobile booking form.'))
                     ->columns(3)
                     ->visible(fn (Get $get): bool => $get('type') === 'service_booking_form')
                     ->schema([
@@ -167,7 +167,7 @@ class SectionsRelationManager extends RelationManager
                             ->columnSpanFull(),
                     ]),
                 Section::make('Basic copy')
-                    ->description('Simple copy blocks that do not need custom JSON editing.')
+                    ->description(__('Simple copy blocks that do not need custom JSON editing.'))
                     ->columns(2)
                     ->visible(fn (Get $get): bool => in_array($get('type'), ['profile_summary', 'checkout_note', 'cart_summary'], true))
                     ->schema([
@@ -181,7 +181,7 @@ class SectionsRelationManager extends RelationManager
                             ->columnSpanFull(),
                     ]),
                 Section::make('Raw data payload')
-                    ->description('Use raw JSON only for complex section types that do not yet have structured fields.')
+                    ->description(__('Use raw JSON only for complex section types that do not yet have structured fields.'))
                     ->visible(fn (Get $get): bool => ! self::hasStructuredDataEditor((string) $get('type')))
                     ->schema([
                         CodeEditor::make('data_json')
@@ -191,10 +191,10 @@ class SectionsRelationManager extends RelationManager
                             ->dehydrated(fn (Get $get): bool => ! self::hasStructuredDataEditor((string) $get('type')))
                             ->rules(['json'])
                             ->columnSpanFull()
-                            ->helperText('This is the section data consumed by the Android renderer.'),
+                            ->helperText(__('This is the section data consumed by the Android renderer.')),
                     ]),
                 Section::make('Advanced layout and style')
-                    ->description('Renderer-specific JSON for layout and styling. Most routine copy edits do not need this.')
+                    ->description(__('Renderer-specific JSON for layout and styling. Most routine copy edits do not need this.'))
                     ->collapsible()
                     ->collapsed()
                     ->schema([

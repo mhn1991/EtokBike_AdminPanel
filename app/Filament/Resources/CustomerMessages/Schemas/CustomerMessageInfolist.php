@@ -21,16 +21,16 @@ class CustomerMessageInfolist
                             ->label('Department'),
                         TextEntry::make('user.name')
                             ->label('User')
-                            ->placeholder('-'),
+                            ->placeholder(__('-')),
                         TextEntry::make('sender')
                             ->badge()
-                            ->formatStateUsing(fn (string $state): string => CustomerMessage::SENDER_OPTIONS[$state] ?? $state)
+                            ->formatStateUsing(fn (string $state): string => __(CustomerMessage::SENDER_OPTIONS[$state] ?? $state))
                             ->color(fn (string $state): string => $state === 'client' ? 'warning' : 'info'),
                         IconEntry::make('is_unread')
                             ->label('Needs response')
                             ->boolean(),
                         TextEntry::make('time_label')
-                            ->placeholder('-'),
+                            ->placeholder(__('-')),
                     ]),
                 Section::make('Message')
                     ->schema([
@@ -43,10 +43,10 @@ class CustomerMessageInfolist
                     ->schema([
                         TextEntry::make('created_at')
                             ->dateTime()
-                            ->placeholder('-'),
+                            ->placeholder(__('-')),
                         TextEntry::make('updated_at')
                             ->dateTime()
-                            ->placeholder('-'),
+                            ->placeholder(__('-')),
                     ]),
             ]);
     }

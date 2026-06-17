@@ -23,15 +23,15 @@ class MobileScreenResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedDevicePhoneMobile;
 
-    protected static ?string $navigationLabel = 'App pages';
+    protected static ?string $navigationLabel = 'صفحات اپ';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Mobile App Content';
+    protected static string|\UnitEnum|null $navigationGroup = 'محتوای اپ موبایل';
 
     protected static ?int $navigationSort = 1;
 
-    protected static ?string $modelLabel = 'app page';
+    protected static ?string $modelLabel = 'صفحه اپ';
 
-    protected static ?string $pluralModelLabel = 'app pages';
+    protected static ?string $pluralModelLabel = 'صفحات اپ';
 
     protected static ?string $recordTitleAttribute = 'title';
 

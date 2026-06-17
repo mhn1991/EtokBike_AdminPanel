@@ -23,15 +23,15 @@ class OrderResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedShoppingCart;
 
-    protected static ?string $navigationLabel = 'Orders';
+    protected static ?string $navigationLabel = 'سفارش‌ها';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Orders';
+    protected static string|\UnitEnum|null $navigationGroup = 'سفارش‌ها';
 
     protected static ?int $navigationSort = 1;
 
-    protected static ?string $modelLabel = 'order';
+    protected static ?string $modelLabel = 'سفارش';
 
-    protected static ?string $pluralModelLabel = 'orders';
+    protected static ?string $pluralModelLabel = 'سفارش‌ها';
 
     protected static ?string $recordTitleAttribute = 'order_number';
 

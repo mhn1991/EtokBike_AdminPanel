@@ -32,9 +32,9 @@ class ReturnRequestResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedClipboardDocumentCheck;
 
-    protected static ?string $navigationLabel = 'Returns';
+    protected static ?string $navigationLabel = 'مرجوعی‌ها';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Orders';
+    protected static string|\UnitEnum|null $navigationGroup = 'سفارش‌ها';
 
     protected static ?int $navigationSort = 4;
 
@@ -45,11 +45,11 @@ class ReturnRequestResource extends Resource
         return $schema
             ->components([
                 Section::make('Return')
-                    ->description('Customer return and refund workflow.')
+                    ->description(__('Customer return and refund workflow.'))
                     ->columns(3)
                     ->schema([
                         TextInput::make('return_number')
-                            ->helperText('Leave blank to auto-generate.')
+                            ->helperText(__('Leave blank to auto-generate.'))
                             ->maxLength(255),
                         Select::make('order_id')
                             ->label('Order')
@@ -60,7 +60,7 @@ class ReturnRequestResource extends Resource
                         TextInput::make('reason')
                             ->maxLength(255),
                         ToggleButtons::make('status')
-                            ->options(ReturnRequest::STATUS_OPTIONS)
+                            ->options(\App\Support\Admin\FilamentLocalization::options(ReturnRequest::STATUS_OPTIONS))
                             ->colors([
                                 'requested' => 'warning',
                                 'approved' => 'info',
@@ -73,7 +73,7 @@ class ReturnRequestResource extends Resource
                             ->default('requested')
                             ->columnSpan(2),
                         ToggleButtons::make('refund_status')
-                            ->options(ReturnRequest::REFUND_STATUS_OPTIONS)
+                            ->options(\App\Support\Admin\FilamentLocalization::options(ReturnRequest::REFUND_STATUS_OPTIONS))
                             ->colors([
                                 'none' => 'gray',
                                 'pending' => 'warning',
@@ -131,7 +131,7 @@ class ReturnRequestResource extends Resource
                     ->wrap(),
                 TextColumn::make('status')
                     ->badge()
-                    ->formatStateUsing(fn (string $state): string => ReturnRequest::STATUS_OPTIONS[$state] ?? $state)
+                    ->formatStateUsing(fn (string $state): string => __(ReturnRequest::STATUS_OPTIONS[$state] ?? $state))
                     ->color(fn (string $state): string => match ($state) {
                         'approved' => 'info',
                         'received' => 'primary',
@@ -143,7 +143,7 @@ class ReturnRequestResource extends Resource
                 TextColumn::make('refund_status')
                     ->label('Refund')
                     ->badge()
-                    ->formatStateUsing(fn (string $state): string => ReturnRequest::REFUND_STATUS_OPTIONS[$state] ?? $state)
+                    ->formatStateUsing(fn (string $state): string => __(ReturnRequest::REFUND_STATUS_OPTIONS[$state] ?? $state))
                     ->color(fn (string $state): string => match ($state) {
                         'paid' => 'success',
                         'failed' => 'danger',
@@ -158,18 +158,18 @@ class ReturnRequestResource extends Resource
                     ->sortable(),
                 TextColumn::make('requested_at')
                     ->dateTime()
-                    ->placeholder('-')
+                    ->placeholder(__('-'))
                     ->visibleFrom('xl')
                     ->sortable(),
             ])
             ->emptyStateIcon(Heroicon::OutlinedClipboardDocumentCheck)
-            ->emptyStateHeading('No returns yet')
-            ->emptyStateDescription('Create return requests for refunds, inspections, and restocking decisions.')
+            ->emptyStateHeading(__('No returns yet'))
+            ->emptyStateDescription(__('Create return requests for refunds, inspections, and restocking decisions.'))
             ->filters([
                 SelectFilter::make('status')
-                    ->options(ReturnRequest::STATUS_OPTIONS),
+                    ->options(\App\Support\Admin\FilamentLocalization::options(ReturnRequest::STATUS_OPTIONS)),
                 SelectFilter::make('refund_status')
-                    ->options(ReturnRequest::REFUND_STATUS_OPTIONS),
+                    ->options(\App\Support\Admin\FilamentLocalization::options(ReturnRequest::REFUND_STATUS_OPTIONS)),
             ])
             ->defaultSort('requested_at', 'desc')
             ->recordActions(ActionGroup::make([

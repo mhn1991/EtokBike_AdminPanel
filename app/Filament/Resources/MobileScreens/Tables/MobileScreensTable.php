@@ -41,8 +41,8 @@ class MobileScreensTable
                     ->sortable(),
             ])
             ->emptyStateIcon(Heroicon::OutlinedDevicePhoneMobile)
-            ->emptyStateHeading('No app pages yet')
-            ->emptyStateDescription('Create app pages to override static mobile screen payloads.')
+            ->emptyStateHeading(__('No app pages yet'))
+            ->emptyStateDescription(__('Create app pages to override static mobile screen payloads.'))
             ->filters([
                 TernaryFilter::make('hide_title')
                     ->label('Hide title'),

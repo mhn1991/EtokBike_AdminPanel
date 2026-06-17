@@ -30,7 +30,7 @@ class ContentPageResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedDocumentText;
 
-    protected static ?string $navigationLabel = 'Content pages';
+    protected static ?string $navigationLabel = 'صفحات محتوا';
 
     protected static string|\UnitEnum|null $navigationGroup = 'SEO';
 
@@ -42,7 +42,7 @@ class ContentPageResource extends Resource
     {
         return $schema->components([
             Section::make('Page')
-                ->description('Create SEO-managed storefront content pages.')
+                ->description(__('Create SEO-managed storefront content pages.'))
                 ->columns(3)
                 ->schema([
                     TextInput::make('title')
@@ -66,7 +66,7 @@ class ContentPageResource extends Resource
                     TextInput::make('seo_title')->maxLength(255)->columnSpanFull(),
                     Textarea::make('seo_description')->rows(3)->maxLength(500)->columnSpanFull(),
                     TextInput::make('canonical_url')->maxLength(255),
-                    Select::make('robots')->options(ContentPage::ROBOTS_OPTIONS)->native(false)->required()->default('index,follow'),
+                    Select::make('robots')->options(\App\Support\Admin\FilamentLocalization::options(ContentPage::ROBOTS_OPTIONS))->native(false)->required()->default('index,follow'),
                     Toggle::make('include_in_sitemap')->default(true),
                     FileUpload::make('og_image')
                         ->label('Social image')
@@ -80,7 +80,7 @@ class ContentPageResource extends Resource
                     TextInput::make('og_title')->maxLength(255),
                     Textarea::make('og_description')->rows(3)->maxLength(500),
                     TextInput::make('sitemap_priority')->numeric()->minValue(0)->maxValue(1)->default(0.6),
-                    Select::make('sitemap_change_frequency')->options(ContentPage::CHANGE_FREQUENCY_OPTIONS)->native(false)->required()->default('monthly'),
+                    Select::make('sitemap_change_frequency')->options(\App\Support\Admin\FilamentLocalization::options(ContentPage::CHANGE_FREQUENCY_OPTIONS))->native(false)->required()->default('monthly'),
                 ]),
         ]);
     }
@@ -98,8 +98,8 @@ class ContentPageResource extends Resource
                 TextColumn::make('updated_at')->dateTime()->visibleFrom('xl')->sortable(),
             ])
             ->emptyStateIcon(Heroicon::OutlinedDocumentText)
-            ->emptyStateHeading('No content pages yet')
-            ->emptyStateDescription('Create policy, FAQ, about, and landing pages with SEO metadata.')
+            ->emptyStateHeading(__('No content pages yet'))
+            ->emptyStateDescription(__('Create policy, FAQ, about, and landing pages with SEO metadata.'))
             ->defaultSort('sort_order')
             ->recordActions([EditAction::make()])
             ->toolbarActions([]);

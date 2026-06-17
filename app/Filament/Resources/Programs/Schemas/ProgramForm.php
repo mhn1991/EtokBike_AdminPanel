@@ -25,7 +25,7 @@ class ProgramForm
         return $schema
             ->components([
                 Section::make('Program')
-                    ->description('Event listing information and publication status.')
+                    ->description(__('Event listing information and publication status.'))
                     ->columns(3)
                     ->schema([
                         Select::make('program_category_id')
@@ -37,10 +37,10 @@ class ProgramForm
                             ->required(),
                         TextInput::make('slug')
                             ->required()
-                            ->helperText('Stable program ID used by the mobile app.')
+                            ->helperText(__('Stable program ID used by the mobile app.'))
                             ->maxLength(255),
                         ToggleButtons::make('program_state')
-                            ->options(Program::STATE_OPTIONS)
+                            ->options(\App\Support\Admin\FilamentLocalization::options(Program::STATE_OPTIONS))
                             ->colors([
                                 'future' => 'success',
                                 'finished' => 'gray',
@@ -80,7 +80,7 @@ class ProgramForm
                             ->default(true),
                     ]),
                 Section::make('App card')
-                    ->description('Visual treatment for program cards in the mobile app.')
+                    ->description(__('Visual treatment for program cards in the mobile app.'))
                     ->columns(3)
                     ->schema([
                         TextInput::make('thumbnail_text')
@@ -103,7 +103,7 @@ class ProgramForm
                             ->maxSize(4096),
                     ]),
                 Section::make('Detail page')
-                    ->description('Copy, tags, and labels used after a customer opens the program.')
+                    ->description(__('Copy, tags, and labels used after a customer opens the program.'))
                     ->schema([
                         TextInput::make('ad_title')
                             ->maxLength(255),
@@ -112,20 +112,20 @@ class ProgramForm
                             ->columnSpanFull(),
                         TagsInput::make('details')
                             ->separator(',')
-                            ->helperText('Add short detail chips such as route length, difficulty, or meeting point.')
+                            ->helperText(__('Add short detail chips such as route length, difficulty, or meeting point.'))
                             ->columnSpanFull(),
                         TextInput::make('book_label')
-                            ->helperText('Only used for future programs.')
+                            ->helperText(__('Only used for future programs.'))
                             ->maxLength(255),
                         TextInput::make('view_label')
-                            ->helperText('Only used for finished programs.')
+                            ->helperText(__('Only used for finished programs.'))
                             ->maxLength(255),
                         TextInput::make('gallery_title')
-                            ->helperText('Only used for finished programs.')
+                            ->helperText(__('Only used for finished programs.'))
                             ->maxLength(255),
                     ]),
                 Section::make('Capacity')
-                    ->description('Optional availability numbers shown to staff.')
+                    ->description(__('Optional availability numbers shown to staff.'))
                     ->columns(2)
                     ->schema([
                         TextInput::make('capacity')

@@ -13,13 +13,13 @@ class SeoAudit extends Page
 {
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedDocumentMagnifyingGlass;
 
-    protected static ?string $navigationLabel = 'SEO audit';
+    protected static ?string $navigationLabel = 'ممیزی SEO';
 
     protected static string|\UnitEnum|null $navigationGroup = 'SEO';
 
     protected static ?int $navigationSort = 4;
 
-    protected static ?string $title = 'SEO audit';
+    protected static ?string $title = 'ممیزی SEO';
 
     protected string $view = 'filament.pages.seo-audit';
 

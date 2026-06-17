@@ -20,12 +20,12 @@ class ProgramBookingInfolist
                             ->label('Program'),
                         TextEntry::make('program.date_label')
                             ->label('Date')
-                            ->placeholder('-'),
+                            ->placeholder(__('-')),
                         TextEntry::make('attendees')
                             ->formatStateUsing(fn (?int $state): string => number_format($state ?? 0)),
                         TextEntry::make('status')
                             ->badge()
-                            ->formatStateUsing(fn (string $state): string => ProgramBooking::STATUS_OPTIONS[$state] ?? $state)
+                            ->formatStateUsing(fn (string $state): string => __(ProgramBooking::STATUS_OPTIONS[$state] ?? $state))
                             ->color(fn (string $state): string => match ($state) {
                                 'pending' => 'warning',
                                 'confirmed' => 'info',
@@ -40,20 +40,20 @@ class ProgramBookingInfolist
                     ->schema([
                         TextEntry::make('user.name')
                             ->label('User')
-                            ->placeholder('-'),
+                            ->placeholder(__('-')),
                         TextEntry::make('customer_name'),
                         TextEntry::make('customer_phone')
-                            ->placeholder('-'),
+                            ->placeholder(__('-')),
                         TextEntry::make('customer_email')
-                            ->placeholder('-'),
+                            ->placeholder(__('-')),
                     ]),
                 Section::make('Notes')
                     ->schema([
                         TextEntry::make('customer_notes')
-                            ->placeholder('-')
+                            ->placeholder(__('-'))
                             ->columnSpanFull(),
                         TextEntry::make('admin_notes')
-                            ->placeholder('-')
+                            ->placeholder(__('-'))
                             ->columnSpanFull(),
                     ]),
                 Section::make('Audit')
@@ -61,10 +61,10 @@ class ProgramBookingInfolist
                     ->schema([
                         TextEntry::make('created_at')
                             ->dateTime()
-                            ->placeholder('-'),
+                            ->placeholder(__('-')),
                         TextEntry::make('updated_at')
                             ->dateTime()
-                            ->placeholder('-'),
+                            ->placeholder(__('-')),
                     ]),
             ]);
     }

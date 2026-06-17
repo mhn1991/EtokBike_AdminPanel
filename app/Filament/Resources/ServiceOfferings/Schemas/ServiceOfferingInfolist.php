@@ -26,9 +26,9 @@ class ServiceOfferingInfolist
                         TextEntry::make('title'),
                         TextEntry::make('subtitle'),
                         TextEntry::make('price_label')
-                            ->placeholder('-'),
+                            ->placeholder(__('-')),
                         TextEntry::make('description')
-                            ->placeholder('-')
+                            ->placeholder(__('-'))
                             ->columnSpanFull(),
                         IconEntry::make('is_active')
                             ->label('Visible in app')
@@ -41,17 +41,17 @@ class ServiceOfferingInfolist
                         ColorEntry::make('thumbnail_color'),
                         ImageEntry::make('image_url')
                             ->disk('public')
-                            ->placeholder('-'),
+                            ->placeholder(__('-')),
                     ]),
                 Section::make('Audit')
                     ->columns(2)
                     ->schema([
                         TextEntry::make('created_at')
                             ->dateTime()
-                            ->placeholder('-'),
+                            ->placeholder(__('-')),
                         TextEntry::make('updated_at')
                             ->dateTime()
-                            ->placeholder('-'),
+                            ->placeholder(__('-')),
                     ]),
             ]);
     }

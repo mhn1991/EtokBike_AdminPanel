@@ -19,33 +19,33 @@ class OrderInfolist
                         TextEntry::make('order_number'),
                         TextEntry::make('status')
                             ->badge()
-                            ->formatStateUsing(fn (string $state): string => Order::STATUS_OPTIONS[$state] ?? $state),
+                            ->formatStateUsing(fn (string $state): string => __(Order::STATUS_OPTIONS[$state] ?? $state)),
                         TextEntry::make('payment_status')
                             ->badge()
-                            ->formatStateUsing(fn (string $state): string => Order::PAYMENT_STATUS_OPTIONS[$state] ?? $state),
+                            ->formatStateUsing(fn (string $state): string => __(Order::PAYMENT_STATUS_OPTIONS[$state] ?? $state)),
                         TextEntry::make('fulfillment_method')
-                            ->formatStateUsing(fn (string $state): string => Order::FULFILLMENT_METHOD_OPTIONS[$state] ?? $state),
+                            ->formatStateUsing(fn (string $state): string => __(Order::FULFILLMENT_METHOD_OPTIONS[$state] ?? $state)),
                         TextEntry::make('placed_at')
                             ->dateTime()
-                            ->placeholder('-'),
+                            ->placeholder(__('-')),
                         TextEntry::make('stock_deducted_at')
                             ->label('Stock deducted')
                             ->dateTime()
-                            ->placeholder('Not deducted yet'),
+                            ->placeholder(__('Not deducted yet')),
                         TextEntry::make('user.name')
                             ->label('Linked user')
-                            ->placeholder('-'),
+                            ->placeholder(__('-')),
                     ]),
                 Section::make('Customer')
                     ->columns(3)
                     ->schema([
                         TextEntry::make('customer_name'),
                         TextEntry::make('customer_email')
-                            ->placeholder('-'),
+                            ->placeholder(__('-')),
                         TextEntry::make('customer_phone')
-                            ->placeholder('-'),
+                            ->placeholder(__('-')),
                         TextEntry::make('customer_notes')
-                            ->placeholder('-')
+                            ->placeholder(__('-'))
                             ->columnSpanFull(),
                     ]),
                 Section::make('Totals')
@@ -64,14 +64,14 @@ class OrderInfolist
                 Section::make('Admin')
                     ->schema([
                         TextEntry::make('admin_notes')
-                            ->placeholder('-')
+                            ->placeholder(__('-'))
                             ->columnSpanFull(),
                         TextEntry::make('created_at')
                             ->dateTime()
-                            ->placeholder('-'),
+                            ->placeholder(__('-')),
                         TextEntry::make('updated_at')
                             ->dateTime()
-                            ->placeholder('-'),
+                            ->placeholder(__('-')),
                     ]),
             ]);
     }

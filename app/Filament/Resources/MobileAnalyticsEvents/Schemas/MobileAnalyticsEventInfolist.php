@@ -24,12 +24,12 @@ class MobileAnalyticsEventInfolist
                             ->color(fn (?string $state): string => MobileAnalyticsEvent::eventColor($state)),
                         TextEntry::make('screen_id')
                             ->label('Screen')
-                            ->placeholder('-'),
+                            ->placeholder(__('-')),
                         TextEntry::make('action')
-                            ->placeholder('-'),
+                            ->placeholder(__('-')),
                         TextEntry::make('occurred_at')
                             ->dateTime()
-                            ->placeholder('-'),
+                            ->placeholder(__('-')),
                         TextEntry::make('created_at')
                             ->dateTime(),
                         TextEntry::make('updated_at')
@@ -44,24 +44,24 @@ class MobileAnalyticsEventInfolist
                         TextEntry::make('session_id')
                             ->label('Session ID')
                             ->copyable()
-                            ->placeholder('-'),
+                            ->placeholder(__('-')),
                         TextEntry::make('platform')
-                            ->placeholder('-'),
+                            ->placeholder(__('-')),
                         TextEntry::make('app_version')
                             ->label('App version')
-                            ->placeholder('-'),
+                            ->placeholder(__('-')),
                         TextEntry::make('ip_address')
                             ->label('IP')
-                            ->placeholder('-'),
+                            ->placeholder(__('-')),
                         TextEntry::make('user_agent')
                             ->label('User agent')
                             ->columnSpanFull()
-                            ->placeholder('-'),
+                            ->placeholder(__('-')),
                     ]),
                 Section::make('Metadata')
                     ->schema([
                         KeyValueEntry::make('metadata')
-                            ->placeholder('No metadata was sent.'),
+                            ->placeholder(__('No metadata was sent.')),
                     ]),
             ]);
     }

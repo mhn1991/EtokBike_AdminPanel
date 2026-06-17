@@ -21,7 +21,7 @@ class ServiceOfferingForm
         return $schema
             ->components([
                 Section::make('Service offering')
-                    ->description('The service card customers see in the mobile app.')
+                    ->description(__('The service card customers see in the mobile app.'))
                     ->columns(3)
                     ->schema([
                         Select::make('service_category_id')
@@ -33,7 +33,7 @@ class ServiceOfferingForm
                             ->required(),
                         TextInput::make('slug')
                             ->required()
-                            ->helperText('Stable service ID used by the mobile app.')
+                            ->helperText(__('Stable service ID used by the mobile app.'))
                             ->maxLength(255),
                         TextInput::make('sort_order')
                             ->required()
@@ -63,7 +63,7 @@ class ServiceOfferingForm
                             ->default(true),
                     ]),
                 Section::make('App card')
-                    ->description('Thumbnail treatment for service lists.')
+                    ->description(__('Thumbnail treatment for service lists.'))
                     ->columns(3)
                     ->schema([
                         TextInput::make('thumbnail_text')

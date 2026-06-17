@@ -20,15 +20,15 @@ class ProductCategoryResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedTag;
 
-    protected static ?string $navigationLabel = 'Product categories';
+    protected static ?string $navigationLabel = 'دسته‌های کالا';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Catalog';
+    protected static string|\UnitEnum|null $navigationGroup = 'کاتالوگ';
 
     protected static ?int $navigationSort = 3;
 
-    protected static ?string $modelLabel = 'product category';
+    protected static ?string $modelLabel = 'دسته کالا';
 
-    protected static ?string $pluralModelLabel = 'product categories';
+    protected static ?string $pluralModelLabel = 'دسته‌های کالا';
 
     protected static ?string $recordTitleAttribute = 'label';
 

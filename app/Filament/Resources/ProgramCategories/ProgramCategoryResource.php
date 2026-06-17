@@ -20,15 +20,15 @@ class ProgramCategoryResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedTag;
 
-    protected static ?string $navigationLabel = 'Program categories';
+    protected static ?string $navigationLabel = 'دسته‌های برنامه‌ها';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Programs';
+    protected static string|\UnitEnum|null $navigationGroup = 'برنامه‌ها';
 
     protected static ?int $navigationSort = 2;
 
-    protected static ?string $modelLabel = 'program category';
+    protected static ?string $modelLabel = 'دسته برنامه';
 
-    protected static ?string $pluralModelLabel = 'program categories';
+    protected static ?string $pluralModelLabel = 'دسته‌های برنامه‌ها';
 
     protected static ?string $recordTitleAttribute = 'label';
 

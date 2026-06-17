@@ -35,7 +35,7 @@ class ProgramBookingsTable
                     ->sortable(),
                 TextColumn::make('status')
                     ->badge()
-                    ->formatStateUsing(fn (string $state): string => ProgramBooking::STATUS_OPTIONS[$state] ?? $state)
+                    ->formatStateUsing(fn (string $state): string => __(ProgramBooking::STATUS_OPTIONS[$state] ?? $state))
                     ->color(fn (string $state): string => match ($state) {
                         'pending' => 'warning',
                         'confirmed' => 'info',
@@ -55,14 +55,14 @@ class ProgramBookingsTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->emptyStateIcon(Heroicon::OutlinedTicket)
-            ->emptyStateHeading('No program bookings yet')
-            ->emptyStateDescription('Customer event and ride bookings will appear here.')
+            ->emptyStateHeading(__('No program bookings yet'))
+            ->emptyStateDescription(__('Customer event and ride bookings will appear here.'))
             ->filters([
                 SelectFilter::make('program_id')
                     ->label('Program')
                     ->relationship('program', 'title'),
                 SelectFilter::make('status')
-                    ->options(ProgramBooking::STATUS_OPTIONS),
+                    ->options(\App\Support\Admin\FilamentLocalization::options(ProgramBooking::STATUS_OPTIONS)),
             ])
             ->defaultSort('created_at', 'desc')
             ->recordActions([

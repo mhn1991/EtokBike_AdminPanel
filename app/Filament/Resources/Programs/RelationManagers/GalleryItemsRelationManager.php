@@ -26,7 +26,7 @@ class GalleryItemsRelationManager extends RelationManager
         return $schema
             ->components([
                 Section::make('Gallery item')
-                    ->description('Photo metadata used when a finished program shows its gallery.')
+                    ->description(__('Photo metadata used when a finished program shows its gallery.'))
                     ->columns(3)
                     ->schema([
                         TextInput::make('caption')
@@ -66,17 +66,17 @@ class GalleryItemsRelationManager extends RelationManager
                 TextEntry::make('thumbnail_text'),
                 TextEntry::make('thumbnail_color'),
                 TextEntry::make('caption')
-                    ->placeholder('-'),
+                    ->placeholder(__('-')),
                 TextEntry::make('image_url')
-                    ->placeholder('-'),
+                    ->placeholder(__('-')),
                 TextEntry::make('sort_order')
                     ->formatStateUsing(fn (?int $state): string => number_format($state ?? 0)),
                 TextEntry::make('created_at')
                     ->dateTime()
-                    ->placeholder('-'),
+                    ->placeholder(__('-')),
                 TextEntry::make('updated_at')
                     ->dateTime()
-                    ->placeholder('-'),
+                    ->placeholder(__('-')),
             ]);
     }
 

@@ -27,9 +27,9 @@ class ShipmentResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedTruck;
 
-    protected static ?string $navigationLabel = 'Shipments';
+    protected static ?string $navigationLabel = 'ارسال‌ها';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Shipping';
+    protected static string|\UnitEnum|null $navigationGroup = 'ارسال';
 
     protected static ?int $navigationSort = 2;
 
@@ -40,7 +40,7 @@ class ShipmentResource extends Resource
         return $schema
             ->components([
                 Section::make('Shipment')
-                    ->description('Track packing, carrier handoff, delivery, and failures.')
+                    ->description(__('Track packing, carrier handoff, delivery, and failures.'))
                     ->columns(3)
                     ->schema([
                         Select::make('order_id')
@@ -56,7 +56,7 @@ class ShipmentResource extends Resource
                             ->searchable()
                             ->preload(),
                         ToggleButtons::make('status')
-                            ->options(Shipment::STATUS_OPTIONS)
+                            ->options(\App\Support\Admin\FilamentLocalization::options(Shipment::STATUS_OPTIONS))
                             ->colors([
                                 'pending' => 'warning',
                                 'packed' => 'info',
@@ -104,12 +104,12 @@ class ShipmentResource extends Resource
             ->columns([
                 TextColumn::make('order.order_number')
                     ->label('Order')
-                    ->placeholder('-')
+                    ->placeholder(__('-'))
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('status')
                     ->badge()
-                    ->formatStateUsing(fn (string $state): string => Shipment::STATUS_OPTIONS[$state] ?? $state)
+                    ->formatStateUsing(fn (string $state): string => __(Shipment::STATUS_OPTIONS[$state] ?? $state))
                     ->color(fn (string $state): string => match ($state) {
                         'delivered' => 'success',
                         'failed', 'returned' => 'danger',
@@ -119,29 +119,29 @@ class ShipmentResource extends Resource
                     })
                     ->sortable(),
                 TextColumn::make('carrier_name')
-                    ->placeholder('-')
+                    ->placeholder(__('-'))
                     ->searchable()
                     ->visibleFrom('md'),
                 TextColumn::make('tracking_number')
-                    ->placeholder('-')
+                    ->placeholder(__('-'))
                     ->searchable()
                     ->visibleFrom('lg'),
                 TextColumn::make('deliveryZone.name')
                     ->label('Zone')
-                    ->placeholder('-')
+                    ->placeholder(__('-'))
                     ->visibleFrom('lg'),
                 TextColumn::make('shipped_at')
                     ->dateTime()
-                    ->placeholder('-')
+                    ->placeholder(__('-'))
                     ->visibleFrom('xl')
                     ->sortable(),
             ])
             ->emptyStateIcon(Heroicon::OutlinedTruck)
-            ->emptyStateHeading('No shipments yet')
-            ->emptyStateDescription('Create shipments for delivery orders and courier tracking.')
+            ->emptyStateHeading(__('No shipments yet'))
+            ->emptyStateDescription(__('Create shipments for delivery orders and courier tracking.'))
             ->filters([
                 SelectFilter::make('status')
-                    ->options(Shipment::STATUS_OPTIONS),
+                    ->options(\App\Support\Admin\FilamentLocalization::options(Shipment::STATUS_OPTIONS)),
                 SelectFilter::make('delivery_zone_id')
                     ->label('Delivery zone')
                     ->relationship('deliveryZone', 'name')

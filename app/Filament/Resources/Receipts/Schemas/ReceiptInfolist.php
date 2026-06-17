@@ -19,30 +19,30 @@ class ReceiptInfolist
                         TextEntry::make('receipt_number'),
                         TextEntry::make('type')
                             ->badge()
-                            ->formatStateUsing(fn (string $state): string => Receipt::TYPE_OPTIONS[$state] ?? $state),
+                            ->formatStateUsing(fn (string $state): string => __(Receipt::TYPE_OPTIONS[$state] ?? $state)),
                         TextEntry::make('status')
                             ->badge()
-                            ->formatStateUsing(fn (string $state): string => Receipt::STATUS_OPTIONS[$state] ?? $state),
+                            ->formatStateUsing(fn (string $state): string => __(Receipt::STATUS_OPTIONS[$state] ?? $state)),
                         TextEntry::make('order.order_number')
                             ->label('Order')
-                            ->placeholder('-'),
+                            ->placeholder(__('-')),
                         TextEntry::make('returnRequest.return_number')
                             ->label('Return')
-                            ->placeholder('-'),
+                            ->placeholder(__('-')),
                         TextEntry::make('issued_at')
                             ->dateTime()
-                            ->placeholder('-'),
+                            ->placeholder(__('-')),
                     ]),
                 Section::make('Customer')
                     ->columns(3)
                     ->schema([
                         TextEntry::make('customer_name'),
                         TextEntry::make('customer_email')
-                            ->placeholder('-'),
+                            ->placeholder(__('-')),
                         TextEntry::make('customer_phone')
-                            ->placeholder('-'),
+                            ->placeholder(__('-')),
                         TextEntry::make('billing_address')
-                            ->placeholder('-')
+                            ->placeholder(__('-'))
                             ->columnSpanFull(),
                     ]),
                 Section::make('Totals')
@@ -65,7 +65,7 @@ class ReceiptInfolist
                 Section::make('Notes')
                     ->schema([
                         TextEntry::make('notes')
-                            ->placeholder('-')
+                            ->placeholder(__('-'))
                             ->columnSpanFull(),
                     ]),
             ]);

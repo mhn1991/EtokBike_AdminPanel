@@ -22,15 +22,15 @@ class StockMovementResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedArchiveBox;
 
-    protected static ?string $navigationLabel = 'Warehouse';
+    protected static ?string $navigationLabel = 'انبار';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Warehouse';
+    protected static string|\UnitEnum|null $navigationGroup = 'انبار';
 
     protected static ?int $navigationSort = 1;
 
-    protected static ?string $modelLabel = 'stock movement';
+    protected static ?string $modelLabel = 'گردش موجودی';
 
-    protected static ?string $pluralModelLabel = 'stock movements';
+    protected static ?string $pluralModelLabel = 'گردش‌های موجودی';
 
     public static function getNavigationBadge(): ?string
     {

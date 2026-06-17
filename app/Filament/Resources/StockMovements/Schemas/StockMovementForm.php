@@ -17,7 +17,7 @@ class StockMovementForm
         return $schema
             ->components([
                 Section::make('Adjustment')
-                    ->description('Record manual warehouse changes. Sales are recorded automatically from orders.')
+                    ->description(__('Record manual warehouse changes. Sales are recorded automatically from orders.'))
                     ->columns(3)
                     ->schema([
                         Select::make('product_id')
@@ -42,10 +42,10 @@ class StockMovementForm
                             ->default('stock_in'),
                         ToggleButtons::make('adjustment_direction')
                             ->label('Adjustment direction')
-                            ->options([
+                            ->options(\App\Support\Admin\FilamentLocalization::options([
                                 'in' => 'Increase',
                                 'out' => 'Decrease',
-                            ])
+                            ]))
                             ->colors([
                                 'in' => 'success',
                                 'out' => 'danger',
@@ -58,7 +58,7 @@ class StockMovementForm
                             ->minValue(1)
                             ->default(1),
                         TextInput::make('reference')
-                            ->placeholder('Supplier invoice, count ID, or note')
+                            ->placeholder(__('Supplier invoice, count ID, or note'))
                             ->maxLength(255),
                         Textarea::make('reason')
                             ->rows(4)

@@ -22,15 +22,15 @@ class CustomerMessageResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedEnvelope;
 
-    protected static ?string $navigationLabel = 'Customer messages';
+    protected static ?string $navigationLabel = 'پیام‌های مشتریان';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Inbox';
+    protected static string|\UnitEnum|null $navigationGroup = 'پیام‌ها';
 
     protected static ?int $navigationSort = 1;
 
-    protected static ?string $modelLabel = 'customer message';
+    protected static ?string $modelLabel = 'پیام مشتری';
 
-    protected static ?string $pluralModelLabel = 'customer messages';
+    protected static ?string $pluralModelLabel = 'پیام‌های مشتریان';
 
     protected static ?string $recordTitleAttribute = 'label';
 

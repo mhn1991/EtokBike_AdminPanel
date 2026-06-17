@@ -24,7 +24,7 @@ class ProgramInfolist
                         TextEntry::make('slug'),
                         TextEntry::make('program_state')
                             ->badge()
-                            ->formatStateUsing(fn (string $state): string => Program::STATE_OPTIONS[$state] ?? $state)
+                            ->formatStateUsing(fn (string $state): string => __(Program::STATE_OPTIONS[$state] ?? $state))
                             ->color(fn (string $state): string => match ($state) {
                                 'future' => 'success',
                                 'finished' => 'gray',
@@ -37,7 +37,7 @@ class ProgramInfolist
                             ->date(),
                         TextEntry::make('date_label'),
                         TextEntry::make('status_label')
-                            ->placeholder('-'),
+                            ->placeholder(__('-')),
                         TextEntry::make('sort_order')
                             ->formatStateUsing(fn (?int $state): string => number_format($state ?? 0)),
                         IconEntry::make('is_active')
@@ -47,20 +47,20 @@ class ProgramInfolist
                 Section::make('Detail page')
                     ->schema([
                         TextEntry::make('book_label')
-                            ->placeholder('-'),
+                            ->placeholder(__('-')),
                         TextEntry::make('view_label')
-                            ->placeholder('-'),
+                            ->placeholder(__('-')),
                         TextEntry::make('ad_title')
-                            ->placeholder('-'),
+                            ->placeholder(__('-')),
                         TextEntry::make('advertisement')
-                            ->placeholder('-')
+                            ->placeholder(__('-'))
                             ->columnSpanFull(),
                         TextEntry::make('details')
                             ->formatStateUsing(fn (mixed $state): string => is_array($state) ? implode(', ', $state) : (string) $state)
-                            ->placeholder('-')
+                            ->placeholder(__('-'))
                             ->columnSpanFull(),
                         TextEntry::make('gallery_title')
-                            ->placeholder('-'),
+                            ->placeholder(__('-')),
                     ]),
                 Section::make('App card and capacity')
                     ->columns(3)
@@ -69,10 +69,10 @@ class ProgramInfolist
                         ColorEntry::make('thumbnail_color'),
                         ImageEntry::make('image_url')
                             ->disk('public')
-                            ->placeholder('-'),
+                            ->placeholder(__('-')),
                         TextEntry::make('capacity')
                             ->formatStateUsing(fn (?int $state): string => is_null($state) ? '-' : number_format($state))
-                            ->placeholder('-'),
+                            ->placeholder(__('-')),
                         TextEntry::make('reserved_count')
                             ->formatStateUsing(fn (?int $state): string => number_format($state ?? 0)),
                     ]),
@@ -81,10 +81,10 @@ class ProgramInfolist
                     ->schema([
                         TextEntry::make('created_at')
                             ->dateTime()
-                            ->placeholder('-'),
+                            ->placeholder(__('-')),
                         TextEntry::make('updated_at')
                             ->dateTime()
-                            ->placeholder('-'),
+                            ->placeholder(__('-')),
                     ]),
             ]);
     }

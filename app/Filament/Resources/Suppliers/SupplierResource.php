@@ -25,9 +25,9 @@ class SupplierResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBuildingStorefront;
 
-    protected static ?string $navigationLabel = 'Suppliers';
+    protected static ?string $navigationLabel = 'تامین‌کنندگان';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Purchasing';
+    protected static string|\UnitEnum|null $navigationGroup = 'خرید';
 
     protected static ?int $navigationSort = 1;
 
@@ -38,7 +38,7 @@ class SupplierResource extends Resource
         return $schema
             ->components([
                 Section::make('Supplier')
-                    ->description('Contact, payment, and compliance details for purchasing.')
+                    ->description(__('Contact, payment, and compliance details for purchasing.'))
                     ->columns(3)
                     ->schema([
                         TextInput::make('name')
@@ -47,7 +47,7 @@ class SupplierResource extends Resource
                         TextInput::make('contact_name')
                             ->maxLength(255),
                         Select::make('status')
-                            ->options(Supplier::STATUS_OPTIONS)
+                            ->options(\App\Support\Admin\FilamentLocalization::options(Supplier::STATUS_OPTIONS))
                             ->native(false)
                             ->required()
                             ->default('active'),
@@ -60,7 +60,7 @@ class SupplierResource extends Resource
                         TextInput::make('tax_number')
                             ->maxLength(255),
                         TextInput::make('payment_terms')
-                            ->placeholder('Net 30, cash, bank transfer')
+                            ->placeholder(__('Net 30, cash, bank transfer'))
                             ->maxLength(255)
                             ->columnSpanFull(),
                         Textarea::make('address')
@@ -85,7 +85,7 @@ class SupplierResource extends Resource
                     ->sortable(),
                 TextColumn::make('status')
                     ->badge()
-                    ->formatStateUsing(fn (string $state): string => Supplier::STATUS_OPTIONS[$state] ?? $state)
+                    ->formatStateUsing(fn (string $state): string => __(Supplier::STATUS_OPTIONS[$state] ?? $state))
                     ->color(fn (string $state): string => match ($state) {
                         'active' => 'success',
                         'blocked' => 'danger',
@@ -93,11 +93,11 @@ class SupplierResource extends Resource
                     })
                     ->sortable(),
                 TextColumn::make('email')
-                    ->placeholder('-')
+                    ->placeholder(__('-'))
                     ->searchable()
                     ->visibleFrom('md'),
                 TextColumn::make('payment_terms')
-                    ->placeholder('-')
+                    ->placeholder(__('-'))
                     ->visibleFrom('lg'),
                 TextColumn::make('purchase_orders_count')
                     ->label('POs')
@@ -106,11 +106,11 @@ class SupplierResource extends Resource
                     ->sortable(),
             ])
             ->emptyStateIcon(Heroicon::OutlinedBuildingStorefront)
-            ->emptyStateHeading('No suppliers yet')
-            ->emptyStateDescription('Add suppliers before creating purchase orders.')
+            ->emptyStateHeading(__('No suppliers yet'))
+            ->emptyStateDescription(__('Add suppliers before creating purchase orders.'))
             ->filters([
                 SelectFilter::make('status')
-                    ->options(Supplier::STATUS_OPTIONS),
+                    ->options(\App\Support\Admin\FilamentLocalization::options(Supplier::STATUS_OPTIONS)),
             ])
             ->defaultSort('name')
             ->recordActions([

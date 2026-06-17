@@ -28,9 +28,9 @@ class ReceiptResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedReceiptPercent;
 
-    protected static ?string $navigationLabel = 'Receipts';
+    protected static ?string $navigationLabel = 'رسیدها';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Finance';
+    protected static string|\UnitEnum|null $navigationGroup = 'مالی';
 
     protected static ?int $navigationSort = 2;
 
@@ -66,7 +66,7 @@ class ReceiptResource extends Resource
                     ->wrap(),
                 TextColumn::make('type')
                     ->badge()
-                    ->formatStateUsing(fn (string $state): string => Receipt::TYPE_OPTIONS[$state] ?? $state)
+                    ->formatStateUsing(fn (string $state): string => __(Receipt::TYPE_OPTIONS[$state] ?? $state))
                     ->color(fn (string $state): string => match ($state) {
                         'credit_note' => 'danger',
                         'invoice' => 'info',
@@ -75,7 +75,7 @@ class ReceiptResource extends Resource
                     ->sortable(),
                 TextColumn::make('status')
                     ->badge()
-                    ->formatStateUsing(fn (string $state): string => Receipt::STATUS_OPTIONS[$state] ?? $state)
+                    ->formatStateUsing(fn (string $state): string => __(Receipt::STATUS_OPTIONS[$state] ?? $state))
                     ->color(fn (string $state): string => match ($state) {
                         'issued' => 'success',
                         'cancelled' => 'danger',
@@ -87,23 +87,23 @@ class ReceiptResource extends Resource
                     ->sortable(),
                 TextColumn::make('payment_status')
                     ->label('Payment')
-                    ->placeholder('-')
+                    ->placeholder(__('-'))
                     ->visibleFrom('lg')
                     ->sortable(),
                 TextColumn::make('issued_at')
                     ->dateTime()
-                    ->placeholder('-')
+                    ->placeholder(__('-'))
                     ->visibleFrom('xl')
                     ->sortable(),
             ])
             ->emptyStateIcon(Heroicon::OutlinedReceiptPercent)
-            ->emptyStateHeading('No receipts yet')
-            ->emptyStateDescription('Generate receipts from orders, invoices, or credit notes for returns.')
+            ->emptyStateHeading(__('No receipts yet'))
+            ->emptyStateDescription(__('Generate receipts from orders, invoices, or credit notes for returns.'))
             ->filters([
                 SelectFilter::make('type')
-                    ->options(Receipt::TYPE_OPTIONS),
+                    ->options(\App\Support\Admin\FilamentLocalization::options(Receipt::TYPE_OPTIONS)),
                 SelectFilter::make('status')
-                    ->options(Receipt::STATUS_OPTIONS),
+                    ->options(\App\Support\Admin\FilamentLocalization::options(Receipt::STATUS_OPTIONS)),
             ])
             ->defaultSort('issued_at', 'desc')
             ->recordActions(ActionGroup::make([

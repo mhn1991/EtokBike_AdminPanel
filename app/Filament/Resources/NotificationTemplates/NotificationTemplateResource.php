@@ -27,9 +27,9 @@ class NotificationTemplateResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBellAlert;
 
-    protected static ?string $navigationLabel = 'Templates';
+    protected static ?string $navigationLabel = 'قالب‌ها';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Notifications';
+    protected static string|\UnitEnum|null $navigationGroup = 'اعلان‌ها';
 
     protected static ?int $navigationSort = 1;
 
@@ -37,11 +37,11 @@ class NotificationTemplateResource extends Resource
     {
         return $schema->components([
             Section::make('Template')
-                ->description('Reusable notification copy for email, SMS, WhatsApp, or push integrations.')
+                ->description(__('Reusable notification copy for email, SMS, WhatsApp, or push integrations.'))
                 ->columns(3)
                 ->schema([
                     TextInput::make('key')->required()->maxLength(255)->unique(ignoreRecord: true),
-                    Select::make('channel')->options(NotificationTemplate::CHANNEL_OPTIONS)->native(false)->required()->default('email'),
+                    Select::make('channel')->options(\App\Support\Admin\FilamentLocalization::options(NotificationTemplate::CHANNEL_OPTIONS))->native(false)->required()->default('email'),
                     Toggle::make('is_active')->default(true),
                     TextInput::make('subject')->maxLength(255)->columnSpanFull(),
                     Textarea::make('body')->required()->rows(8)->columnSpanFull(),
@@ -53,14 +53,14 @@ class NotificationTemplateResource extends Resource
     {
         return $table->paginated(false)->striped()->columns([
             TextColumn::make('key')->searchable()->sortable(),
-            TextColumn::make('channel')->badge()->formatStateUsing(fn (string $state): string => NotificationTemplate::CHANNEL_OPTIONS[$state] ?? $state)->sortable(),
-            TextColumn::make('subject')->placeholder('-')->wrap()->visibleFrom('md'),
+            TextColumn::make('channel')->badge()->formatStateUsing(fn (string $state): string => __(NotificationTemplate::CHANNEL_OPTIONS[$state] ?? $state))->sortable(),
+            TextColumn::make('subject')->placeholder(__('-'))->wrap()->visibleFrom('md'),
             IconColumn::make('is_active')->label('Active')->boolean(),
-            TextColumn::make('logs_count')->label('Logs')->counts('logs')->visibleFrom('lg')->sortable(),
+            TextColumn::make('logs_count')->label('لاگ‌ها')->counts('logs')->visibleFrom('lg')->sortable(),
         ])->emptyStateIcon(Heroicon::OutlinedBellAlert)
-            ->emptyStateHeading('No notification templates yet')
-            ->emptyStateDescription('Create templates for order confirmation, receipt delivery, low-stock alerts, and shipment updates.')
-            ->filters([SelectFilter::make('channel')->options(NotificationTemplate::CHANNEL_OPTIONS)])
+            ->emptyStateHeading(__('No notification templates yet'))
+            ->emptyStateDescription(__('Create templates for order confirmation, receipt delivery, low-stock alerts, and shipment updates.'))
+            ->filters([SelectFilter::make('channel')->options(\App\Support\Admin\FilamentLocalization::options(NotificationTemplate::CHANNEL_OPTIONS))])
             ->defaultSort('key')
             ->recordActions([EditAction::make()])
             ->toolbarActions([]);

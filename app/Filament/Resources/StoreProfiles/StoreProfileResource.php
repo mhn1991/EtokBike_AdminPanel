@@ -25,15 +25,15 @@ class StoreProfileResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBuildingStorefront;
 
-    protected static ?string $navigationLabel = 'Store profile';
+    protected static ?string $navigationLabel = 'پروفایل فروشگاه';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Settings';
+    protected static string|\UnitEnum|null $navigationGroup = 'تنظیمات';
 
     protected static ?int $navigationSort = 1;
 
-    protected static ?string $modelLabel = 'store profile';
+    protected static ?string $modelLabel = 'پروفایل فروشگاه';
 
-    protected static ?string $pluralModelLabel = 'store profiles';
+    protected static ?string $pluralModelLabel = 'پروفایل‌های فروشگاه';
 
     protected static ?string $recordTitleAttribute = 'branch_title';
 
@@ -42,7 +42,7 @@ class StoreProfileResource extends Resource
         return $schema
             ->components([
                 Section::make('Current status')
-                    ->description('Shown in the Home screen store status block.')
+                    ->description(__('Shown in the Home screen store status block.'))
                     ->columns(2)
                     ->schema([
                         TextInput::make('status_title')
@@ -58,7 +58,7 @@ class StoreProfileResource extends Resource
                             ->columnSpanFull(),
                     ]),
                 Section::make('Store info')
-                    ->description('Shown in the Home screen store info block.')
+                    ->description(__('Shown in the Home screen store info block.'))
                     ->columns(2)
                     ->schema([
                         TextInput::make('branch_title')

@@ -24,15 +24,15 @@ class ServiceTimeSlotResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedClock;
 
-    protected static ?string $navigationLabel = 'Service time slots';
+    protected static ?string $navigationLabel = 'بازه‌های زمانی خدمات';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Services';
+    protected static string|\UnitEnum|null $navigationGroup = 'خدمات';
 
     protected static ?int $navigationSort = 4;
 
-    protected static ?string $modelLabel = 'service time slot';
+    protected static ?string $modelLabel = 'بازه زمانی خدمات';
 
-    protected static ?string $pluralModelLabel = 'service time slots';
+    protected static ?string $pluralModelLabel = 'بازه‌های زمانی خدمات';
 
     protected static ?string $recordTitleAttribute = 'label';
 

@@ -45,8 +45,8 @@ class ServiceOfferingsTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->emptyStateIcon(Heroicon::OutlinedWrenchScrewdriver)
-            ->emptyStateHeading('No service offerings yet')
-            ->emptyStateDescription('Create workshop services so customers can browse them in the app.')
+            ->emptyStateHeading(__('No service offerings yet'))
+            ->emptyStateDescription(__('Create workshop services so customers can browse them in the app.'))
             ->filters([
                 SelectFilter::make('service_category_id')
                     ->label('Category')

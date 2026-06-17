@@ -26,15 +26,15 @@ class CustomerProfileResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedUserGroup;
 
-    protected static ?string $navigationLabel = 'Customer profiles';
+    protected static ?string $navigationLabel = 'پروفایل‌های مشتریان';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Customers';
+    protected static string|\UnitEnum|null $navigationGroup = 'مشتریان';
 
     protected static ?int $navigationSort = 1;
 
-    protected static ?string $modelLabel = 'customer profile';
+    protected static ?string $modelLabel = 'پروفایل مشتری';
 
-    protected static ?string $pluralModelLabel = 'customer profiles';
+    protected static ?string $pluralModelLabel = 'پروفایل‌های مشتریان';
 
     protected static ?string $recordTitleAttribute = 'name';
 

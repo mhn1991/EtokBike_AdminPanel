@@ -17,7 +17,7 @@ class ServiceCategoryForm
         return $schema
             ->components([
                 Section::make('Category')
-                    ->description('Groups workshop services in the mobile app.')
+                    ->description(__('Groups workshop services in the mobile app.'))
                     ->columns(3)
                     ->schema([
                         TextInput::make('label')

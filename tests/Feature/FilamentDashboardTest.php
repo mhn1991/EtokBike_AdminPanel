@@ -76,13 +76,13 @@ class FilamentDashboardTest extends TestCase
         $this->actingAs($user)
             ->get('/admin')
             ->assertOk()
-            ->assertSee('Mobile app activity')
-            ->assertSee('Active users')
-            ->assertSee('Mobile usage trend')
-            ->assertSee('Operations snapshot')
-            ->assertSee('Daily operations')
-            ->assertSee('Order status mix')
-            ->assertSee('Recent orders')
+            ->assertSee('فعالیت اپ موبایل')
+            ->assertSee('کاربران فعال')
+            ->assertSee('روند استفاده از موبایل')
+            ->assertSee('نمای عملیات')
+            ->assertSee('عملیات روزانه')
+            ->assertSee('ترکیب وضعیت سفارش‌ها')
+            ->assertSee('سفارش‌های اخیر')
             ->assertSee('Dashboard Customer');
     }
 }

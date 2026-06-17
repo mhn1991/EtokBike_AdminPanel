@@ -24,7 +24,7 @@ class ItemsRelationManager extends RelationManager
         return $schema
             ->components([
                 Section::make('Receipt item')
-                    ->description('Snapshot line shown on the receipt printout.')
+                    ->description(__('Snapshot line shown on the receipt printout.'))
                     ->columns(3)
                     ->schema([
                         Select::make('product_id')

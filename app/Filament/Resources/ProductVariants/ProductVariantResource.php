@@ -28,9 +28,9 @@ class ProductVariantResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedSquares2x2;
 
-    protected static ?string $navigationLabel = 'Product variants';
+    protected static ?string $navigationLabel = 'تنوع‌های کالا';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Catalog';
+    protected static string|\UnitEnum|null $navigationGroup = 'کاتالوگ';
 
     protected static ?int $navigationSort = 3;
 
@@ -38,7 +38,7 @@ class ProductVariantResource extends Resource
     {
         return $schema->components([
             Section::make('Variant')
-                ->description('Variant-specific SKU, options, price, and stock.')
+                ->description(__('Variant-specific SKU, options, price, and stock.'))
                 ->columns(3)
                 ->schema([
                     Select::make('product_id')->label('Product')->relationship('product', 'title')->native(false)->searchable()->preload()->required(),
@@ -77,8 +77,8 @@ class ProductVariantResource extends Resource
                 IconColumn::make('is_active')->label('Active')->boolean(),
             ])
             ->emptyStateIcon(Heroicon::OutlinedSquares2x2)
-            ->emptyStateHeading('No variants yet')
-            ->emptyStateDescription('Create size, color, model, or bundle variants for products.')
+            ->emptyStateHeading(__('No variants yet'))
+            ->emptyStateDescription(__('Create size, color, model, or bundle variants for products.'))
             ->filters([
                 SelectFilter::make('product_id')->label('Product')->relationship('product', 'title')->searchable()->preload(),
             ])

@@ -28,7 +28,7 @@ class ItemsRelationManager extends RelationManager
         return $schema
             ->components([
                 Section::make('Returned item')
-                    ->description('Set item condition and whether it should go back into sellable stock.')
+                    ->description(__('Set item condition and whether it should go back into sellable stock.'))
                     ->columns(3)
                     ->schema([
                         Select::make('order_item_id')
@@ -44,7 +44,7 @@ class ItemsRelationManager extends RelationManager
                             ->searchable()
                             ->preload(),
                         Select::make('condition')
-                            ->options(ReturnRequestItem::CONDITION_OPTIONS)
+                            ->options(\App\Support\Admin\FilamentLocalization::options(ReturnRequestItem::CONDITION_OPTIONS))
                             ->native(false)
                             ->required()
                             ->default('inspection'),
@@ -98,7 +98,7 @@ class ItemsRelationManager extends RelationManager
                     ->sortable(),
                 TextColumn::make('condition')
                     ->badge()
-                    ->formatStateUsing(fn (string $state): string => ReturnRequestItem::CONDITION_OPTIONS[$state] ?? $state)
+                    ->formatStateUsing(fn (string $state): string => __(ReturnRequestItem::CONDITION_OPTIONS[$state] ?? $state))
                     ->color(fn (string $state): string => match ($state) {
                         'sellable' => 'success',
                         'damaged' => 'danger',

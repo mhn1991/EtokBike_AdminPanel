@@ -15,7 +15,11 @@ use App\Models\Receipt;
 use App\Models\ReturnRequest;
 use App\Models\SeoRedirect;
 use App\Models\StockMovement;
+use App\Support\Admin\FilamentLocalization;
 use App\Support\Storefront\StorefrontCart;
+use Filament\Forms\Components\Select;
+use Filament\Support\Components\Component as FilamentComponent;
+use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
@@ -35,11 +39,45 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        $this->configureFilamentLocalization();
+
         View::composer('storefront.*', function ($view): void {
             $view->with('cartCount', app(StorefrontCart::class)->count());
         });
 
         $this->registerAdminActivityLogging();
+    }
+
+    private function configureFilamentLocalization(): void
+    {
+        FilamentComponent::configureUsing(
+            static function (FilamentComponent $component): void {
+                if (method_exists($component, 'translateLabel')) {
+                    $component->translateLabel();
+                }
+            },
+            isImportant: true,
+        );
+
+        Select::configureUsing(static function (Select $select): void {
+            $select
+                ->native(false)
+                ->transformOptionsForJsUsing(
+                    static fn (Select $component, array $options): array => FilamentLocalization::selectOptionsForJs($component, $options),
+                )
+                ->getOptionLabelUsing(
+                    static fn (Select $component): ?string => FilamentLocalization::selectedOptionLabel($component),
+                )
+                ->getOptionLabelsUsing(
+                    static fn (Select $component): array => FilamentLocalization::selectedOptionLabels($component),
+                );
+        });
+
+        SelectFilter::configureUsing(static function (SelectFilter $filter): void {
+            $filter->indicateUsing(
+                static fn (SelectFilter $filter, array $state): array => FilamentLocalization::selectFilterIndicators($filter, $state),
+            );
+        });
     }
 
     private function registerAdminActivityLogging(): void

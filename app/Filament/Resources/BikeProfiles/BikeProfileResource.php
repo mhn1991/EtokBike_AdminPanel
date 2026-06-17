@@ -25,15 +25,15 @@ class BikeProfileResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedWrenchScrewdriver;
 
-    protected static ?string $navigationLabel = 'Bike profiles';
+    protected static ?string $navigationLabel = 'پروفایل‌های دوچرخه';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Customers';
+    protected static string|\UnitEnum|null $navigationGroup = 'مشتریان';
 
     protected static ?int $navigationSort = 2;
 
-    protected static ?string $modelLabel = 'bike profile';
+    protected static ?string $modelLabel = 'پروفایل دوچرخه';
 
-    protected static ?string $pluralModelLabel = 'bike profiles';
+    protected static ?string $pluralModelLabel = 'پروفایل‌های دوچرخه';
 
     protected static ?string $recordTitleAttribute = 'title';
 

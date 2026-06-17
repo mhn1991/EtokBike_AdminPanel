@@ -27,7 +27,7 @@ class SeoRedirectResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedArrowPath;
 
-    protected static ?string $navigationLabel = 'Redirects';
+    protected static ?string $navigationLabel = 'ریدایرکت‌ها';
 
     protected static string|\UnitEnum|null $navigationGroup = 'SEO';
 
@@ -37,12 +37,12 @@ class SeoRedirectResource extends Resource
     {
         return $schema->components([
             Section::make('Redirect')
-                ->description('Redirect an old storefront URL to a current page.')
+                ->description(__('Redirect an old storefront URL to a current page.'))
                 ->columns(3)
                 ->schema([
-                    TextInput::make('source_path')->placeholder('/old-page')->required()->maxLength(255)->unique(ignoreRecord: true),
-                    TextInput::make('target_url')->placeholder('/shop or https://example.com/new')->required()->maxLength(255),
-                    Select::make('status_code')->options(SeoRedirect::STATUS_CODE_OPTIONS)->native(false)->required()->default(301),
+                    TextInput::make('source_path')->placeholder(__('/old-page'))->required()->maxLength(255)->unique(ignoreRecord: true),
+                    TextInput::make('target_url')->placeholder(__('/shop or https://example.com/new'))->required()->maxLength(255),
+                    Select::make('status_code')->options(\App\Support\Admin\FilamentLocalization::options(SeoRedirect::STATUS_CODE_OPTIONS))->native(false)->required()->default(301),
                     Toggle::make('is_active')->default(true),
                     Textarea::make('notes')->rows(3)->columnSpanFull(),
                 ]),
@@ -60,13 +60,13 @@ class SeoRedirectResource extends Resource
                 TextColumn::make('status_code')->badge()->sortable(),
                 TextColumn::make('hit_count')->formatStateUsing(fn (?int $state): string => number_format($state ?? 0))->sortable(),
                 IconColumn::make('is_active')->boolean(),
-                TextColumn::make('last_hit_at')->dateTime()->placeholder('-')->visibleFrom('lg')->sortable(),
+                TextColumn::make('last_hit_at')->dateTime()->placeholder(__('-'))->visibleFrom('lg')->sortable(),
             ])
             ->emptyStateIcon(Heroicon::OutlinedArrowPath)
-            ->emptyStateHeading('No redirects yet')
-            ->emptyStateDescription('Create redirects when product, category, or content URLs change.')
+            ->emptyStateHeading(__('No redirects yet'))
+            ->emptyStateDescription(__('Create redirects when product, category, or content URLs change.'))
             ->filters([
-                SelectFilter::make('status_code')->options(SeoRedirect::STATUS_CODE_OPTIONS),
+                SelectFilter::make('status_code')->options(\App\Support\Admin\FilamentLocalization::options(SeoRedirect::STATUS_CODE_OPTIONS)),
             ])
             ->defaultSort('updated_at', 'desc')
             ->recordActions([EditAction::make()])

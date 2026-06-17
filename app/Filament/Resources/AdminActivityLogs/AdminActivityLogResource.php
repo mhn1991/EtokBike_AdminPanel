@@ -16,9 +16,9 @@ class AdminActivityLogResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedClipboardDocumentList;
 
-    protected static ?string $navigationLabel = 'Activity log';
+    protected static ?string $navigationLabel = 'گزارش فعالیت';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Audit';
+    protected static string|\UnitEnum|null $navigationGroup = 'ممیزی';
 
     protected static ?int $navigationSort = 1;
 
@@ -27,12 +27,12 @@ class AdminActivityLogResource extends Resource
         return $table->paginated(false)->striped()->columns([
             TextColumn::make('created_at')->label('Time')->dateTime()->sortable(),
             TextColumn::make('event')->searchable()->sortable(),
-            TextColumn::make('user.name')->label('User')->placeholder('-')->visibleFrom('md'),
-            TextColumn::make('subject_type')->label('Subject')->description(fn (AdminActivityLog $record): string => $record->subject_id ? '#'.$record->subject_id : '')->placeholder('-')->visibleFrom('lg'),
-            TextColumn::make('ip_address')->placeholder('-')->visibleFrom('xl'),
+            TextColumn::make('user.name')->label('User')->placeholder(__('-'))->visibleFrom('md'),
+            TextColumn::make('subject_type')->label('Subject')->description(fn (AdminActivityLog $record): string => $record->subject_id ? '#'.$record->subject_id : '')->placeholder(__('-'))->visibleFrom('lg'),
+            TextColumn::make('ip_address')->placeholder(__('-'))->visibleFrom('xl'),
         ])->emptyStateIcon(Heroicon::OutlinedClipboardDocumentList)
-            ->emptyStateHeading('No activity yet')
-            ->emptyStateDescription('Admin actions can be recorded here for audit trails.')
+            ->emptyStateHeading(__('No activity yet'))
+            ->emptyStateDescription(__('Admin actions can be recorded here for audit trails.'))
             ->defaultSort('created_at', 'desc')
             ->toolbarActions([]);
     }

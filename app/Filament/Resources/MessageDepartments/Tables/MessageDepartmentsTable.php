@@ -54,8 +54,8 @@ class MessageDepartmentsTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->emptyStateIcon(Heroicon::OutlinedInboxStack)
-            ->emptyStateHeading('No message departments yet')
-            ->emptyStateDescription('Departments route support conversations in the mobile app.')
+            ->emptyStateHeading(__('No message departments yet'))
+            ->emptyStateDescription(__('Departments route support conversations in the mobile app.'))
             ->filters([
                 TernaryFilter::make('is_active')
                     ->label('Visible in app'),

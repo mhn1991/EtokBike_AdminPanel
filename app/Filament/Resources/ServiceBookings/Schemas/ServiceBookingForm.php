@@ -17,7 +17,7 @@ class ServiceBookingForm
         return $schema
             ->components([
                 Section::make('Customer')
-                    ->description('Contact details for service follow-up.')
+                    ->description(__('Contact details for service follow-up.'))
                     ->columns(3)
                     ->schema([
                         Select::make('user_id')
@@ -37,7 +37,7 @@ class ServiceBookingForm
                             ->maxLength(255),
                     ]),
                 Section::make('Service request')
-                    ->description('What the customer needs and when they prefer to visit.')
+                    ->description(__('What the customer needs and when they prefer to visit.'))
                     ->columns(3)
                     ->schema([
                         TextInput::make('service_type')
@@ -55,7 +55,7 @@ class ServiceBookingForm
                     ->columns(2)
                     ->schema([
                         ToggleButtons::make('status')
-                            ->options(ServiceBooking::STATUS_OPTIONS)
+                            ->options(\App\Support\Admin\FilamentLocalization::options(ServiceBooking::STATUS_OPTIONS))
                             ->colors([
                                 'pending' => 'warning',
                                 'confirmed' => 'info',

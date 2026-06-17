@@ -28,9 +28,9 @@ class PurchaseOrderResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedClipboardDocumentCheck;
 
-    protected static ?string $navigationLabel = 'Purchase orders';
+    protected static ?string $navigationLabel = 'سفارش‌های خرید';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Purchasing';
+    protected static string|\UnitEnum|null $navigationGroup = 'خرید';
 
     protected static ?int $navigationSort = 2;
 
@@ -41,12 +41,12 @@ class PurchaseOrderResource extends Resource
         return $schema
             ->components([
                 Section::make('Purchase order')
-                    ->description('Supplier order header, dates, and receiving status.')
+                    ->description(__('Supplier order header, dates, and receiving status.'))
                     ->columns(3)
                     ->schema([
                         TextInput::make('purchase_order_number')
                             ->label('PO number')
-                            ->helperText('Leave blank to auto-generate.')
+                            ->helperText(__('Leave blank to auto-generate.'))
                             ->maxLength(255),
                         Select::make('supplier_id')
                             ->label('Supplier')
@@ -55,7 +55,7 @@ class PurchaseOrderResource extends Resource
                             ->searchable()
                             ->preload(),
                         ToggleButtons::make('status')
-                            ->options(PurchaseOrder::STATUS_OPTIONS)
+                            ->options(\App\Support\Admin\FilamentLocalization::options(PurchaseOrder::STATUS_OPTIONS))
                             ->colors([
                                 'draft' => 'gray',
                                 'ordered' => 'info',
@@ -76,7 +76,7 @@ class PurchaseOrderResource extends Resource
                             ->default('IRR'),
                     ]),
                 Section::make('Totals')
-                    ->description('Subtotal is calculated from purchase items.')
+                    ->description(__('Subtotal is calculated from purchase items.'))
                     ->columns(4)
                     ->schema([
                         TextInput::make('subtotal')
@@ -94,7 +94,7 @@ class PurchaseOrderResource extends Resource
                             ->suffix('IRR')
                             ->default(0),
                         TextInput::make('shipping_total')
-                            ->label('Shipping')
+                            ->label('ارسال')
                             ->required()
                             ->integer()
                             ->minValue(0)
@@ -126,12 +126,12 @@ class PurchaseOrderResource extends Resource
                     ->sortable(),
                 TextColumn::make('supplier.name')
                     ->label('Supplier')
-                    ->placeholder('-')
+                    ->placeholder(__('-'))
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('status')
                     ->badge()
-                    ->formatStateUsing(fn (string $state): string => PurchaseOrder::STATUS_OPTIONS[$state] ?? $state)
+                    ->formatStateUsing(fn (string $state): string => __(PurchaseOrder::STATUS_OPTIONS[$state] ?? $state))
                     ->color(fn (string $state): string => match ($state) {
                         'ordered' => 'info',
                         'partially_received' => 'warning',
@@ -145,18 +145,18 @@ class PurchaseOrderResource extends Resource
                     ->sortable(),
                 TextColumn::make('expected_at')
                     ->dateTime()
-                    ->placeholder('-')
+                    ->placeholder(__('-'))
                     ->visibleFrom('lg')
                     ->sortable(),
                 TextColumn::make('received_at')
                     ->dateTime()
-                    ->placeholder('-')
+                    ->placeholder(__('-'))
                     ->visibleFrom('xl')
                     ->sortable(),
             ])
             ->emptyStateIcon(Heroicon::OutlinedClipboardDocumentCheck)
-            ->emptyStateHeading('No purchase orders yet')
-            ->emptyStateDescription('Create supplier orders before receiving stock.')
+            ->emptyStateHeading(__('No purchase orders yet'))
+            ->emptyStateDescription(__('Create supplier orders before receiving stock.'))
             ->filters([
                 SelectFilter::make('supplier_id')
                     ->label('Supplier')
@@ -164,7 +164,7 @@ class PurchaseOrderResource extends Resource
                     ->searchable()
                     ->preload(),
                 SelectFilter::make('status')
-                    ->options(PurchaseOrder::STATUS_OPTIONS),
+                    ->options(\App\Support\Admin\FilamentLocalization::options(PurchaseOrder::STATUS_OPTIONS)),
             ])
             ->defaultSort('created_at', 'desc')
             ->recordActions([

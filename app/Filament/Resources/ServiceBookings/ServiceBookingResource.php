@@ -22,15 +22,15 @@ class ServiceBookingResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedClipboardDocumentCheck;
 
-    protected static ?string $navigationLabel = 'Service bookings';
+    protected static ?string $navigationLabel = 'رزروهای خدمات';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Services';
+    protected static string|\UnitEnum|null $navigationGroup = 'خدمات';
 
     protected static ?int $navigationSort = 1;
 
-    protected static ?string $modelLabel = 'service booking';
+    protected static ?string $modelLabel = 'رزرو خدمات';
 
-    protected static ?string $pluralModelLabel = 'service bookings';
+    protected static ?string $pluralModelLabel = 'رزروهای خدمات';
 
     protected static ?string $recordTitleAttribute = 'customer_name';
 

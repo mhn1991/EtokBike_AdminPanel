@@ -20,15 +20,15 @@ class MessageDepartmentResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedInboxStack;
 
-    protected static ?string $navigationLabel = 'Message departments';
+    protected static ?string $navigationLabel = 'دپارتمان‌های پیام';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Inbox';
+    protected static string|\UnitEnum|null $navigationGroup = 'پیام‌ها';
 
     protected static ?int $navigationSort = 2;
 
-    protected static ?string $modelLabel = 'message department';
+    protected static ?string $modelLabel = 'دپارتمان پیام';
 
-    protected static ?string $pluralModelLabel = 'message departments';
+    protected static ?string $pluralModelLabel = 'دپارتمان‌های پیام';
 
     protected static ?string $recordTitleAttribute = 'title';
 

@@ -22,15 +22,15 @@ class ProgramBookingResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedTicket;
 
-    protected static ?string $navigationLabel = 'Program bookings';
+    protected static ?string $navigationLabel = 'رزروهای برنامه';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Programs';
+    protected static string|\UnitEnum|null $navigationGroup = 'برنامه‌ها';
 
     protected static ?int $navigationSort = 1;
 
-    protected static ?string $modelLabel = 'program booking';
+    protected static ?string $modelLabel = 'رزرو برنامه';
 
-    protected static ?string $pluralModelLabel = 'program bookings';
+    protected static ?string $pluralModelLabel = 'رزروهای برنامه';
 
     protected static ?string $recordTitleAttribute = 'customer_name';
 

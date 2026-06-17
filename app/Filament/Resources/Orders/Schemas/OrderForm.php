@@ -18,15 +18,15 @@ class OrderForm
         return $schema
             ->components([
                 Section::make('Order')
-                    ->description('Track fulfilment, payment, and the linked customer account.')
+                    ->description(__('Track fulfilment, payment, and the linked customer account.'))
                     ->columns(3)
                     ->schema([
                         TextInput::make('order_number')
                             ->label('Order number')
-                            ->helperText('Leave blank to auto-generate on create.')
+                            ->helperText(__('Leave blank to auto-generate on create.'))
                             ->maxLength(255),
                         ToggleButtons::make('status')
-                            ->options(Order::STATUS_OPTIONS)
+                            ->options(\App\Support\Admin\FilamentLocalization::options(Order::STATUS_OPTIONS))
                             ->colors([
                                 'pending' => 'warning',
                                 'confirmed' => 'info',
@@ -40,7 +40,7 @@ class OrderForm
                             ->columnSpan(2)
                             ->default('pending'),
                         ToggleButtons::make('payment_status')
-                            ->options(Order::PAYMENT_STATUS_OPTIONS)
+                            ->options(\App\Support\Admin\FilamentLocalization::options(Order::PAYMENT_STATUS_OPTIONS))
                             ->colors([
                                 'unpaid' => 'warning',
                                 'paid' => 'success',
@@ -51,7 +51,7 @@ class OrderForm
                             ->required()
                             ->default('unpaid'),
                         ToggleButtons::make('fulfillment_method')
-                            ->options(Order::FULFILLMENT_METHOD_OPTIONS)
+                            ->options(\App\Support\Admin\FilamentLocalization::options(Order::FULFILLMENT_METHOD_OPTIONS))
                             ->colors([
                                 'pickup' => 'info',
                                 'delivery' => 'primary',
@@ -61,7 +61,7 @@ class OrderForm
                             ->default('pickup'),
                         DateTimePicker::make('placed_at')
                             ->seconds(false)
-                            ->helperText('Defaults to the current time when left blank.'),
+                            ->helperText(__('Defaults to the current time when left blank.')),
                         Select::make('user_id')
                             ->label('Linked user')
                             ->relationship('user', 'name')
@@ -70,7 +70,7 @@ class OrderForm
                             ->preload(),
                     ]),
                 Section::make('Customer')
-                    ->description('Details used by staff to contact the buyer.')
+                    ->description(__('Details used by staff to contact the buyer.'))
                     ->columns(3)
                     ->schema([
                         TextInput::make('customer_name')
@@ -87,7 +87,7 @@ class OrderForm
                             ->columnSpanFull(),
                     ]),
                 Section::make('Totals')
-                    ->description('Subtotal is calculated from order items; discounts and delivery adjust the final total.')
+                    ->description(__('Subtotal is calculated from order items; discounts and delivery adjust the final total.'))
                     ->columns(4)
                     ->schema([
                         TextInput::make('currency')

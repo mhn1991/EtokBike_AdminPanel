@@ -17,7 +17,7 @@ class MessageDepartmentForm
         return $schema
             ->components([
                 Section::make('Department')
-                    ->description('Controls how this support department appears in the app.')
+                    ->description(__('Controls how this support department appears in the app.'))
                     ->columns(3)
                     ->schema([
                         TextInput::make('title')
@@ -45,7 +45,7 @@ class MessageDepartmentForm
                             ->default(true),
                     ]),
                 Section::make('Composer copy')
-                    ->description('Text customers see when opening and sending a message.')
+                    ->description(__('Text customers see when opening and sending a message.'))
                     ->columns(2)
                     ->schema([
                         TextInput::make('thread_title')

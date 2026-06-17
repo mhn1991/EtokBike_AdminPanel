@@ -26,7 +26,7 @@ class ItemsRelationManager extends RelationManager
         return $schema
             ->components([
                 Section::make('Item')
-                    ->description('Line total updates from quantity and unit price.')
+                    ->description(__('Line total updates from quantity and unit price.'))
                     ->columns(3)
                     ->schema([
                         TextInput::make('title')
@@ -72,11 +72,11 @@ class ItemsRelationManager extends RelationManager
         return $schema
             ->components([
                 TextEntry::make('product_id')
-                    ->placeholder('-'),
+                    ->placeholder(__('-')),
                 TextEntry::make('title'),
                 TextEntry::make('sku')
                     ->label('SKU')
-                    ->placeholder('-'),
+                    ->placeholder(__('-')),
                 TextEntry::make('quantity')
                     ->formatStateUsing(fn (?int $state): string => number_format($state ?? 0)),
                 TextEntry::make('unit_price')
@@ -85,14 +85,14 @@ class ItemsRelationManager extends RelationManager
                     ->formatStateUsing(fn (?int $state): string => number_format($state ?? 0)),
                 TextEntry::make('metadata')
                     ->formatStateUsing(fn (mixed $state): string => is_array($state) ? json_encode($state, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) : (string) $state)
-                    ->placeholder('-')
+                    ->placeholder(__('-'))
                     ->columnSpanFull(),
                 TextEntry::make('created_at')
                     ->dateTime()
-                    ->placeholder('-'),
+                    ->placeholder(__('-')),
                 TextEntry::make('updated_at')
                     ->dateTime()
-                    ->placeholder('-'),
+                    ->placeholder(__('-')),
             ]);
     }
 

@@ -28,9 +28,9 @@ class PaymentTransactionResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCreditCard;
 
-    protected static ?string $navigationLabel = 'Payments';
+    protected static ?string $navigationLabel = 'پرداخت‌ها';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Finance';
+    protected static string|\UnitEnum|null $navigationGroup = 'مالی';
 
     protected static ?int $navigationSort = 3;
 
@@ -38,12 +38,12 @@ class PaymentTransactionResource extends Resource
     {
         return $schema->components([
             Section::make('Payment')
-                ->description('Track manual or gateway payment attempts and reconciliation references.')
+                ->description(__('Track manual or gateway payment attempts and reconciliation references.'))
                 ->columns(3)
                 ->schema([
                     Select::make('order_id')->label('Order')->relationship('order', 'order_number')->native(false)->searchable()->preload(),
                     Select::make('financial_transaction_id')->label('Finance record')->relationship('financialTransaction', 'reference')->native(false)->searchable()->preload(),
-                    ToggleButtons::make('status')->options(PaymentTransaction::STATUS_OPTIONS)->colors([
+                    ToggleButtons::make('status')->options(\App\Support\Admin\FilamentLocalization::options(PaymentTransaction::STATUS_OPTIONS))->colors([
                         'pending' => 'warning',
                         'authorized' => 'info',
                         'paid' => 'success',
@@ -67,9 +67,9 @@ class PaymentTransactionResource extends Resource
     public static function table(Table $table): Table
     {
         return $table->paginated(false)->striped()->columns([
-            TextColumn::make('order.order_number')->label('Order')->placeholder('-')->searchable()->sortable(),
+            TextColumn::make('order.order_number')->label('Order')->placeholder(__('-'))->searchable()->sortable(),
             TextColumn::make('provider')->searchable()->sortable(),
-            TextColumn::make('status')->badge()->formatStateUsing(fn (string $state): string => PaymentTransaction::STATUS_OPTIONS[$state] ?? $state)->color(fn (string $state): string => match ($state) {
+            TextColumn::make('status')->badge()->formatStateUsing(fn (string $state): string => __(PaymentTransaction::STATUS_OPTIONS[$state] ?? $state))->color(fn (string $state): string => match ($state) {
                 'paid' => 'success',
                 'authorized' => 'info',
                 'failed', 'refunded' => 'danger',
@@ -77,12 +77,12 @@ class PaymentTransactionResource extends Resource
                 default => 'warning',
             })->sortable(),
             TextColumn::make('amount')->formatStateUsing(fn (?int $state): string => number_format($state ?? 0))->sortable(),
-            TextColumn::make('transaction_reference')->placeholder('-')->visibleFrom('lg')->searchable(),
-            TextColumn::make('paid_at')->dateTime()->placeholder('-')->visibleFrom('xl')->sortable(),
+            TextColumn::make('transaction_reference')->placeholder(__('-'))->visibleFrom('lg')->searchable(),
+            TextColumn::make('paid_at')->dateTime()->placeholder(__('-'))->visibleFrom('xl')->sortable(),
         ])->emptyStateIcon(Heroicon::OutlinedCreditCard)
-            ->emptyStateHeading('No payments yet')
-            ->emptyStateDescription('Track gateway attempts, manual payments, failed payments, and reconciliation references.')
-            ->filters([SelectFilter::make('status')->options(PaymentTransaction::STATUS_OPTIONS)])
+            ->emptyStateHeading(__('No payments yet'))
+            ->emptyStateDescription(__('Track gateway attempts, manual payments, failed payments, and reconciliation references.'))
+            ->filters([SelectFilter::make('status')->options(\App\Support\Admin\FilamentLocalization::options(PaymentTransaction::STATUS_OPTIONS))])
             ->defaultSort('created_at', 'desc')
             ->recordActions([EditAction::make()])
             ->toolbarActions([]);

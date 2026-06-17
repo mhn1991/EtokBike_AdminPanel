@@ -19,9 +19,9 @@ class OperationsTrendChart extends ChartWidget
         'xl' => 2,
     ];
 
-    protected ?string $heading = 'Daily operations';
+    protected ?string $heading = 'عملیات روزانه';
 
-    protected ?string $description = 'Orders, service bookings, and customer messages created over the last two weeks.';
+    protected ?string $description = 'سفارش‌ها، رزروهای خدمات و پیام‌های مشتریان در دو هفته گذشته.';
 
     protected ?string $maxHeight = '240px';
 
@@ -49,21 +49,21 @@ class OperationsTrendChart extends ChartWidget
         return [
             'datasets' => [
                 [
-                    'label' => 'Orders',
+                    'label' => __('Orders'),
                     'data' => DashboardMetrics::countByDay(Order::class, $days),
                     'borderColor' => '#f59e0b',
                     'backgroundColor' => 'rgba(245, 158, 11, 0.15)',
                     'tension' => 0.35,
                 ],
                 [
-                    'label' => 'Service bookings',
+                    'label' => __('Service bookings'),
                     'data' => DashboardMetrics::countByDay(ServiceBooking::class, $days),
                     'borderColor' => '#2563eb',
                     'backgroundColor' => 'rgba(37, 99, 235, 0.12)',
                     'tension' => 0.35,
                 ],
                 [
-                    'label' => 'Messages',
+                    'label' => __('Messages'),
                     'data' => DashboardMetrics::countByDay(CustomerMessage::class, $days),
                     'borderColor' => '#dc2626',
                     'backgroundColor' => 'rgba(220, 38, 38, 0.10)',

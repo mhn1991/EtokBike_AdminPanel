@@ -16,9 +16,9 @@ class MobileActivityStatsWidget extends StatsOverviewWidget
 
     protected static ?int $sort = 4;
 
-    protected ?string $heading = 'Mobile app activity';
+    protected ?string $heading = 'فعالیت اپ موبایل';
 
-    protected ?string $description = 'Live app usage from phone telemetry events.';
+    protected ?string $description = 'مصرف زنده اپ بر اساس رویدادهای تله‌متری موبایل.';
 
     protected ?string $pollingInterval = null;
 
@@ -52,26 +52,26 @@ class MobileActivityStatsWidget extends StatsOverviewWidget
             ->count();
 
         return [
-            Stat::make('Active users', DashboardMetrics::number($activeUsers))
-                ->description('Unique devices seen in the last 15 minutes')
+            Stat::make(__('Active users'), DashboardMetrics::number($activeUsers))
+                ->description(__('Unique devices seen in the last 15 minutes'))
                 ->chart(DashboardMetrics::distinctCountByDay(MobileAnalyticsEvent::class, 'device_id', 7))
                 ->color('success')
                 ->icon(Heroicon::DevicePhoneMobile)
                 ->url(MobileAnalyticsEventResource::getUrl()),
-            Stat::make('Daily active users', DashboardMetrics::number($dailyActiveUsers))
-                ->description('Unique devices seen since midnight')
+            Stat::make(__('Daily active users'), DashboardMetrics::number($dailyActiveUsers))
+                ->description(__('Unique devices seen since midnight'))
                 ->chart(DashboardMetrics::distinctCountByDay(MobileAnalyticsEvent::class, 'device_id', 7))
                 ->color('info')
                 ->icon(Heroicon::Users)
                 ->url(MobileAnalyticsEventResource::getUrl()),
-            Stat::make('Events today', DashboardMetrics::number($eventsToday))
-                ->description('Screen views, taps, opens, and heartbeats')
+            Stat::make(__('Events today'), DashboardMetrics::number($eventsToday))
+                ->description(__('Screen views, taps, opens, and heartbeats'))
                 ->chart(DashboardMetrics::countByDay(MobileAnalyticsEvent::class, 7, column: 'occurred_at'))
                 ->color('primary')
                 ->icon(Heroicon::CursorArrowRays)
                 ->url(MobileAnalyticsEventResource::getUrl()),
-            Stat::make('Phone errors', DashboardMetrics::number($errorsToday))
-                ->description('Error events reported by the app today')
+            Stat::make(__('Phone errors'), DashboardMetrics::number($errorsToday))
+                ->description(__('Error events reported by the app today'))
                 ->chart(DashboardMetrics::countByDay(
                     MobileAnalyticsEvent::class,
                     7,

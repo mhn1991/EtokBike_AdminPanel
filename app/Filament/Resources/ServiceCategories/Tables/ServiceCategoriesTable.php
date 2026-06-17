@@ -42,8 +42,8 @@ class ServiceCategoriesTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->emptyStateIcon(Heroicon::OutlinedWrenchScrewdriver)
-            ->emptyStateHeading('No service categories yet')
-            ->emptyStateDescription('Categories organize workshop services in the app.')
+            ->emptyStateHeading(__('No service categories yet'))
+            ->emptyStateDescription(__('Categories organize workshop services in the app.'))
             ->filters([
                 TernaryFilter::make('is_active')
                     ->label('Visible in app'),

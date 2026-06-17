@@ -22,15 +22,15 @@ class ServiceOfferingResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedWrenchScrewdriver;
 
-    protected static ?string $navigationLabel = 'Service offerings';
+    protected static ?string $navigationLabel = 'خدمات قابل ارائه';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Services';
+    protected static string|\UnitEnum|null $navigationGroup = 'خدمات';
 
     protected static ?int $navigationSort = 2;
 
-    protected static ?string $modelLabel = 'service offering';
+    protected static ?string $modelLabel = 'خدمت قابل ارائه';
 
-    protected static ?string $pluralModelLabel = 'service offerings';
+    protected static ?string $pluralModelLabel = 'خدمات قابل ارائه';
 
     protected static ?string $recordTitleAttribute = 'title';
 

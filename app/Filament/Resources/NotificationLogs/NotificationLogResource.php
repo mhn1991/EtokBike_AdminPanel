@@ -28,9 +28,9 @@ class NotificationLogResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedEnvelope;
 
-    protected static ?string $navigationLabel = 'Logs';
+    protected static ?string $navigationLabel = 'لاگ‌ها';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Notifications';
+    protected static string|\UnitEnum|null $navigationGroup = 'اعلان‌ها';
 
     protected static ?int $navigationSort = 2;
 
@@ -38,14 +38,14 @@ class NotificationLogResource extends Resource
     {
         return $schema->components([
             Section::make('Notification log')
-                ->description('Track sent, failed, and pending notification attempts.')
+                ->description(__('Track sent, failed, and pending notification attempts.'))
                 ->columns(3)
                 ->schema([
                     Select::make('notification_template_id')->label('Template')->relationship('template', 'key')->native(false)->searchable()->preload(),
                     Select::make('order_id')->label('Order')->relationship('order', 'order_number')->native(false)->searchable()->preload(),
-                    Select::make('channel')->options(NotificationTemplate::CHANNEL_OPTIONS)->native(false)->required()->default('email'),
+                    Select::make('channel')->options(\App\Support\Admin\FilamentLocalization::options(NotificationTemplate::CHANNEL_OPTIONS))->native(false)->required()->default('email'),
                     TextInput::make('recipient')->required()->maxLength(255),
-                    ToggleButtons::make('status')->options(NotificationLog::STATUS_OPTIONS)->colors([
+                    ToggleButtons::make('status')->options(\App\Support\Admin\FilamentLocalization::options(NotificationLog::STATUS_OPTIONS))->colors([
                         'pending' => 'warning',
                         'sent' => 'success',
                         'failed' => 'danger',
@@ -63,19 +63,19 @@ class NotificationLogResource extends Resource
     {
         return $table->paginated(false)->striped()->columns([
             TextColumn::make('recipient')->description(fn (NotificationLog $record): string => collect([$record->channel, $record->order?->order_number])->filter()->join(' · '))->searchable()->wrap(),
-            TextColumn::make('status')->badge()->formatStateUsing(fn (string $state): string => NotificationLog::STATUS_OPTIONS[$state] ?? $state)->color(fn (string $state): string => match ($state) {
+            TextColumn::make('status')->badge()->formatStateUsing(fn (string $state): string => __(NotificationLog::STATUS_OPTIONS[$state] ?? $state))->color(fn (string $state): string => match ($state) {
                 'sent' => 'success',
                 'failed' => 'danger',
                 'cancelled' => 'gray',
                 default => 'warning',
             })->sortable(),
-            TextColumn::make('subject')->placeholder('-')->visibleFrom('md')->wrap(),
-            TextColumn::make('sent_at')->dateTime()->placeholder('-')->visibleFrom('lg')->sortable(),
+            TextColumn::make('subject')->placeholder(__('-'))->visibleFrom('md')->wrap(),
+            TextColumn::make('sent_at')->dateTime()->placeholder(__('-'))->visibleFrom('lg')->sortable(),
             TextColumn::make('created_at')->dateTime()->visibleFrom('xl')->sortable(),
         ])->emptyStateIcon(Heroicon::OutlinedEnvelope)
-            ->emptyStateHeading('No notification logs yet')
-            ->emptyStateDescription('Notification attempts will be tracked here once integrations are enabled.')
-            ->filters([SelectFilter::make('status')->options(NotificationLog::STATUS_OPTIONS)])
+            ->emptyStateHeading(__('No notification logs yet'))
+            ->emptyStateDescription(__('Notification attempts will be tracked here once integrations are enabled.'))
+            ->filters([SelectFilter::make('status')->options(\App\Support\Admin\FilamentLocalization::options(NotificationLog::STATUS_OPTIONS))])
             ->defaultSort('created_at', 'desc')
             ->recordActions([EditAction::make()])
             ->toolbarActions([]);

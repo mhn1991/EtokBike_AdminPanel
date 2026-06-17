@@ -17,13 +17,13 @@ class CommerceReports extends Page
 {
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedChartBar;
 
-    protected static ?string $navigationLabel = 'Commerce reports';
+    protected static ?string $navigationLabel = 'گزارش‌های فروش';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Reports';
+    protected static string|\UnitEnum|null $navigationGroup = 'گزارش‌ها';
 
     protected static ?int $navigationSort = 1;
 
-    protected static ?string $title = 'Commerce reports';
+    protected static ?string $title = 'گزارش‌های فروش';
 
     protected string $view = 'filament.pages.commerce-reports';
 

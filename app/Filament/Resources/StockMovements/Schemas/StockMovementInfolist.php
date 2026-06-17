@@ -20,7 +20,7 @@ class StockMovementInfolist
                             ->label('Product'),
                         TextEntry::make('type')
                             ->badge()
-                            ->formatStateUsing(fn (string $state): string => StockMovement::TYPE_OPTIONS[$state] ?? $state)
+                            ->formatStateUsing(fn (string $state): string => __(StockMovement::TYPE_OPTIONS[$state] ?? $state))
                             ->color(fn (string $state): string => match ($state) {
                                 'stock_in', 'sale_return', 'return' => 'success',
                                 'sale', 'manual_removal', 'damage' => 'danger',
@@ -36,9 +36,9 @@ class StockMovementInfolist
                             ->label('New')
                             ->formatStateUsing(fn (?int $state): string => number_format($state ?? 0)),
                         TextEntry::make('reference')
-                            ->placeholder('-'),
+                            ->placeholder(__('-')),
                         TextEntry::make('reason')
-                            ->placeholder('-')
+                            ->placeholder(__('-'))
                             ->columnSpanFull(),
                     ]),
                 Section::make('Linked records')
@@ -46,16 +46,16 @@ class StockMovementInfolist
                     ->schema([
                         TextEntry::make('order.order_number')
                             ->label('Order')
-                            ->placeholder('-'),
+                            ->placeholder(__('-')),
                         TextEntry::make('orderItem.title')
                             ->label('Order item')
-                            ->placeholder('-'),
+                            ->placeholder(__('-')),
                         TextEntry::make('user.name')
                             ->label('User')
-                            ->placeholder('-'),
+                            ->placeholder(__('-')),
                         TextEntry::make('created_at')
                             ->dateTime()
-                            ->placeholder('-'),
+                            ->placeholder(__('-')),
                     ]),
             ]);
     }
