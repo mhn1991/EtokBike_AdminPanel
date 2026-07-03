@@ -44,7 +44,7 @@ class ServiceOffering extends Model
             'price' => $this->price_label,
             'thumbnailText' => $this->thumbnail_text,
             'thumbnailColor' => $this->thumbnail_color,
-            'imageUrl' => ImageUrl::resolve($this->image_url),
+            'imageUrl' => ImageUrl::resolveForMobile($this->image_url),
         ];
     }
 }

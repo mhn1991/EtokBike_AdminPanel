@@ -231,7 +231,7 @@ class HomeScreenBuilder
             'price' => $program->book_label ?: 'رزرو برنامه',
             'thumbnailText' => $program->thumbnail_text,
             'thumbnailColor' => $program->thumbnail_color,
-            'imageUrl' => ImageUrl::resolve($program->image_url),
+            'imageUrl' => ImageUrl::resolveForMobile($program->image_url),
         ];
     }
 

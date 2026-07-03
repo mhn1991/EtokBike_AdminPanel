@@ -38,7 +38,7 @@ class ProgramGalleryItem extends Model
             'thumbnailText' => $this->thumbnail_text,
             'thumbnailColor' => $this->thumbnail_color,
             'caption' => $this->caption,
-            'imageUrl' => ImageUrl::resolve($this->image_url),
+            'imageUrl' => ImageUrl::resolveForMobile($this->image_url),
         ];
     }
 }

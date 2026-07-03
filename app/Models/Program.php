@@ -115,7 +115,7 @@ class Program extends Model
             'details' => $this->details ?: [],
             'thumbnailText' => $this->thumbnail_text,
             'thumbnailColor' => $this->thumbnail_color,
-            'imageUrl' => ImageUrl::resolve($this->image_url),
+            'imageUrl' => ImageUrl::resolveForMobile($this->image_url),
         ];
 
         if ($this->program_state === 'future') {

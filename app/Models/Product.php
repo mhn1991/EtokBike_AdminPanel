@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 #[Fillable([
     'product_category_id',
@@ -85,6 +87,21 @@ class Product extends Model
         return $this->hasMany(ProductVariant::class);
     }
 
+    protected static function booted(): void
+    {
+        static::updated(function (Product $product): void {
+            if (! $product->wasChanged('image_url')) {
+                return;
+            }
+
+            $product->deleteStoredProductImageIfUnused($product->getOriginal('image_url'));
+        });
+
+        static::deleted(function (Product $product): void {
+            $product->deleteStoredProductImageIfUnused($product->image_url);
+        });
+    }
+
     protected function casts(): array
     {
         return [
@@ -130,7 +147,46 @@ class Product extends Model
             'stockLabel' => $this->stock_label,
             'thumbnailText' => $this->thumbnail_text,
             'thumbnailColor' => $this->thumbnail_color,
-            'imageUrl' => ImageUrl::resolve($this->image_url),
+            'imageUrl' => ImageUrl::resolveForMobile($this->image_url),
         ];
+    }
+
+    private function deleteStoredProductImageIfUnused(?string $path): void
+    {
+        $path = $this->normalizeStoredProductImagePath($path);
+
+        if ($path === null) {
+            return;
+        }
+
+        $isUsedByAnotherProduct = static::query()
+            ->whereKeyNot($this->getKey())
+            ->where('image_url', $path)
+            ->exists();
+
+        if ($isUsedByAnotherProduct) {
+            return;
+        }
+
+        Storage::disk('public')->delete($path);
+    }
+
+    private function normalizeStoredProductImagePath(?string $path): ?string
+    {
+        if (blank($path)) {
+            return null;
+        }
+
+        $path = ltrim(trim((string) $path), '/');
+
+        if (
+            Str::startsWith($path, ['http://', 'https://']) ||
+            str_contains($path, '..') ||
+            ! Str::startsWith($path, 'mobile/products/')
+        ) {
+            return null;
+        }
+
+        return $path;
     }
 }

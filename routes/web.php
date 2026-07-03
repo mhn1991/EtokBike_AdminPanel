@@ -17,13 +17,29 @@ use Illuminate\Support\Facades\Route;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 Route::get('{assetPath}', function (Request $request, string $assetPath): BinaryFileResponse {
-    abort_unless(str_contains($request->getBaseUrl(), 'index.php'), 404);
+    $hasIndexedBaseUrl = str_contains($request->getBaseUrl(), 'index.php');
+    $hasIndexedPath = str_starts_with($assetPath, 'index.php/');
 
-    $publicPath = realpath(public_path());
-    $filePath = realpath(public_path($assetPath));
+    if ($hasIndexedPath) {
+        $assetPath = substr($assetPath, strlen('index.php/'));
+    }
 
-    abort_if($publicPath === false || $filePath === false, 404);
-    abort_unless(str_starts_with($filePath, $publicPath.DIRECTORY_SEPARATOR), 404);
+    $isStorageAsset = str_starts_with($assetPath, 'storage/');
+
+    abort_unless($hasIndexedBaseUrl || $hasIndexedPath || $isStorageAsset, 404);
+
+    if ($isStorageAsset) {
+        $rootPath = realpath(storage_path('app/public'));
+        $filePath = $rootPath === false
+            ? false
+            : realpath($rootPath.DIRECTORY_SEPARATOR.substr($assetPath, strlen('storage/')));
+    } else {
+        $rootPath = realpath(public_path());
+        $filePath = realpath(public_path($assetPath));
+    }
+
+    abort_if($rootPath === false || $filePath === false, 404);
+    abort_unless(str_starts_with($filePath, $rootPath.DIRECTORY_SEPARATOR), 404);
     abort_unless(is_file($filePath), 404);
 
     $contentType = match (strtolower(pathinfo($filePath, PATHINFO_EXTENSION))) {
@@ -32,6 +48,8 @@ Route::get('{assetPath}', function (Request $request, string $assetPath): Binary
         'json' => 'application/json; charset=UTF-8',
         'png' => 'image/png',
         'jpg', 'jpeg' => 'image/jpeg',
+        'gif' => 'image/gif',
+        'avif' => 'image/avif',
         'svg' => 'image/svg+xml',
         'webp' => 'image/webp',
         'ico' => 'image/x-icon',
@@ -44,7 +62,7 @@ Route::get('{assetPath}', function (Request $request, string $assetPath): Binary
         ->setMaxAge(604800)
         ->setPublic();
 })
-    ->where('assetPath', '(?:build|css|fonts|images|js)/.*|favicon\.ico')
+    ->where('assetPath', '(?:index\.php/)?(?:(?:build|css|fonts|images|js|storage)/.*|favicon\.ico)')
     ->name('public-assets.indexed');
 
 Route::middleware('auth')->prefix('admin')->group(function (): void {

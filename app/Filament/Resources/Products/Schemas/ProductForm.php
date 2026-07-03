@@ -143,11 +143,24 @@ class ProductForm
                             ->default('#101114'),
                         FileUpload::make('image_url')
                             ->label('Product image')
+                            ->helperText(__('Use the edit control to adjust the crop, upload a new file to replace it, or remove it and save to return to the fallback thumbnail.'))
                             ->disk('public')
                             ->directory('mobile/products')
                             ->visibility('public')
                             ->image()
+                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                            ->imageEditor()
+                            ->imageEditorAspectRatioOptions([
+                                '4:3',
+                                '1:1',
+                                '16:9',
+                            ])
                             ->imagePreviewHeight('160')
+                            ->panelLayout('integrated')
+                            ->removeUploadedFileButtonPosition('left bottom')
+                            ->uploadButtonPosition('right bottom')
+                            ->uploadProgressIndicatorPosition('right bottom')
+                            ->deletable()
                             ->openable()
                             ->downloadable()
                             ->maxSize(4096),

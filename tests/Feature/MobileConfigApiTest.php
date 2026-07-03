@@ -96,6 +96,8 @@ class MobileConfigApiTest extends TestCase
 
     public function test_it_returns_products_from_the_database_for_the_shop_screen(): void
     {
+        config(['mobile.base_url' => 'http://10.0.2.2:8001']);
+
         $category = ProductCategory::query()->create([
             'slug' => 'bikes',
             'label' => 'دوچرخه',
@@ -122,7 +124,7 @@ class MobileConfigApiTest extends TestCase
             ->assertJsonPath('sections.2.data.categories.0.id', 'bikes')
             ->assertJsonPath('sections.2.data.items.0.id', 'bike-panel-test')
             ->assertJsonPath('sections.2.data.items.0.title', 'دوچرخه پنل')
-            ->assertJsonPath('sections.2.data.items.0.imageUrl', 'http://127.0.0.1:8001/storage/mobile/products/bike-panel-test.jpg');
+            ->assertJsonPath('sections.2.data.items.0.imageUrl', 'http://10.0.2.2:8001/storage/mobile/products/bike-panel-test.jpg');
     }
 
     public function test_cart_screen_does_not_use_featured_products_as_sample_cart_items(): void
