@@ -24,52 +24,52 @@
                         name="q"
                         type="search"
                         placeholder="نام دوچرخه، قطعه یا لوازم جانبی"
-                        class="min-h-12 flex-1 rounded-md border border-white/20 bg-white px-4 text-neutral-950 outline-none focus:border-red-500 focus:ring-2 focus:ring-red-500"
+                        class="min-h-12 flex-1 rounded-xl border border-white/20 bg-white px-4 text-neutral-950 outline-none focus:border-brand focus:ring-2 focus:ring-brand"
                     >
-                    <button type="submit" class="min-h-12 rounded-md bg-red-700 px-6 text-sm font-semibold text-white hover:bg-red-800">
+                    <button type="submit" class="min-h-12 rounded-xl bg-brand px-6 text-sm font-semibold text-white transition hover:bg-brand-hover">
                         جستجو
                     </button>
                 </form>
                 <div class="mt-5 flex flex-wrap gap-3 text-sm font-semibold">
-                    <a href="{{ route('storefront.shop') }}" class="rounded-md bg-white px-4 py-2 text-neutral-950 hover:bg-red-700 hover:text-white">دیدن فروشگاه</a>
-                    <a href="{{ route('storefront.cart.show') }}" class="rounded-md border border-white/40 px-4 py-2 text-white hover:border-white hover:bg-white hover:text-neutral-950">سبد خرید</a>
+                    <a href="{{ route('storefront.shop') }}" class="rounded-xl bg-white px-4 py-2 text-neutral-950 transition hover:bg-brand hover:text-white">دیدن فروشگاه</a>
+                    <a href="{{ route('storefront.cart.show') }}" class="rounded-xl border border-white/40 px-4 py-2 text-white transition hover:border-white hover:bg-white hover:text-neutral-950">سبد خرید</a>
                 </div>
             </div>
         </div>
     </section>
 
-    <section class="bg-[#f6f3ef] py-10">
+    <section class="bg-surface-page py-10">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div class="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
                 <div>
-                    <h2 class="text-2xl font-semibold tracking-normal text-neutral-950">دسته‌بندی محصولات</h2>
-                    <p class="mt-2 text-sm leading-6 text-neutral-600">دسته‌های اصلی فروشگاه برای انتخاب سریع‌تر.</p>
+                    <h2 class="text-2xl font-semibold tracking-normal text-ink">دسته‌بندی محصولات</h2>
+                    <p class="mt-2 text-sm leading-6 text-muted">دسته‌های اصلی فروشگاه برای انتخاب سریع‌تر.</p>
                 </div>
-                <a href="{{ route('storefront.shop') }}" class="text-sm font-semibold text-red-700 hover:text-red-900">مشاهده همه محصولات</a>
+                <a href="{{ route('storefront.shop') }}" class="text-sm font-semibold text-brand transition hover:text-brand-hover">مشاهده همه محصولات</a>
             </div>
 
-            <div class="mt-6 grid gap-4 sm:grid-cols-3">
+            <div class="mt-6 grid gap-4 sm:grid-cols-3 xl:grid-cols-4">
                 @foreach ($categories as $category)
-                    <a href="{{ route('storefront.categories.show', $category) }}" class="rounded-lg border border-neutral-200 bg-white p-5 hover:border-red-700">
-                        <span class="text-sm font-semibold text-red-700">{{ $category->active_products_count }} محصول</span>
-                        <h3 class="mt-3 text-xl font-semibold text-neutral-950">{{ $category->label }}</h3>
-                        <p class="mt-2 text-sm text-neutral-600">مشاهده محصولات دسته {{ $category->label }}</p>
+                    <a href="{{ route('storefront.categories.show', $category) }}" class="rounded-2xl border border-border bg-surface p-5 shadow-sm transition hover:border-brand">
+                        <span class="text-sm font-semibold text-brand">{{ $category->active_products_count }} محصول</span>
+                        <h3 class="mt-3 text-xl font-semibold text-ink">{{ $category->label }}</h3>
+                        <p class="mt-2 text-sm text-muted">مشاهده محصولات دسته {{ $category->label }}</p>
                     </a>
                 @endforeach
             </div>
         </div>
     </section>
 
-    <section class="bg-white py-12">
+    <section class="bg-surface py-12">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div class="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
                 <div>
-                    <h2 class="text-2xl font-semibold tracking-normal text-neutral-950">محصولات پیشنهادی</h2>
-                    <p class="mt-2 text-sm leading-6 text-neutral-600">انتخاب‌های مناسب برای شروع خرید.</p>
+                    <h2 class="text-2xl font-semibold tracking-normal text-ink">محصولات پیشنهادی</h2>
+                    <p class="mt-2 text-sm leading-6 text-muted">انتخاب‌های مناسب برای شروع خرید.</p>
                 </div>
             </div>
 
-            <div class="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            <div class="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
                 @foreach ($featuredProducts as $product)
                     @include('storefront.partials.product-card', ['product' => $product])
                 @endforeach
@@ -78,16 +78,16 @@
     </section>
 
     @if ($storeProfile)
-        <section class="border-t border-neutral-200 bg-[#f6f3ef] py-10">
+        <section class="border-t border-border bg-surface-page py-10">
             <div class="mx-auto grid max-w-7xl gap-6 px-4 sm:px-6 md:grid-cols-2 lg:px-8">
                 <div>
-                    <h2 class="text-xl font-semibold text-neutral-950">{{ $storeProfile->status_title }}</h2>
-                    <p class="mt-2 leading-7 text-neutral-700">{{ $storeProfile->status_description }}</p>
+                    <h2 class="text-xl font-semibold text-ink">{{ $storeProfile->status_title }}</h2>
+                    <p class="mt-2 leading-7 text-muted">{{ $storeProfile->status_description }}</p>
                 </div>
                 <div>
-                    <h2 class="text-xl font-semibold text-neutral-950">{{ $storeProfile->branch_title }}</h2>
-                    <p class="mt-2 leading-7 text-neutral-700">{{ $storeProfile->address }}</p>
-                    <p class="mt-1 leading-7 text-neutral-700">{{ $storeProfile->hours }}</p>
+                    <h2 class="text-xl font-semibold text-ink">{{ $storeProfile->branch_title }}</h2>
+                    <p class="mt-2 leading-7 text-muted">{{ $storeProfile->address }}</p>
+                    <p class="mt-1 leading-7 text-muted">{{ $storeProfile->hours }}</p>
                 </div>
             </div>
         </section>

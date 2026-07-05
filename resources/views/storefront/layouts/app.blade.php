@@ -8,6 +8,21 @@
     $ogTitle = $meta['ogTitle'] ?? $title;
     $ogDescription = $meta['ogDescription'] ?? $description;
     $schemas = collect($structuredData ?? [])->filter()->values();
+    $desktopNavItems = [
+        ['label' => 'خانه', 'url' => route('storefront.home'), 'active' => request()->routeIs('storefront.home')],
+        ['label' => 'فروشگاه', 'url' => route('storefront.shop'), 'active' => request()->routeIs('storefront.shop', 'storefront.categories.show', 'storefront.products.show')],
+        ['label' => 'خدمات', 'url' => route('storefront.services'), 'active' => request()->routeIs('storefront.services')],
+        ['label' => 'برنامه‌ها', 'url' => route('storefront.events'), 'active' => request()->routeIs('storefront.events', 'storefront.events.show')],
+        ['label' => 'پیام', 'url' => route('storefront.messages'), 'active' => request()->routeIs('storefront.messages')],
+        ['label' => 'حساب', 'url' => route('storefront.account'), 'active' => request()->routeIs('storefront.account')],
+    ];
+    $mobileNavItems = [
+        ['label' => 'خانه', 'url' => route('storefront.home'), 'active' => request()->routeIs('storefront.home')],
+        ['label' => 'فروشگاه', 'url' => route('storefront.shop'), 'active' => request()->routeIs('storefront.shop', 'storefront.categories.show', 'storefront.products.show')],
+        ['label' => 'خدمات', 'url' => route('storefront.services'), 'active' => request()->routeIs('storefront.services')],
+        ['label' => 'برنامه‌ها', 'url' => route('storefront.events'), 'active' => request()->routeIs('storefront.events', 'storefront.events.show')],
+        ['label' => 'حساب', 'url' => route('storefront.account'), 'active' => request()->routeIs('storefront.account')],
+    ];
 @endphp
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
@@ -38,7 +53,7 @@
             @vite(['resources/css/app.css', 'resources/js/app.js'])
         @else
             <style>
-                body { margin: 0; background: #f6f3ef; color: #171717; font-family: ui-sans-serif, system-ui, sans-serif; }
+                body { margin: 0; background: #FAF8F5; color: #101114; font-family: Tahoma, ui-sans-serif, system-ui, sans-serif; }
                 a { color: inherit; }
                 img { max-width: 100%; height: auto; }
             </style>
@@ -50,30 +65,27 @@
             <script type="application/ld+json">@json($schema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)</script>
         @endforeach
     </head>
-    <body class="bg-[#f6f3ef] text-neutral-950 antialiased selection:bg-red-700 selection:text-white">
-        <a href="#content" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:right-3 focus:z-50 focus:rounded-md focus:bg-white focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-neutral-950">
+    <body class="storefront-shell flex min-h-dvh flex-col bg-surface-page pb-20 text-ink antialiased selection:bg-brand selection:text-white md:pb-0">
+        <a href="#content" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:right-3 focus:z-50 focus:rounded-xl focus:bg-surface focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-ink">
             رفتن به محتوا
         </a>
 
-        <header class="sticky top-0 z-40 border-b border-neutral-200/80 bg-[#f6f3ef]/95 backdrop-blur">
+        <header class="sticky top-0 z-40 border-b border-border/80 bg-surface-page/95 backdrop-blur">
             <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
                 <a href="{{ route('storefront.home') }}" class="flex items-center gap-3" aria-label="EtokBike">
-                    <span class="grid size-10 place-items-center rounded-md bg-neutral-950 text-sm font-bold text-white">ET</span>
-                    <span class="text-lg font-semibold tracking-normal">EtokBike</span>
+                    <span class="grid size-10 place-items-center rounded-xl bg-brand text-sm font-bold text-white shadow-sm shadow-red-900/10">ET</span>
+                    <span class="text-lg font-semibold tracking-normal text-ink">EtokBike</span>
                 </a>
 
-                <nav class="hidden items-center gap-6 text-sm font-medium text-neutral-700 md:flex" aria-label="Main navigation">
-                    <a href="{{ route('storefront.home') }}" class="hover:text-red-700 @if(request()->routeIs('storefront.home')) text-red-700 @endif">خانه</a>
-                    <a href="{{ route('storefront.shop') }}" class="hover:text-red-700 @if(request()->routeIs('storefront.shop', 'storefront.categories.show', 'storefront.products.show')) text-red-700 @endif">فروشگاه</a>
-                    <a href="{{ route('storefront.services') }}" class="hover:text-red-700 @if(request()->routeIs('storefront.services')) text-red-700 @endif">خدمات</a>
-                    <a href="{{ route('storefront.events') }}" class="hover:text-red-700 @if(request()->routeIs('storefront.events', 'storefront.events.show')) text-red-700 @endif">برنامه‌ها</a>
-                    <a href="{{ route('storefront.messages') }}" class="hover:text-red-700 @if(request()->routeIs('storefront.messages')) text-red-700 @endif">پیام</a>
-                    <a href="{{ route('storefront.account') }}" class="hover:text-red-700 @if(request()->routeIs('storefront.account')) text-red-700 @endif">پیگیری</a>
+                <nav class="hidden items-center gap-6 text-sm font-medium text-muted md:flex" aria-label="Main navigation">
+                    @foreach ($desktopNavItems as $item)
+                        <a href="{{ $item['url'] }}" class="transition hover:text-brand @if($item['active']) text-brand @endif">{{ $item['label'] }}</a>
+                    @endforeach
                 </nav>
 
-                <a href="{{ route('storefront.cart.show') }}" class="inline-flex min-h-10 items-center gap-2 rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm font-semibold text-neutral-950 hover:border-red-700 hover:text-red-700">
+                <a href="{{ route('storefront.cart.show') }}" class="inline-flex min-h-10 items-center gap-2 rounded-xl border border-border bg-surface px-3 py-2 text-sm font-semibold text-ink shadow-sm transition hover:border-brand hover:text-brand">
                     <span>سبد خرید</span>
-                    <span class="grid min-w-6 place-items-center rounded-md bg-neutral-950 px-2 py-0.5 text-xs text-white">{{ $cartCount ?? 0 }}</span>
+                    <span class="grid min-w-6 place-items-center rounded-lg bg-brand px-2 py-0.5 text-xs text-white">{{ $cartCount ?? 0 }}</span>
                 </a>
             </div>
         </header>
@@ -86,34 +98,48 @@
             </div>
         @endif
 
-        <main id="content">
+        <main id="content" class="flex-1">
             @yield('content')
         </main>
 
-        <footer class="border-t border-neutral-200 bg-white">
-            <div class="mx-auto grid max-w-7xl gap-8 px-4 py-10 text-sm text-neutral-700 sm:px-6 md:grid-cols-3 lg:px-8">
+        <footer class="mt-auto border-t border-border bg-surface">
+            <div class="mx-auto grid max-w-7xl gap-8 px-4 py-10 text-sm text-muted sm:px-6 md:grid-cols-3 lg:px-8">
                 <div>
-                    <p class="text-base font-semibold text-neutral-950">EtokBike</p>
+                    <p class="text-base font-semibold text-ink">EtokBike</p>
                     <p class="mt-3 leading-7">فروشگاه دوچرخه، قطعات مصرفی، لوازم جانبی و سرویس تخصصی.</p>
                 </div>
                 <div>
-                    <p class="font-semibold text-neutral-950">خرید</p>
+                    <p class="font-semibold text-ink">خرید</p>
                     <div class="mt-3 grid gap-2">
-                        <a class="hover:text-red-700" href="{{ route('storefront.shop') }}">همه محصولات</a>
-                        <a class="hover:text-red-700" href="{{ route('storefront.cart.show') }}">سبد خرید</a>
-                        <a class="hover:text-red-700" href="{{ route('storefront.account') }}">پیگیری سفارش</a>
+                        <a class="transition hover:text-brand" href="{{ route('storefront.shop') }}">همه محصولات</a>
+                        <a class="transition hover:text-brand" href="{{ route('storefront.cart.show') }}">سبد خرید</a>
+                        <a class="transition hover:text-brand" href="{{ route('storefront.account') }}">پیگیری سفارش</a>
                     </div>
                 </div>
                 <div>
-                    <p class="font-semibold text-neutral-950">خدمات مشتری</p>
+                    <p class="font-semibold text-ink">خدمات مشتری</p>
                     <div class="mt-3 grid gap-2">
-                        <a class="hover:text-red-700" href="{{ route('storefront.services') }}">رزرو خدمات</a>
-                        <a class="hover:text-red-700" href="{{ route('storefront.events') }}">برنامه‌ها</a>
-                        <a class="hover:text-red-700" href="{{ route('storefront.messages') }}">ارسال پیام</a>
-                        <a class="hover:text-red-700" href="{{ route('storefront.sitemap') }}">نقشه سایت</a>
+                        <a class="transition hover:text-brand" href="{{ route('storefront.services') }}">رزرو خدمات</a>
+                        <a class="transition hover:text-brand" href="{{ route('storefront.events') }}">برنامه‌ها</a>
+                        <a class="transition hover:text-brand" href="{{ route('storefront.messages') }}">ارسال پیام</a>
+                        <a class="transition hover:text-brand" href="{{ route('storefront.sitemap') }}">نقشه سایت</a>
                     </div>
                 </div>
             </div>
         </footer>
+
+        <nav class="fixed inset-x-0 bottom-0 z-50 border-t border-border bg-surface/95 px-2 pb-[max(env(safe-area-inset-bottom),0.5rem)] pt-2 shadow-[0_-16px_32px_rgba(16,17,20,0.08)] backdrop-blur md:hidden" aria-label="Mobile navigation">
+            <div class="mx-auto grid max-w-md grid-cols-5 gap-1 text-center text-[11px] font-semibold">
+                @foreach ($mobileNavItems as $item)
+                    <a
+                        href="{{ $item['url'] }}"
+                        class="flex min-h-12 items-center justify-center rounded-xl px-1 transition @if($item['active']) bg-brand-soft text-brand @else text-muted hover:bg-surface-alt hover:text-ink @endif"
+                        @if($item['active']) aria-current="page" @endif
+                    >
+                        {{ $item['label'] }}
+                    </a>
+                @endforeach
+            </div>
+        </nav>
     </body>
 </html>

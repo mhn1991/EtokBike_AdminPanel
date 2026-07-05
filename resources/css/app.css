@@ -6,6 +6,97 @@
 @source '../**/*.js';
 
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+    --color-brand: #D71920;
+    --color-brand-hover: #B0141A;
+    --color-brand-soft: #FFF0F1;
+    --color-surface-page: #FAF8F5;
+    --color-surface: #FFFFFF;
+    --color-surface-alt: #F3F1ED;
+    --color-ink: #101114;
+    --color-muted: #626368;
+    --color-border: #E5E2DC;
+    --color-secondary: #1B4D3E;
+    --color-highlight: #E8A317;
+    --font-sans: Tahoma, 'Vazirmatn', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
+}
+
+@layer base {
+    html,
+    body {
+        min-height: 100%;
+    }
+
+    body {
+        margin: 0;
+        background: var(--color-surface-page);
+        color: var(--color-ink);
+        font-family: var(--font-sans);
+    }
+
+    input,
+    select,
+    textarea,
+    button {
+        font: inherit;
+    }
+}
+
+@layer components {
+    .storefront-shell {
+        min-height: 100dvh;
+        width: 100%;
+    }
+
+    .storefront-shell main {
+        width: 100%;
+    }
+
+    .storefront-shell .max-w-7xl {
+        max-width: none !important;
+    }
+
+    .storefront-control {
+        min-height: 2.75rem;
+        border-radius: 0.75rem;
+        border: 1px solid var(--color-border);
+        background: var(--color-surface);
+        color: var(--color-ink);
+        outline: none;
+    }
+
+    .storefront-control:focus {
+        border-color: var(--color-brand);
+        box-shadow: 0 0 0 3px rgb(215 25 32 / 0.16);
+    }
+
+    .storefront-primary-action {
+        min-height: 2.75rem;
+        border-radius: 0.75rem;
+        background: var(--color-brand);
+        color: white;
+        font-size: 0.875rem;
+        font-weight: 700;
+        transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
+    }
+
+    .storefront-primary-action:hover {
+        background: var(--color-brand-hover);
+    }
+
+    .storefront-secondary-action {
+        min-height: 2.75rem;
+        border-radius: 0.75rem;
+        border: 1px solid var(--color-border);
+        background: var(--color-surface);
+        color: var(--color-ink);
+        font-size: 0.875rem;
+        font-weight: 700;
+        transition: border-color 150ms ease, color 150ms ease, background-color 150ms ease;
+    }
+
+    .storefront-secondary-action:hover {
+        border-color: var(--color-brand);
+        color: var(--color-brand);
+    }
 }

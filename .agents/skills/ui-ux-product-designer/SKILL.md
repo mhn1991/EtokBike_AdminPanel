@@ -323,3 +323,219 @@ When you finish a UI/UX task, summarize:
 6. Any tests, builds, or checks run
 
 If you cannot run the app visually, say that clearly and still perform a code-level UI review.
+
+## Full-Screen and Mobile Space Usage
+
+The website and mobile app must use the full available screen intelligently, especially on mobile devices.
+
+Do not design narrow, boxed, desktop-style layouts on mobile. The UI should feel native, spacious, and properly adapted to the screen size.
+
+### Core Rule
+
+Use the full width and height of the device where appropriate, while still keeping readable padding and safe spacing.
+
+The goal is:
+
+* No unnecessary empty margins on mobile
+* No small centred desktop containers on mobile
+* No wasted left/right space
+* No cramped content
+* No fixed-width layouts that break on small screens
+* Full-screen mobile-first layouts
+* Strong use of available vertical space
+* Clear thumb-friendly actions
+
+### Mobile Website Rules
+
+For mobile web:
+
+* Body should use the full viewport width.
+* Remove default page margins.
+* Main app layout should fill the screen.
+* Avoid fixed desktop container widths on mobile.
+* Use responsive padding instead of fixed margins.
+* Use full-width cards, lists, forms, and product sections where suitable.
+* Use sticky bottom actions for important flows such as basket, checkout, product detail, and contact actions.
+* Use bottom navigation where the site behaves like an app.
+* Use large touch targets.
+* Keep product images large and clear.
+* Use horizontal category chips only when useful.
+* Do not force users to zoom.
+
+Recommended mobile layout behaviour:
+
+* Header/search area at the top
+* Main content fills the middle
+* Bottom navigation or sticky CTA at the bottom
+* Product cards use most of the available width
+* Forms stretch naturally across the screen with safe padding
+* Important actions are reachable near the bottom of the screen
+
+Use modern viewport units carefully:
+
+* Prefer `min-height: 100dvh` for full-height mobile layouts.
+* Use `100svh` or `100dvh` where mobile browser address bars affect layout.
+* Avoid relying only on old `100vh` for mobile browsers.
+
+### Mobile App Rules
+
+For Android or native mobile app:
+
+* Use edge-to-edge design where appropriate.
+* Respect system safe areas, gesture navigation, status bar, and navigation bar.
+* Content should fill the available screen.
+* Use Scaffold-style layouts.
+* Top app bars, bottom navigation, and sticky action areas should feel integrated.
+* Avoid unnecessary wrapper boxes that make the app feel like a web page inside a phone.
+* Product listing, basket, profile, and category screens should use the full screen.
+* Product detail pages should make strong use of image area and sticky purchase/contact actions.
+* Forms should use full width with comfortable padding.
+* Empty states should be centred and use the available vertical space well.
+
+Do not hide the status bar or navigation bar unless the screen genuinely needs immersive mode, such as image preview, video, or onboarding artwork.
+
+### Desktop and Tablet Rules
+
+On larger screens, do not stretch text and forms too wide.
+
+Use maximum widths only for readability, not on mobile.
+
+Recommended behaviour:
+
+* Mobile: full width with safe padding
+* Tablet: wider cards and two-column layouts where useful
+* Desktop: centred content with sensible max width
+* Product grids expand responsively
+* Admin tables use the available horizontal space
+
+Examples:
+
+* Product grid: 1 column on small mobile, 2 columns on large mobile/tablet, 3–5 columns on desktop
+* Forms: full width on mobile, limited width on desktop
+* Product detail: vertical layout on mobile, image/details split layout on desktop
+* Admin dashboard: full-width tables and filters on desktop
+
+### Spacing for Full-Screen Layouts
+
+Full-screen does not mean content should touch the screen edges.
+
+Use safe padding:
+
+* Small mobile: 16px horizontal padding
+* Large mobile: 16–20px horizontal padding
+* Tablet: 24px or more
+* Desktop: 32px or container-based spacing
+
+Use full-width sections but keep internal padding consistent.
+
+### Mobile Navigation
+
+Prefer mobile-native navigation patterns:
+
+* Bottom navigation for main app sections
+* Sticky bottom CTA for product purchase/contact
+* Top search bar for browsing
+* Modal bottom sheets for filters and sorting
+* Full-screen dialogs only for complex flows
+* Avoid desktop-style sidebars on mobile
+
+### Product Screens
+
+Product screens should make strong use of the available screen.
+
+Product list:
+
+* Search and filters visible near the top
+* Product cards fill the available width
+* Images should be large enough to inspect the product
+* Price and availability should be easy to scan
+* Avoid tiny grid items on mobile
+
+Product detail:
+
+* Large product image at the top
+* Name, price, availability, and key specs immediately visible
+* Sticky bottom action area for Add to Basket, Call, or WhatsApp
+* Description below the main buying information
+* Avoid hiding the main CTA far down the page
+
+### Implementation Rules
+
+When generating code:
+
+* Do not create mobile layouts with fixed desktop widths.
+* Do not use `max-width` on the main mobile app container unless overridden for mobile.
+* Use responsive CSS or platform layout primitives.
+* Use `width: 100%` for primary mobile containers.
+* Use `min-height: 100dvh` for app-like web pages.
+* Remove default body margin.
+* Make the root app container fill the viewport.
+* Use safe-area insets where needed.
+* Keep bottom navigation and sticky CTAs safe from gesture bars.
+
+For web CSS, prefer patterns like:
+
+```css
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+}
+
+.app {
+  min-height: 100dvh;
+  width: 100%;
+}
+
+.page {
+  width: 100%;
+  padding-inline: 16px;
+}
+
+@media (min-width: 768px) {
+  .page {
+    padding-inline: 24px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .page {
+    max-width: 1200px;
+    margin-inline: auto;
+  }
+}
+```
+
+For Android Jetpack Compose, prefer:
+
+```kotlin
+Scaffold(
+    modifier = Modifier.fillMaxSize(),
+    bottomBar = { /* Bottom navigation or sticky action */ }
+) { paddingValues ->
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(paddingValues)
+            .padding(horizontal = 16.dp)
+    ) {
+        // Screen content
+    }
+}
+```
+
+### Design Review Checklist for Screen Usage
+
+Before finalising a mobile screen, check:
+
+* Does the screen use the full available width?
+* Is there unnecessary empty space on the left or right?
+* Does it look like a native mobile layout?
+* Is the main action easy to reach?
+* Does the content fill the vertical space naturally?
+* Are cards, forms, and lists responsive?
+* Are safe areas respected?
+* Is the layout still readable?
+* Are product images large enough?
+* Is the bottom navigation or CTA positioned correctly?
+* Does the same screen adapt well to tablet and desktop?
