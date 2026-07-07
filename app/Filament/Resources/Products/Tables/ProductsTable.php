@@ -3,6 +3,8 @@
 namespace App\Filament\Resources\Products\Tables;
 
 use App\Models\Product;
+use App\Models\ProductCategory;
+use App\Support\Admin\FilamentLocalization;
 use App\Support\Inventory\InventoryManager;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
@@ -28,6 +30,7 @@ class ProductsTable
             ->columns([
                 TextColumn::make('category.label')
                     ->label('Category')
+                    ->formatStateUsing(fn (?string $state, Product $record): string => $record->category?->pathLabel() ?? (string) $state)
                     ->visibleFrom('md')
                     ->sortable(),
                 TextColumn::make('title')
@@ -51,6 +54,13 @@ class ProductsTable
                         default => 'gray',
                     })
                     ->visibleFrom('md')
+                    ->sortable(),
+                TextColumn::make('variants_count')
+                    ->label('Variants')
+                    ->counts('variants')
+                    ->badge()
+                    ->formatStateUsing(fn (?int $state): string => number_format($state ?? 0))
+                    ->visibleFrom('lg')
                     ->sortable(),
                 TextColumn::make('price_value')
                     ->label('Price')
@@ -105,9 +115,9 @@ class ProductsTable
             ->filters([
                 SelectFilter::make('product_category_id')
                     ->label('Category')
-                    ->relationship('category', 'label'),
+                    ->options(fn (): array => ProductCategory::formOptions()),
                 SelectFilter::make('availability')
-                    ->options(\App\Support\Admin\FilamentLocalization::options(Product::AVAILABILITY_OPTIONS)),
+                    ->options(FilamentLocalization::options(Product::AVAILABILITY_OPTIONS)),
                 TernaryFilter::make('is_featured')
                     ->label('Featured'),
                 TernaryFilter::make('is_active')

@@ -126,7 +126,13 @@ class MobileCartController extends Controller
     private function cartPayload(string $deviceId, ?User $user): array
     {
         $items = $this->cartQuery($deviceId, $user)
-            ->with('product.category')
+            ->with([
+                'product.category',
+                'product.variants' => fn ($query) => $query
+                    ->where('is_active', true)
+                    ->orderBy('sort_order')
+                    ->orderBy('name'),
+            ])
             ->latest()
             ->get();
 

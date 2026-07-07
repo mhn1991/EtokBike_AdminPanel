@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\ProductCategories\Schemas;
 
 use App\Models\ProductCategory;
+use App\Support\Admin\FilamentLocalization;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -24,6 +25,14 @@ class ProductCategoryForm
                     ->description(__('Organizes product lists in the mobile shop.'))
                     ->columns(3)
                     ->schema([
+                        Select::make('parent_id')
+                            ->label('Parent category')
+                            ->options(fn (?ProductCategory $record): array => ProductCategory::formOptions($record))
+                            ->searchable()
+                            ->preload()
+                            ->placeholder(__('Top-level category'))
+                            ->helperText(__('Leave empty for a top-level category.'))
+                            ->columnSpanFull(),
                         TextInput::make('label')
                             ->required()
                             ->live(onBlur: true)
@@ -35,6 +44,7 @@ class ProductCategoryForm
                             ->maxLength(255),
                         TextInput::make('slug')
                             ->required()
+                            ->unique(ignoreRecord: true)
                             ->maxLength(255),
                         TextInput::make('sort_order')
                             ->required()
@@ -62,7 +72,7 @@ class ProductCategoryForm
                         TextInput::make('canonical_url')
                             ->maxLength(255),
                         Select::make('robots')
-                            ->options(\App\Support\Admin\FilamentLocalization::options(ProductCategory::ROBOTS_OPTIONS))
+                            ->options(FilamentLocalization::options(ProductCategory::ROBOTS_OPTIONS))
                             ->native(false)
                             ->required()
                             ->default('index,follow'),
@@ -91,7 +101,7 @@ class ProductCategoryForm
                             ->maxValue(1)
                             ->default(0.8),
                         Select::make('sitemap_change_frequency')
-                            ->options(\App\Support\Admin\FilamentLocalization::options(ProductCategory::CHANGE_FREQUENCY_OPTIONS))
+                            ->options(FilamentLocalization::options(ProductCategory::CHANGE_FREQUENCY_OPTIONS))
                             ->native(false)
                             ->required()
                             ->default('weekly'),

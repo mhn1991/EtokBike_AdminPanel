@@ -3,8 +3,12 @@
 namespace App\Filament\Resources\Products\Schemas;
 
 use App\Models\Product;
+use App\Models\ProductCategory;
+use App\Support\Admin\FilamentLocalization;
 use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\KeyValue;
+use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -28,7 +32,7 @@ class ProductForm
                     ->schema([
                         Select::make('product_category_id')
                             ->label('Category')
-                            ->relationship('category', 'label')
+                            ->options(fn (): array => ProductCategory::formOptions())
                             ->native(false)
                             ->searchable()
                             ->preload()
@@ -46,7 +50,7 @@ class ProductForm
                             ->required()
                             ->maxLength(255),
                         ToggleButtons::make('availability')
-                            ->options(\App\Support\Admin\FilamentLocalization::options(Product::AVAILABILITY_OPTIONS))
+                            ->options(FilamentLocalization::options(Product::AVAILABILITY_OPTIONS))
                             ->colors([
                                 'in_stock' => 'success',
                                 'low_stock' => 'warning',
@@ -102,6 +106,92 @@ class ProductForm
                             ->helperText(__('Shown in the app. Leave blank to format from price value.')),
                         TextInput::make('stock_label')
                             ->maxLength(255),
+                    ]),
+                Section::make('Variants')
+                    ->description(__('Add color, size, extra features, stock amount, and variant price for versions of the same product.'))
+                    ->schema([
+                        Repeater::make('variants')
+                            ->label('Product variants')
+                            ->relationship('variants', fn ($query) => $query->orderBy('sort_order')->orderBy('name'))
+                            ->defaultItems(0)
+                            ->columns(4)
+                            ->itemLabel(fn (array $state): string => self::variantItemLabel($state))
+                            ->addActionLabel(__('Add variant'))
+                            ->orderColumn('sort_order')
+                            ->reorderableWithButtons()
+                            ->mutateRelationshipDataBeforeCreateUsing(fn (array $data): array => self::normalizeVariantData($data))
+                            ->mutateRelationshipDataBeforeSaveUsing(fn (array $data): array => self::normalizeVariantData($data))
+                            ->schema([
+                                TextInput::make('name')
+                                    ->label('Variant name')
+                                    ->placeholder(__('Red / Large'))
+                                    ->helperText(__('Shown to staff and customers for this exact option.'))
+                                    ->live(onBlur: true)
+                                    ->required()
+                                    ->maxLength(255)
+                                    ->columnSpan(2),
+                                TextInput::make('sku')
+                                    ->label('Variant SKU')
+                                    ->maxLength(255)
+                                    ->unique(table: 'product_variants', column: 'sku', ignoreRecord: true)
+                                    ->columnSpan(2),
+                                TextInput::make('options.color')
+                                    ->label('Color')
+                                    ->placeholder(__('Red, Black, Blue...'))
+                                    ->maxLength(80),
+                                TextInput::make('options.size')
+                                    ->label('Size')
+                                    ->placeholder(__('S, M, L, 26, 29...'))
+                                    ->maxLength(80),
+                                KeyValue::make('options.attributes')
+                                    ->label('Extra features')
+                                    ->keyLabel('Feature')
+                                    ->valueLabel('Value')
+                                    ->helperText(__('Add any filterable feature, such as brand, material, model, or gender.'))
+                                    ->columnSpanFull(),
+                                TextInput::make('stock_quantity')
+                                    ->label('Amount')
+                                    ->required()
+                                    ->integer()
+                                    ->minValue(0)
+                                    ->default(0),
+                                TextInput::make('price_value')
+                                    ->label('Variant price')
+                                    ->integer()
+                                    ->minValue(0)
+                                    ->suffix('IRR')
+                                    ->helperText(__('Leave empty to use the base product price.')),
+                                TextInput::make('minimum_stock')
+                                    ->label('Low stock alert')
+                                    ->required()
+                                    ->integer()
+                                    ->minValue(0)
+                                    ->default(0),
+                                Toggle::make('is_active')
+                                    ->label('Active')
+                                    ->required()
+                                    ->default(true),
+                                FileUpload::make('image_url')
+                                    ->label('Variant image')
+                                    ->disk('public')
+                                    ->directory('mobile/product-variants')
+                                    ->visibility('public')
+                                    ->image()
+                                    ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                                    ->imageEditor()
+                                    ->imageEditorAspectRatioOptions([
+                                        '4:3',
+                                        '1:1',
+                                        '16:9',
+                                    ])
+                                    ->imagePreviewHeight('140')
+                                    ->panelLayout('integrated')
+                                    ->openable()
+                                    ->downloadable()
+                                    ->maxSize(4096)
+                                    ->columnSpanFull(),
+                            ])
+                            ->columnSpanFull(),
                     ]),
                 Section::make('Warehouse')
                     ->description(__('Use stock movements to change quantity after a product is created.'))
@@ -184,7 +274,7 @@ class ProductForm
                         TextInput::make('canonical_url')
                             ->maxLength(255),
                         Select::make('robots')
-                            ->options(\App\Support\Admin\FilamentLocalization::options(Product::ROBOTS_OPTIONS))
+                            ->options(FilamentLocalization::options(Product::ROBOTS_OPTIONS))
                             ->native(false)
                             ->required()
                             ->default('index,follow'),
@@ -213,11 +303,58 @@ class ProductForm
                             ->maxValue(1)
                             ->default(0.7),
                         Select::make('sitemap_change_frequency')
-                            ->options(\App\Support\Admin\FilamentLocalization::options(Product::CHANGE_FREQUENCY_OPTIONS))
+                            ->options(FilamentLocalization::options(Product::CHANGE_FREQUENCY_OPTIONS))
                             ->native(false)
                             ->required()
                             ->default('weekly'),
                     ]),
             ]);
+    }
+
+    /**
+     * @param  array<string, mixed>  $state
+     */
+    private static function variantItemLabel(array $state): string
+    {
+        $label = trim((string) ($state['name'] ?? ''));
+
+        if ($label !== '') {
+            return $label;
+        }
+
+        $options = collect($state['options'] ?? [])
+            ->only(['color', 'size'])
+            ->filter(fn (mixed $value): bool => filled($value))
+            ->join(' / ');
+
+        return $options !== '' ? $options : __('New variant');
+    }
+
+    /**
+     * @param  array<string, mixed>  $data
+     * @return array<string, mixed>
+     */
+    private static function normalizeVariantData(array $data): array
+    {
+        $options = collect($data['options'] ?? [])
+            ->map(function (mixed $value): mixed {
+                if (is_array($value)) {
+                    $value = collect($value)
+                        ->map(fn (mixed $item): mixed => is_string($item) ? trim($item) : $item)
+                        ->filter(fn (mixed $item): bool => filled($item) && ! is_array($item))
+                        ->all();
+
+                    return $value === [] ? null : $value;
+                }
+
+                return is_string($value) ? trim($value) : $value;
+            })
+            ->filter(fn (mixed $value): bool => filled($value))
+            ->all();
+
+        $data['options'] = $options === [] ? null : $options;
+        $data['price_value'] = filled($data['price_value'] ?? null) ? (int) $data['price_value'] : null;
+
+        return $data;
     }
 }

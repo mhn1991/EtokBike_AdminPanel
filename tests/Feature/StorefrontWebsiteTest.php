@@ -2,23 +2,23 @@
 
 namespace Tests\Feature;
 
+use App\Models\BikeProfile;
+use App\Models\CustomerMessage;
+use App\Models\CustomerProfile;
+use App\Models\DeliveryZone;
+use App\Models\DiscountCode;
+use App\Models\MessageDepartment;
 use App\Models\Order;
+use App\Models\PaymentTransaction;
 use App\Models\Product;
 use App\Models\ProductCategory;
+use App\Models\ProductVariant;
 use App\Models\Program;
-use App\Models\ProgramBooking;
 use App\Models\ProgramCategory;
 use App\Models\ServiceBooking;
 use App\Models\ServiceCategory;
 use App\Models\ServiceOffering;
 use App\Models\ServiceTimeSlot;
-use App\Models\MessageDepartment;
-use App\Models\CustomerMessage;
-use App\Models\CustomerProfile;
-use App\Models\BikeProfile;
-use App\Models\DeliveryZone;
-use App\Models\DiscountCode;
-use App\Models\PaymentTransaction;
 use App\Models\Shipment;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -48,6 +48,325 @@ class StorefrontWebsiteTest extends TestCase
             ->assertOk()
             ->assertSee('<link rel="canonical" href="'.route('storefront.shop').'">', false)
             ->assertSee('<meta name="robots" content="noindex,follow">', false);
+    }
+
+    public function test_parent_category_page_lists_products_from_nested_categories(): void
+    {
+        $parent = ProductCategory::query()->create([
+            'slug' => 'bikes',
+            'label' => 'دوچرخه',
+        ]);
+
+        $child = ProductCategory::query()->create([
+            'parent_id' => $parent->id,
+            'slug' => 'mountain-bikes',
+            'label' => 'دوچرخه کوهستان',
+        ]);
+
+        $product = Product::query()->create([
+            'product_category_id' => $child->id,
+            'slug' => 'nested-mountain-bike',
+            'title' => 'دوچرخه کوهستان nested',
+            'subtitle' => 'محصول دسته فرزند',
+            'availability' => 'in_stock',
+            'price_value' => 18000000,
+            'stock_quantity' => 3,
+        ]);
+
+        $this->get(route('storefront.categories.show', $parent))
+            ->assertOk()
+            ->assertSee($product->title)
+            ->assertSee('دوچرخه کوهستان');
+
+        $this->get(route('storefront.products.show', $product))
+            ->assertOk()
+            ->assertSee('دوچرخه')
+            ->assertSee('دوچرخه کوهستان');
+    }
+
+    public function test_shop_filters_category_then_variant_features_and_max_price(): void
+    {
+        $accessories = ProductCategory::query()->create([
+            'slug' => 'accessory',
+            'label' => 'Accessory',
+        ]);
+
+        $tShirts = ProductCategory::query()->create([
+            'parent_id' => $accessories->id,
+            'slug' => 't-shirts',
+            'label' => 'T-shirt',
+        ]);
+
+        $matching = Product::query()->create([
+            'product_category_id' => $tShirts->id,
+            'slug' => 'blue-xs-shirt',
+            'title' => 'Blue XS shirt',
+            'subtitle' => 'Matching accessory',
+            'availability' => 'in_stock',
+            'price_value' => 20000,
+            'stock_quantity' => 5,
+        ]);
+
+        ProductVariant::query()->create([
+            'product_id' => $matching->id,
+            'name' => 'Blue / XS',
+            'options' => [
+                'color' => 'blue',
+                'size' => 'xs',
+                'attributes' => [
+                    'brand' => 'Etok',
+                ],
+            ],
+            'price_value' => 14000,
+            'stock_quantity' => 3,
+        ]);
+
+        $wrongSize = Product::query()->create([
+            'product_category_id' => $tShirts->id,
+            'slug' => 'blue-large-shirt',
+            'title' => 'Blue large shirt',
+            'subtitle' => 'Wrong size',
+            'availability' => 'in_stock',
+            'price_value' => 14000,
+            'stock_quantity' => 5,
+        ]);
+
+        ProductVariant::query()->create([
+            'product_id' => $wrongSize->id,
+            'name' => 'Blue / L',
+            'options' => [
+                'color' => 'blue',
+                'size' => 'l',
+                'attributes' => [
+                    'brand' => 'Etok',
+                ],
+            ],
+            'price_value' => 14000,
+            'stock_quantity' => 3,
+        ]);
+
+        $wrongBrand = Product::query()->create([
+            'product_category_id' => $tShirts->id,
+            'slug' => 'other-brand-blue-xs-shirt',
+            'title' => 'Other brand blue XS shirt',
+            'subtitle' => 'Wrong dynamic feature',
+            'availability' => 'in_stock',
+            'price_value' => 14000,
+            'stock_quantity' => 5,
+        ]);
+
+        ProductVariant::query()->create([
+            'product_id' => $wrongBrand->id,
+            'name' => 'Blue / XS',
+            'options' => [
+                'color' => 'blue',
+                'size' => 'xs',
+                'attributes' => [
+                    'brand' => 'Other',
+                ],
+            ],
+            'price_value' => 14000,
+            'stock_quantity' => 3,
+        ]);
+
+        $tooExpensive = Product::query()->create([
+            'product_category_id' => $tShirts->id,
+            'slug' => 'expensive-blue-xs-shirt',
+            'title' => 'Expensive blue XS shirt',
+            'subtitle' => 'Too expensive',
+            'availability' => 'in_stock',
+            'price_value' => 30000,
+            'stock_quantity' => 5,
+        ]);
+
+        ProductVariant::query()->create([
+            'product_id' => $tooExpensive->id,
+            'name' => 'Blue / XS',
+            'options' => [
+                'color' => 'blue',
+                'size' => 'xs',
+                'attributes' => [
+                    'brand' => 'Etok',
+                ],
+            ],
+            'price_value' => 18000,
+            'stock_quantity' => 3,
+        ]);
+
+        $otherCategory = ProductCategory::query()->create([
+            'slug' => 'bikes',
+            'label' => 'Bikes',
+        ]);
+
+        $bikeProduct = Product::query()->create([
+            'product_category_id' => $otherCategory->id,
+            'slug' => 'blue-xs-bike',
+            'title' => 'Blue XS bike',
+            'subtitle' => 'Wrong category',
+            'availability' => 'in_stock',
+            'price_value' => 14000,
+            'stock_quantity' => 5,
+        ]);
+
+        ProductVariant::query()->create([
+            'product_id' => $bikeProduct->id,
+            'name' => 'Blue / XS',
+            'options' => [
+                'color' => 'blue',
+                'size' => 'xs',
+                'attributes' => [
+                    'brand' => 'Etok',
+                ],
+            ],
+            'price_value' => 14000,
+            'stock_quantity' => 3,
+        ]);
+
+        $this->get(route('storefront.categories.show', [
+            'category' => $tShirts,
+            'features' => [
+                'brand' => 'Etok',
+                'color' => 'blue',
+                'size' => 'xs',
+            ],
+            'max_price' => 15000,
+        ]))
+            ->assertOk()
+            ->assertSee('Blue XS shirt')
+            ->assertSee('name="features[brand]"', false)
+            ->assertSee('name="features[color]"', false)
+            ->assertSee('name="features[size]"', false)
+            ->assertSee('برند: Etok')
+            ->assertSee('رنگ: blue')
+            ->assertSee('سایز: xs')
+            ->assertSee('کمتر از: 15,000')
+            ->assertDontSee('Blue large shirt')
+            ->assertDontSee('Other brand blue XS shirt')
+            ->assertDontSee('Expensive blue XS shirt')
+            ->assertDontSee('Blue XS bike');
+    }
+
+    public function test_shop_feature_options_only_show_available_combinations(): void
+    {
+        $category = ProductCategory::query()->create([
+            'slug' => 'faceted-shirts',
+            'label' => 'Faceted shirts',
+        ]);
+
+        $blueXs = Product::query()->create([
+            'product_category_id' => $category->id,
+            'slug' => 'facet-blue-xs',
+            'title' => 'Facet Blue XS',
+            'subtitle' => 'Available combination',
+            'availability' => 'in_stock',
+            'price_value' => 20000,
+            'stock_quantity' => 5,
+        ]);
+
+        ProductVariant::query()->create([
+            'product_id' => $blueXs->id,
+            'name' => 'Blue / XS / Etok',
+            'options' => [
+                'color' => 'blue',
+                'size' => 'xs',
+                'attributes' => [
+                    'brand' => 'Etok',
+                ],
+            ],
+            'price_value' => 14000,
+            'stock_quantity' => 3,
+        ]);
+
+        $redLarge = Product::query()->create([
+            'product_category_id' => $category->id,
+            'slug' => 'facet-red-large',
+            'title' => 'Facet Red Large',
+            'subtitle' => 'Wrong size for selected filters',
+            'availability' => 'in_stock',
+            'price_value' => 14000,
+            'stock_quantity' => 5,
+        ]);
+
+        ProductVariant::query()->create([
+            'product_id' => $redLarge->id,
+            'name' => 'Red / L / Etok',
+            'options' => [
+                'color' => 'red',
+                'size' => 'l',
+                'attributes' => [
+                    'brand' => 'Etok',
+                ],
+            ],
+            'price_value' => 14000,
+            'stock_quantity' => 3,
+        ]);
+
+        $greenOther = Product::query()->create([
+            'product_category_id' => $category->id,
+            'slug' => 'facet-green-other',
+            'title' => 'Facet Green Other',
+            'subtitle' => 'Wrong brand for selected filters',
+            'availability' => 'in_stock',
+            'price_value' => 14000,
+            'stock_quantity' => 5,
+        ]);
+
+        ProductVariant::query()->create([
+            'product_id' => $greenOther->id,
+            'name' => 'Green / XS / Other',
+            'options' => [
+                'color' => 'green',
+                'size' => 'xs',
+                'attributes' => [
+                    'brand' => 'Other',
+                ],
+            ],
+            'price_value' => 14000,
+            'stock_quantity' => 3,
+        ]);
+
+        $blackExpensive = Product::query()->create([
+            'product_category_id' => $category->id,
+            'slug' => 'facet-black-expensive',
+            'title' => 'Facet Black Expensive',
+            'subtitle' => 'Too expensive for selected filters',
+            'availability' => 'in_stock',
+            'price_value' => 30000,
+            'stock_quantity' => 5,
+        ]);
+
+        ProductVariant::query()->create([
+            'product_id' => $blackExpensive->id,
+            'name' => 'Black / XS / Etok',
+            'options' => [
+                'color' => 'black',
+                'size' => 'xs',
+                'attributes' => [
+                    'brand' => 'Etok',
+                ],
+            ],
+            'price_value' => 18000,
+            'stock_quantity' => 3,
+        ]);
+
+        $this->get(route('storefront.categories.show', [
+            'category' => $category,
+            'features' => [
+                'brand' => 'Etok',
+                'size' => 'xs',
+            ],
+            'max_price' => 15000,
+        ]))
+            ->assertOk()
+            ->assertSee('Facet Blue XS')
+            ->assertSee('name="features[color]"', false)
+            ->assertSee('<option value="blue"', false)
+            ->assertDontSee('<option value="red"', false)
+            ->assertDontSee('<option value="green"', false)
+            ->assertDontSee('<option value="black"', false)
+            ->assertDontSee('Facet Red Large')
+            ->assertDontSee('Facet Green Other')
+            ->assertDontSee('Facet Black Expensive');
     }
 
     public function test_product_page_exposes_canonical_url_and_product_json_ld(): void

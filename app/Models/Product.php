@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -135,6 +137,9 @@ class Product extends Model
         return [
             'id' => $this->slug,
             'category' => $this->category?->slug,
+            'categoryPath' => $this->category
+                ? $this->category->breadcrumbCategories()->pluck('slug')->values()->all()
+                : [],
             'availability' => $this->availability,
             'sku' => $this->sku ?: $this->slug,
             'stockQuantity' => $this->stock_quantity,
@@ -148,7 +153,34 @@ class Product extends Model
             'thumbnailText' => $this->thumbnail_text,
             'thumbnailColor' => $this->thumbnail_color,
             'imageUrl' => ImageUrl::resolveForMobile($this->image_url),
+            'variants' => $this->mobileVariants(),
         ];
+    }
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    private function mobileVariants(): array
+    {
+        if (! Schema::hasTable('product_variants')) {
+            return [];
+        }
+
+        $variants = $this->relationLoaded('variants')
+            ? $this->variants
+            : $this->variants()
+                ->where('is_active', true)
+                ->orderBy('sort_order')
+                ->orderBy('name')
+                ->get();
+
+        /** @var Collection<int, ProductVariant> $variants */
+        return $variants
+            ->filter(fn (ProductVariant $variant): bool => (bool) $variant->is_active)
+            ->sortBy('sort_order')
+            ->map(fn (ProductVariant $variant): array => $variant->toMobilePayload($this))
+            ->values()
+            ->all();
     }
 
     private function deleteStoredProductImageIfUnused(?string $path): void

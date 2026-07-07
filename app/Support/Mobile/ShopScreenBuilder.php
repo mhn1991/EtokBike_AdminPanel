@@ -4,6 +4,8 @@ namespace App\Support\Mobile;
 
 use App\Models\Product;
 use App\Models\ProductCategory;
+use App\Models\ProductVariant;
+use App\Models\User;
 use Illuminate\Support\Facades\Schema;
 
 class ShopScreenBuilder
@@ -11,17 +13,13 @@ class ShopScreenBuilder
     /**
      * @return array<string, mixed>
      */
-    public static function build(array $fallback, ?\App\Models\User $user = null): array
+    public static function build(array $fallback, ?User $user = null): array
     {
         if (! static::canUseDatabase()) {
             return $fallback;
         }
 
-        $categories = ProductCategory::query()
-            ->where('is_active', true)
-            ->orderBy('sort_order')
-            ->orderBy('label')
-            ->get();
+        $categories = ProductCategory::activeTreeForStorefront();
 
         if ($categories->isEmpty()) {
             return $fallback;
@@ -29,7 +27,7 @@ class ShopScreenBuilder
 
         $products = Product::query()
             ->where('is_active', true)
-            ->with('category')
+            ->with(static::productRelations())
             ->orderBy('sort_order')
             ->orderBy('title')
             ->get();
@@ -46,7 +44,11 @@ class ShopScreenBuilder
             $section['data']['categories'] = $categories
                 ->map(fn (ProductCategory $category): array => [
                     'id' => $category->slug,
+                    'parentId' => $category->parent?->slug,
                     'label' => $category->label,
+                    'treeLabel' => $category->tree_label,
+                    'depth' => (int) ($category->tree_depth ?? 0),
+                    'productCount' => (int) ($category->active_products_count ?? 0),
                 ])
                 ->values()
                 ->all();
@@ -67,7 +69,10 @@ class ShopScreenBuilder
 
         $categoryVersion = ProductCategory::query()->max('updated_at');
         $productVersion = Product::query()->max('updated_at');
-        $timestamp = collect([$categoryVersion, $productVersion])
+        $variantVersion = Schema::hasTable('product_variants')
+            ? ProductVariant::query()->max('updated_at')
+            : null;
+        $timestamp = collect([$categoryVersion, $productVersion, $variantVersion])
             ->filter()
             ->map(fn ($value): int => strtotime((string) $value) ?: 0)
             ->max();
@@ -79,5 +84,22 @@ class ShopScreenBuilder
     {
         return Schema::hasTable('product_categories')
             && Schema::hasTable('products');
+    }
+
+    /**
+     * @return array<int|string, mixed>
+     */
+    private static function productRelations(): array
+    {
+        $relations = ['category'];
+
+        if (Schema::hasTable('product_variants')) {
+            $relations['variants'] = fn ($query) => $query
+                ->where('is_active', true)
+                ->orderBy('sort_order')
+                ->orderBy('name');
+        }
+
+        return $relations;
     }
 }

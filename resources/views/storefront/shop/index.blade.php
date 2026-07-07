@@ -19,12 +19,16 @@
         'price_high' => 'گران‌ترین',
         'newest' => 'جدیدترین',
     ];
+    $selectedFeatures = collect($filters['features'] ?? [])->filter(fn ($value) => ! blank($value));
+    $featureLabels = collect($featureFilters['features'] ?? [])->mapWithKeys(fn ($feature) => [$feature['key'] => $feature['label']]);
     $activeFilterCount = collect([
         $filters['q'] ?? null,
         $filters['availability'] ?? null,
         $filters['price'] ?? null,
+        $filters['max_price'] ?? null,
         (($filters['sort'] ?? 'recommended') !== 'recommended') ? ($filters['sort'] ?? null) : null,
-    ])->filter(fn ($value) => ! blank($value))->count();
+    ])->filter(fn ($value) => ! blank($value))->count() + $selectedFeatures->count();
+    $activeCategoryIds = $category?->breadcrumbCategories()->pluck('id')->all() ?? [];
 @endphp
 
 @push('head')
@@ -39,6 +43,25 @@
             .storefront-mobile-shop-tools { display: none; }
         }
     </style>
+@endpush
+
+@push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('[data-shop-filter-form]').forEach((form) => {
+                form.querySelectorAll('[data-shop-filter-control]').forEach((control) => {
+                    control.addEventListener('change', () => {
+                        if (typeof form.requestSubmit === 'function') {
+                            form.requestSubmit();
+                            return;
+                        }
+
+                        form.submit();
+                    });
+                });
+            });
+        });
+    </script>
 @endpush
 
 @section('content')
@@ -95,38 +118,52 @@
                             همه محصولات
                         </a>
                         @foreach ($categories as $item)
-                            <a href="{{ route('storefront.categories.show', $item) }}" class="flex items-center justify-between gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition @if($category?->id === $item->id) bg-brand text-white shadow-sm shadow-red-900/10 @else text-ink hover:bg-brand-soft hover:text-brand @endif">
+                            @php
+                                $depth = (int) ($item->tree_depth ?? 0);
+                                $isCurrentCategory = $category?->id === $item->id;
+                                $isAncestorCategory = ! $isCurrentCategory && in_array($item->id, $activeCategoryIds, true);
+                            @endphp
+                            <a href="{{ route('storefront.categories.show', $item) }}" style="padding-right: {{ 0.75 + ($depth * 1.1) }}rem" class="flex items-center justify-between gap-3 rounded-xl py-2.5 pl-3 text-sm font-semibold transition @if($isCurrentCategory) bg-brand text-white shadow-sm shadow-red-900/10 @elseif($isAncestorCategory) bg-brand-soft text-brand @else text-ink hover:bg-brand-soft hover:text-brand @endif">
                                 <span>{{ $item->label }}</span>
                                 <span class="text-xs opacity-75">{{ $item->active_products_count }}</span>
                             </a>
                         @endforeach
                     </nav>
 
-                    <form action="{{ $listingRoute }}" method="GET" class="mt-5 grid gap-4 border-t border-border pt-5">
+                    <form action="{{ $listingRoute }}" method="GET" class="mt-5 grid gap-4 border-t border-border pt-5" data-shop-filter-form>
                         @if (! blank($filters['q'] ?? null))
                             <input type="hidden" name="q" value="{{ $filters['q'] }}">
                         @endif
                         <label class="grid gap-2 text-sm font-semibold text-ink">
                             موجودی
-                            <select name="availability" class="min-h-11 rounded-xl border border-border bg-surface px-3 text-sm font-medium text-ink outline-none focus:border-brand focus:ring-2 focus:ring-brand/20">
+                            <select name="availability" class="min-h-11 rounded-xl border border-border bg-surface px-3 text-sm font-medium text-ink outline-none focus:border-brand focus:ring-2 focus:ring-brand/20" data-shop-filter-control>
                                 <option value="">همه وضعیت‌ها</option>
                                 @foreach ($availabilityLabels as $key => $label)
                                     <option value="{{ $key }}" @selected(($filters['availability'] ?? '') === $key)>{{ $label }}</option>
                                 @endforeach
                             </select>
                         </label>
-                        <label class="grid gap-2 text-sm font-semibold text-ink">
-                            قیمت
-                            <select name="price" class="min-h-11 rounded-xl border border-border bg-surface px-3 text-sm font-medium text-ink outline-none focus:border-brand focus:ring-2 focus:ring-brand/20">
-                                <option value="">همه قیمت‌ها</option>
-                                @foreach ($priceLabels as $key => $label)
-                                    <option value="{{ $key }}" @selected(($filters['price'] ?? '') === $key)>{{ $label }}</option>
-                                @endforeach
-                            </select>
-                        </label>
+                        <div class="grid gap-3 rounded-xl bg-surface-alt p-3">
+                            <p class="text-xs font-semibold text-muted">ویژگی‌های محصول</p>
+                            @foreach ($featureFilters['features'] as $feature)
+                                <label class="grid gap-2 text-sm font-semibold text-ink">
+                                    {{ $feature['label'] }}
+                                    <select name="features[{{ $feature['key'] }}]" class="min-h-11 rounded-xl border border-border bg-surface px-3 text-sm font-medium text-ink outline-none focus:border-brand focus:ring-2 focus:ring-brand/20" data-shop-filter-control>
+                                        <option value="">{{ $feature['placeholder'] }}</option>
+                                        @foreach ($feature['values'] as $value)
+                                            <option value="{{ $value }}" @selected(($filters['features'][$feature['key']] ?? '') === $value)>{{ $value }}</option>
+                                        @endforeach
+                                    </select>
+                                </label>
+                            @endforeach
+                            <label class="grid gap-2 text-sm font-semibold text-ink">
+                                قیمت کمتر از
+                                <input name="max_price" type="number" min="0" value="{{ $filters['max_price'] ?? '' }}" placeholder="15000" class="min-h-11 rounded-xl border border-border bg-surface px-3 text-sm font-medium text-ink outline-none placeholder:text-muted/60 focus:border-brand focus:ring-2 focus:ring-brand/20" data-shop-filter-control>
+                            </label>
+                        </div>
                         <label class="grid gap-2 text-sm font-semibold text-ink">
                             مرتب‌سازی
-                            <select name="sort" class="min-h-11 rounded-xl border border-border bg-surface px-3 text-sm font-medium text-ink outline-none focus:border-brand focus:ring-2 focus:ring-brand/20">
+                            <select name="sort" class="min-h-11 rounded-xl border border-border bg-surface px-3 text-sm font-medium text-ink outline-none focus:border-brand focus:ring-2 focus:ring-brand/20" data-shop-filter-control>
                                 @foreach ($sortLabels as $key => $label)
                                     <option value="{{ $key }}" @selected(($filters['sort'] ?? 'recommended') === $key)>{{ $label }}</option>
                                 @endforeach
@@ -157,7 +194,7 @@
                     @if ($activeFilterCount > 0 || $category)
                         <div class="mt-3 flex flex-wrap gap-2 text-xs font-semibold">
                             @if ($category)
-                                <span class="rounded-full bg-brand-soft px-3 py-1.5 text-brand">{{ $category->label }}</span>
+                                <span class="rounded-full bg-brand-soft px-3 py-1.5 text-brand">{{ $category->pathLabel() }}</span>
                             @endif
                             @if (! blank($filters['q'] ?? null))
                                 <span class="rounded-full bg-surface-alt px-3 py-1.5 text-muted">جستجو: {{ $filters['q'] }}</span>
@@ -168,6 +205,12 @@
                             @if (! blank($filters['price'] ?? null))
                                 <span class="rounded-full bg-surface-alt px-3 py-1.5 text-muted">قیمت: {{ $priceLabels[$filters['price']] ?? $filters['price'] }}</span>
                             @endif
+                            @if (! blank($filters['max_price'] ?? null))
+                                <span class="rounded-full bg-surface-alt px-3 py-1.5 text-muted">کمتر از: {{ number_format((int) $filters['max_price']) }}</span>
+                            @endif
+                            @foreach ($selectedFeatures as $key => $value)
+                                <span class="rounded-full bg-surface-alt px-3 py-1.5 text-muted">{{ $featureLabels->get($key, $key) }}: {{ $value }}</span>
+                            @endforeach
                             @if (($filters['sort'] ?? 'recommended') !== 'recommended')
                                 <span class="rounded-full bg-surface-alt px-3 py-1.5 text-muted">مرتب‌سازی: {{ $sortLabels[$filters['sort']] ?? $filters['sort'] }}</span>
                             @endif
@@ -182,8 +225,9 @@
                                 همه محصولات
                             </a>
                             @foreach ($categories as $item)
+                                @php($isCurrentCategory = $category?->id === $item->id)
                                 <a href="{{ route('storefront.categories.show', $item) }}" class="storefront-mobile-category-link inline-flex min-h-11 items-center rounded-full border px-4 text-sm font-semibold transition @if($category?->id === $item->id) border-brand bg-brand text-white @else border-border bg-surface text-ink @endif">
-                                    {{ $item->label }}
+                                    {{ $item->tree_label ?? $item->label }}
                                     <span class="mr-2 text-xs opacity-70">{{ $item->active_products_count }}</span>
                                 </a>
                             @endforeach
@@ -197,31 +241,40 @@
                                 <span class="rounded-full bg-brand-soft px-2.5 py-1 text-xs text-brand">{{ $activeFilterCount }} فعال</span>
                             @endif
                         </summary>
-                        <form action="{{ $listingRoute }}" method="GET" class="grid gap-4 border-t border-border p-4">
+                        <form action="{{ $listingRoute }}" method="GET" class="grid gap-4 border-t border-border p-4" data-shop-filter-form>
                             @if (! blank($filters['q'] ?? null))
                                 <input type="hidden" name="q" value="{{ $filters['q'] }}">
                             @endif
                             <label class="grid gap-2 text-sm font-semibold text-ink">
                                 موجودی
-                                <select name="availability" class="min-h-11 rounded-xl border border-border bg-surface px-3 text-sm font-medium text-ink outline-none focus:border-brand focus:ring-2 focus:ring-brand/20">
+                                <select name="availability" class="min-h-11 rounded-xl border border-border bg-surface px-3 text-sm font-medium text-ink outline-none focus:border-brand focus:ring-2 focus:ring-brand/20" data-shop-filter-control>
                                     <option value="">همه وضعیت‌ها</option>
                                     @foreach ($availabilityLabels as $key => $label)
                                         <option value="{{ $key }}" @selected(($filters['availability'] ?? '') === $key)>{{ $label }}</option>
                                     @endforeach
                                 </select>
                             </label>
-                            <label class="grid gap-2 text-sm font-semibold text-ink">
-                                قیمت
-                                <select name="price" class="min-h-11 rounded-xl border border-border bg-surface px-3 text-sm font-medium text-ink outline-none focus:border-brand focus:ring-2 focus:ring-brand/20">
-                                    <option value="">همه قیمت‌ها</option>
-                                    @foreach ($priceLabels as $key => $label)
-                                        <option value="{{ $key }}" @selected(($filters['price'] ?? '') === $key)>{{ $label }}</option>
-                                    @endforeach
-                                </select>
-                            </label>
+                            <div class="grid gap-3 rounded-xl bg-surface-alt p-3">
+                                <p class="text-xs font-semibold text-muted">ویژگی‌های محصول</p>
+                                @foreach ($featureFilters['features'] as $feature)
+                                    <label class="grid gap-2 text-sm font-semibold text-ink">
+                                        {{ $feature['label'] }}
+                                        <select name="features[{{ $feature['key'] }}]" class="min-h-11 rounded-xl border border-border bg-surface px-3 text-sm font-medium text-ink outline-none focus:border-brand focus:ring-2 focus:ring-brand/20" data-shop-filter-control>
+                                            <option value="">{{ $feature['placeholder'] }}</option>
+                                            @foreach ($feature['values'] as $value)
+                                                <option value="{{ $value }}" @selected(($filters['features'][$feature['key']] ?? '') === $value)>{{ $value }}</option>
+                                            @endforeach
+                                        </select>
+                                    </label>
+                                @endforeach
+                                <label class="grid gap-2 text-sm font-semibold text-ink">
+                                    قیمت کمتر از
+                                    <input name="max_price" type="number" min="0" value="{{ $filters['max_price'] ?? '' }}" placeholder="15000" class="min-h-11 rounded-xl border border-border bg-surface px-3 text-sm font-medium text-ink outline-none placeholder:text-muted/60 focus:border-brand focus:ring-2 focus:ring-brand/20" data-shop-filter-control>
+                                </label>
+                            </div>
                             <label class="grid gap-2 text-sm font-semibold text-ink">
                                 مرتب‌سازی
-                                <select name="sort" class="min-h-11 rounded-xl border border-border bg-surface px-3 text-sm font-medium text-ink outline-none focus:border-brand focus:ring-2 focus:ring-brand/20">
+                                <select name="sort" class="min-h-11 rounded-xl border border-border bg-surface px-3 text-sm font-medium text-ink outline-none focus:border-brand focus:ring-2 focus:ring-brand/20" data-shop-filter-control>
                                     @foreach ($sortLabels as $key => $label)
                                         <option value="{{ $key }}" @selected(($filters['sort'] ?? 'recommended') === $key)>{{ $label }}</option>
                                     @endforeach

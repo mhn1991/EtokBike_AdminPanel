@@ -4,11 +4,13 @@ namespace App\Support\Mobile;
 
 use App\Models\Order;
 use App\Models\Product;
+use App\Models\ProductVariant;
 use App\Models\Program;
 use App\Models\ProgramCategory;
 use App\Models\ProgramGalleryItem;
 use App\Models\ServiceBooking;
 use App\Models\StoreProfile;
+use App\Models\User;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Schema;
 
@@ -17,7 +19,7 @@ class HomeScreenBuilder
     /**
      * @return array<string, mixed>
      */
-    public static function build(array $fallback, ?\App\Models\User $user = null): array
+    public static function build(array $fallback, ?User $user = null): array
     {
         if (! static::canUseAnyDatabase()) {
             return $fallback;
@@ -81,6 +83,10 @@ class HomeScreenBuilder
 
         if (static::hasTables(['product_categories', 'products'])) {
             $timestamps[] = Product::query()->max('updated_at');
+
+            if (static::hasTables(['product_variants'])) {
+                $timestamps[] = ProductVariant::query()->max('updated_at');
+            }
         }
 
         if (static::hasTables(['program_categories', 'programs', 'program_gallery_items'])) {
@@ -142,7 +148,7 @@ class HomeScreenBuilder
         $products = Product::query()
             ->where('is_active', true)
             ->where('is_featured', true)
-            ->with('category')
+            ->with(static::productRelations())
             ->orderBy('sort_order')
             ->orderBy('title')
             ->limit(6)
@@ -154,11 +160,28 @@ class HomeScreenBuilder
 
         return Product::query()
             ->where('is_active', true)
-            ->with('category')
+            ->with(static::productRelations())
             ->orderBy('sort_order')
             ->orderBy('title')
             ->limit(6)
             ->get();
+    }
+
+    /**
+     * @return array<int|string, mixed>
+     */
+    private static function productRelations(): array
+    {
+        $relations = ['category'];
+
+        if (static::hasTables(['product_variants'])) {
+            $relations['variants'] = fn ($query) => $query
+                ->where('is_active', true)
+                ->orderBy('sort_order')
+                ->orderBy('name');
+        }
+
+        return $relations;
     }
 
     /**
@@ -189,7 +212,7 @@ class HomeScreenBuilder
     /**
      * @return array<int, array<string, mixed>>
      */
-    private static function statusItems(?\App\Models\User $user = null): array
+    private static function statusItems(?User $user = null): array
     {
         $items = collect();
 

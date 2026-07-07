@@ -11,6 +11,7 @@ use App\Models\MobileScreen;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\ProductCategory;
+use App\Models\ProductVariant;
 use App\Models\Program;
 use App\Models\ProgramCategory;
 use App\Models\ServiceBooking;
@@ -103,8 +104,14 @@ class MobileConfigApiTest extends TestCase
             'label' => 'دوچرخه',
         ]);
 
-        Product::query()->create([
-            'product_category_id' => $category->id,
+        $childCategory = ProductCategory::query()->create([
+            'parent_id' => $category->id,
+            'slug' => 'mountain-bikes',
+            'label' => 'دوچرخه کوهستان',
+        ]);
+
+        $product = Product::query()->create([
+            'product_category_id' => $childCategory->id,
             'slug' => 'bike-panel-test',
             'title' => 'دوچرخه پنل',
             'subtitle' => 'نمایش از دیتابیس',
@@ -116,14 +123,36 @@ class MobileConfigApiTest extends TestCase
             'image_url' => 'mobile/products/bike-panel-test.jpg',
         ]);
 
+        ProductVariant::query()->create([
+            'product_id' => $product->id,
+            'name' => 'قرمز / بزرگ',
+            'sku' => 'BIKE-PANEL-RED-L',
+            'options' => [
+                'color' => 'قرمز',
+                'size' => 'L',
+            ],
+            'price_value' => 1330000,
+            'stock_quantity' => 3,
+            'minimum_stock' => 1,
+        ]);
+
         $this->getJson('/api/mobile/screens/shop')
             ->assertOk()
             ->assertJsonPath('screenId', 'shop')
             ->assertJsonPath('sections.0.type', 'hero')
             ->assertJsonPath('sections.2.data.defaultCategory', 'bikes')
             ->assertJsonPath('sections.2.data.categories.0.id', 'bikes')
+            ->assertJsonPath('sections.2.data.categories.1.id', 'mountain-bikes')
+            ->assertJsonPath('sections.2.data.categories.1.parentId', 'bikes')
+            ->assertJsonPath('sections.2.data.categories.1.depth', 1)
             ->assertJsonPath('sections.2.data.items.0.id', 'bike-panel-test')
+            ->assertJsonPath('sections.2.data.items.0.category', 'mountain-bikes')
+            ->assertJsonPath('sections.2.data.items.0.categoryPath', ['bikes', 'mountain-bikes'])
             ->assertJsonPath('sections.2.data.items.0.title', 'دوچرخه پنل')
+            ->assertJsonPath('sections.2.data.items.0.variants.0.name', 'قرمز / بزرگ')
+            ->assertJsonPath('sections.2.data.items.0.variants.0.options.color', 'قرمز')
+            ->assertJsonPath('sections.2.data.items.0.variants.0.stockQuantity', 3)
+            ->assertJsonPath('sections.2.data.items.0.variants.0.priceValue', 1330000)
             ->assertJsonPath('sections.2.data.items.0.imageUrl', 'http://10.0.2.2:8001/storage/mobile/products/bike-panel-test.jpg');
     }
 

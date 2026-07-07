@@ -13,12 +13,9 @@ class HomeController extends Controller
 {
     public function __invoke(): View
     {
-        $categories = ProductCategory::query()
-            ->where('is_active', true)
-            ->withCount(['products as active_products_count' => fn ($query) => $query->where('is_active', true)])
-            ->orderBy('sort_order')
-            ->orderBy('label')
-            ->get();
+        $categories = ProductCategory::activeTreeForStorefront()
+            ->filter(fn (ProductCategory $category): bool => (int) ($category->tree_depth ?? 0) === 0)
+            ->values();
 
         $featuredProducts = Product::query()
             ->with('category')

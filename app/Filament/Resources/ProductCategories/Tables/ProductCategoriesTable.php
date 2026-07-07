@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\ProductCategories\Tables;
 
+use App\Models\ProductCategory;
 use Filament\Actions\EditAction;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
@@ -17,13 +18,29 @@ class ProductCategoriesTable
             ->paginated(false)
             ->striped()
             ->columns([
-                TextColumn::make('slug')
-                    ->searchable(),
                 TextColumn::make('label')
-                    ->searchable(),
+                    ->label('Category')
+                    ->formatStateUsing(fn (string $state, ProductCategory $record): string => str_repeat('— ', $record->breadcrumbCategories()->count() - 1).$state)
+                    ->description(fn (ProductCategory $record): string => $record->parent ? __('Under :parent', ['parent' => $record->parent->pathLabel()]) : __('Top-level category'))
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('slug')
+                    ->searchable()
+                    ->visibleFrom('md'),
+                TextColumn::make('parent.label')
+                    ->label('Parent')
+                    ->placeholder(__('-'))
+                    ->visibleFrom('lg')
+                    ->sortable(),
                 TextColumn::make('products_count')
                     ->counts('products')
-                    ->label('Products')
+                    ->label('Direct products')
+                    ->visibleFrom('md')
+                    ->sortable(),
+                TextColumn::make('children_count')
+                    ->counts('children')
+                    ->label('Subcategories')
+                    ->visibleFrom('lg')
                     ->sortable(),
                 TextColumn::make('sort_order')
                     ->formatStateUsing(fn (?int $state): string => number_format($state ?? 0))

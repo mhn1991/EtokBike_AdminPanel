@@ -6,6 +6,8 @@ use App\Models\Product;
 use Filament\Infolists\Components\ColorEntry;
 use Filament\Infolists\Components\IconEntry;
 use Filament\Infolists\Components\ImageEntry;
+use Filament\Infolists\Components\RepeatableEntry;
+use Filament\Infolists\Components\RepeatableEntry\TableColumn;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -20,7 +22,8 @@ class ProductInfolist
                     ->columns(3)
                     ->schema([
                         TextEntry::make('category.label')
-                            ->label('Category'),
+                            ->label('Category')
+                            ->formatStateUsing(fn (?string $state, Product $record): string => $record->category?->pathLabel() ?? (string) $state),
                         TextEntry::make('slug'),
                         TextEntry::make('sku')
                             ->label('SKU')
@@ -70,6 +73,38 @@ class ProductInfolist
                         IconEntry::make('is_active')
                             ->label('Visible in app')
                             ->boolean(),
+                    ]),
+                Section::make('Variants')
+                    ->description(__('Color, size, stock amount, and price options for this product.'))
+                    ->schema([
+                        RepeatableEntry::make('variants')
+                            ->label('Product variants')
+                            ->table([
+                                TableColumn::make('Name'),
+                                TableColumn::make('Color'),
+                                TableColumn::make('Size'),
+                                TableColumn::make('Price'),
+                                TableColumn::make('Amount'),
+                                TableColumn::make('Active'),
+                            ])
+                            ->schema([
+                                TextEntry::make('name'),
+                                TextEntry::make('options.color')
+                                    ->label('Color')
+                                    ->placeholder(__('-')),
+                                TextEntry::make('options.size')
+                                    ->label('Size')
+                                    ->placeholder(__('-')),
+                                TextEntry::make('price_value')
+                                    ->label('Price')
+                                    ->formatStateUsing(fn (?int $state): string => filled($state) ? number_format($state) : __('Base price')),
+                                TextEntry::make('stock_quantity')
+                                    ->label('Amount')
+                                    ->formatStateUsing(fn (?int $state): string => number_format($state ?? 0)),
+                                IconEntry::make('is_active')
+                                    ->label('Active')
+                                    ->boolean(),
+                            ]),
                     ]),
                 Section::make('App card')
                     ->columns(3)
