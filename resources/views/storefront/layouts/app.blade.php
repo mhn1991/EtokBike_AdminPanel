@@ -65,7 +65,7 @@
             <script type="application/ld+json">@json($schema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)</script>
         @endforeach
     </head>
-    <body class="storefront-shell flex min-h-dvh flex-col bg-surface-page pb-20 text-ink antialiased selection:bg-brand selection:text-white md:pb-0">
+    <body class="storefront-shell flex min-h-dvh flex-col overflow-x-hidden bg-surface-page pb-20 text-ink antialiased selection:bg-brand selection:text-white md:pb-0">
         <a href="#content" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:right-3 focus:z-50 focus:rounded-xl focus:bg-surface focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-ink">
             رفتن به محتوا
         </a>
