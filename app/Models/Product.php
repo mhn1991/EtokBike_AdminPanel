@@ -137,6 +137,7 @@ class Product extends Model
         return [
             'id' => $this->slug,
             'category' => $this->category?->slug,
+            'categoryLabel' => $this->category?->label,
             'categoryPath' => $this->category
                 ? $this->category->breadcrumbCategories()->pluck('slug')->values()->all()
                 : [],
@@ -153,6 +154,9 @@ class Product extends Model
             'thumbnailText' => $this->thumbnail_text,
             'thumbnailColor' => $this->thumbnail_color,
             'imageUrl' => ImageUrl::resolveForMobile($this->image_url),
+            'isFeatured' => (bool) $this->is_featured,
+            'sortOrder' => (int) $this->sort_order,
+            'createdAt' => $this->created_at?->toIso8601String(),
             'variants' => $this->mobileVariants(),
         ];
     }
