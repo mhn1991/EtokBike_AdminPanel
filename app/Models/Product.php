@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Support\Mobile\ImageUrl;
+use Filament\Forms\Components\RichEditor\RichContentRenderer;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -129,6 +130,24 @@ class Product extends Model
         return $this->availability === 'orderable' || $this->availableStock() >= $quantity;
     }
 
+    public function richDescription(): RichContentRenderer
+    {
+        return RichContentRenderer::make($this->description)
+            ->fileAttachmentsDisk('public')
+            ->fileAttachmentsVisibility('public');
+    }
+
+    public function plainDescription(): ?string
+    {
+        if (blank($this->description)) {
+            return null;
+        }
+
+        $description = trim(preg_replace('/\s+/u', ' ', $this->richDescription()->toText()) ?? '');
+
+        return $description !== '' ? $description : null;
+    }
+
     /**
      * @return array<string, mixed>
      */
@@ -148,7 +167,7 @@ class Product extends Model
             'priceValue' => $this->price_value,
             'title' => $this->title,
             'subtitle' => $this->subtitle,
-            'description' => $this->description,
+            'description' => $this->plainDescription(),
             'price' => $this->price_label ?: number_format($this->price_value).' تومان',
             'stockLabel' => $this->stock_label,
             'thumbnailText' => $this->thumbnail_text,

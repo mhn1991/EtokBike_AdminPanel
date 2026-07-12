@@ -2,11 +2,11 @@
 
 namespace App\Providers\Filament;
 
+use Filament\FontProviders\LocalFontProvider;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
-use Filament\FontProviders\LocalFontProvider;
 use Filament\Navigation\NavigationGroup;
 use Filament\Pages\Dashboard;
 use Filament\Panel;
@@ -34,7 +34,7 @@ class AdminPanelProvider extends PanelProvider
             ->sidebarWidth('18rem')
             ->collapsibleNavigationGroups(false)
             ->colors([
-                'primary' => Color::Amber,
+                'primary' => Color::hex('#D71920'),
             ])
             ->navigationGroups([
                 NavigationGroup::make('پیام‌ها'),

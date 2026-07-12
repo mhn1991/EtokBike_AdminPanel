@@ -63,7 +63,7 @@ class Seo
 
     public static function productDescription(Product $product): string
     {
-        return static::description($product->seo_description, $product->description ?: $product->subtitle);
+        return static::description($product->seo_description, $product->plainDescription() ?: $product->subtitle);
     }
 
     public static function productImage(Product $product): string

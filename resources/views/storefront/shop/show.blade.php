@@ -32,7 +32,9 @@
                 <p class="mt-4 text-lg leading-8 text-muted">{{ $product->subtitle }}</p>
 
                 @if ($product->description)
-                    <p class="mt-4 leading-8 text-muted">{{ $product->description }}</p>
+                    <div class="product-rich-content mt-5 text-muted">
+                        {{ $product->richDescription() }}
+                    </div>
                 @endif
 
                 <dl class="mt-6 grid gap-3 border-y border-border py-5 sm:grid-cols-2">

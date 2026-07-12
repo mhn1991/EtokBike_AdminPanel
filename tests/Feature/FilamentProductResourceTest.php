@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Filament\Resources\ProductCategories\Pages\CreateProductCategory;
 use App\Filament\Resources\Products\Pages\CreateProduct;
+use App\Filament\Resources\Products\Pages\EditProduct;
 use App\Models\Product;
 use App\Models\ProductCategory;
 use App\Models\User;
@@ -38,6 +39,20 @@ class FilamentProductResourceTest extends TestCase
             ->assertSee('دوچرخه تست');
     }
 
+    public function test_the_product_create_page_has_a_guided_rich_authoring_layout(): void
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)
+            ->get('/admin/products/create')
+            ->assertOk()
+            ->assertSee('محتوای کالا')
+            ->assertSee('توضیحات کامل')
+            ->assertSee('اسلاگ / نشانی')
+            ->assertSee('سئو و اشتراک‌گذاری')
+            ->assertSee('fi-fo-rich-editor', false);
+    }
+
     public function test_product_can_be_created_with_variants_from_the_product_form(): void
     {
         $user = User::factory()->create();
@@ -53,6 +68,7 @@ class FilamentProductResourceTest extends TestCase
                 'product_category_id' => $category->id,
                 'title' => 'دوچرخه شهری',
                 'subtitle' => 'قابل سفارش در چند رنگ',
+                'description' => '<h2>ویژگی‌ها</h2><p>مناسب رفت‌وآمد روزانه</p>',
                 'availability' => 'in_stock',
                 'slug' => 'city-bike',
                 'sku' => 'CITY-BASE',
@@ -101,6 +117,8 @@ class FilamentProductResourceTest extends TestCase
 
         $product = Product::query()->where('slug', 'city-bike')->firstOrFail();
 
+        $this->assertSame('<h2>ویژگی‌ها</h2><p>مناسب رفت‌وآمد روزانه</p>', $product->description);
+
         $this->assertDatabaseHas('product_variants', [
             'product_id' => $product->id,
             'name' => 'قرمز / بزرگ',
@@ -125,6 +143,73 @@ class FilamentProductResourceTest extends TestCase
             ['color' => 'قرمز', 'size' => 'L'],
             $product->variants()->where('sku', 'CITY-RED-L')->firstOrFail()->options,
         );
+    }
+
+    public function test_product_slug_is_suggested_until_a_staff_member_customizes_it(): void
+    {
+        $user = User::factory()->create();
+        $category = ProductCategory::query()->create([
+            'slug' => 'city-bikes',
+            'label' => 'دوچرخه شهری',
+        ]);
+
+        $existingProduct = Product::query()->create([
+            'product_category_id' => $category->id,
+            'slug' => 'دوچرخه-شهری',
+            'title' => 'دوچرخه شهری موجود',
+            'subtitle' => 'کالای موجود',
+            'availability' => 'in_stock',
+            'price_value' => 1000000,
+        ]);
+
+        $this->actingAs($user);
+
+        Livewire::test(CreateProduct::class)
+            ->set('data.title', 'دوچرخه شهری')
+            ->assertSet('data.slug', 'دوچرخه-شهری-2')
+            ->set('data.title', 'دوچرخه شهری سبک')
+            ->assertSet('data.slug', 'دوچرخه-شهری-سبک')
+            ->set('data.slug', 'city-bike-custom')
+            ->set('data.title', 'عنوان تازه')
+            ->assertSet('data.slug', 'city-bike-custom')
+            ->callFormComponentAction('slug', 'suggestSlug')
+            ->assertSet('data.slug', 'عنوان-تازه');
+
+        Livewire::test(EditProduct::class, ['record' => $existingProduct->getRouteKey()])
+            ->set('data.title', 'عنوان ویرایش‌شده')
+            ->assertSet('data.slug', 'دوچرخه-شهری')
+            ->callFormComponentAction('slug', 'suggestSlug')
+            ->assertSet('data.slug', 'عنوان-ویرایش-شده');
+    }
+
+    public function test_rich_product_description_is_safe_for_the_storefront_and_plain_for_mobile(): void
+    {
+        $category = ProductCategory::query()->create([
+            'slug' => 'bikes',
+            'label' => 'دوچرخه',
+        ]);
+
+        $product = Product::query()->create([
+            'product_category_id' => $category->id,
+            'slug' => 'rich-description-bike',
+            'title' => 'دوچرخه با توضیحات کامل',
+            'subtitle' => 'مناسب استفاده شهری',
+            'description' => '<h2>مشخصات اصلی</h2><p>بدنه <strong>سبک</strong> و مقاوم</p><script>alert("unsafe")</script>',
+            'availability' => 'in_stock',
+            'price_value' => 12000000,
+        ]);
+
+        $mobileDescription = $product->toMobilePayload()['description'];
+
+        $this->assertStringContainsString('مشخصات اصلی', $mobileDescription);
+        $this->assertStringContainsString('بدنه سبک و مقاوم', $mobileDescription);
+        $this->assertStringNotContainsString('<', $mobileDescription);
+        $this->assertStringNotContainsString('unsafe', $mobileDescription);
+
+        $this->get(route('storefront.products.show', $product))
+            ->assertOk()
+            ->assertSee('<h2>مشخصات اصلی</h2>', false)
+            ->assertDontSee('alert("unsafe")', false);
     }
 
     public function test_the_product_categories_resource_renders_in_the_admin_panel(): void
