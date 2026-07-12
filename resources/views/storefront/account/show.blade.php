@@ -26,15 +26,15 @@
 @endphp
 
 @section('content')
-    <section class="bg-surface">
+    <section class="storefront-page-hero">
         <div class="mx-auto grid max-w-7xl gap-8 px-4 py-10 sm:px-6 lg:grid-cols-[0.9fr_1.1fr] lg:px-8">
             <div>
-                <p class="inline-flex rounded-full bg-brand-soft px-3 py-1 text-sm font-semibold text-brand">پیگیری مشتری</p>
-                <h1 class="mt-4 text-3xl font-bold leading-tight tracking-normal text-ink sm:text-5xl">حساب و وضعیت‌ها</h1>
+                <p class="storefront-eyebrow">پیگیری مشتری</p>
+                <h1 class="mt-4 text-3xl font-extrabold leading-tight tracking-normal text-ink sm:text-5xl">خرید و سرویس، همه در دسترس شما</h1>
                 <p class="mt-5 leading-8 text-muted">با شماره تماس، ایمیل یا شماره سفارش، سفارش‌ها، سرویس‌ها، رزرو برنامه و مشخصات دوچرخه را ببینید.</p>
             </div>
 
-            <form method="GET" action="{{ route('storefront.account') }}" class="grid gap-5 rounded-2xl border border-border bg-surface-page p-5 shadow-sm">
+            <form method="GET" action="{{ route('storefront.account') }}" class="storefront-form-card grid gap-5">
                 <div class="grid gap-5 sm:grid-cols-2">
                     <label class="grid gap-2 text-sm font-medium text-neutral-800">
                         شماره تماس
@@ -52,7 +52,7 @@
                     <input name="order_number" value="{{ old('order_number', $lookup['order_number']) }}" class="storefront-control px-3">
                     @error('order_number') <span class="text-xs text-red-700">{{ $message }}</span> @enderror
                 </label>
-                <button type="submit" class="min-h-12 rounded-xl bg-brand px-6 text-sm font-semibold text-white transition hover:bg-brand-hover">نمایش وضعیت</button>
+                <button type="submit" class="min-h-12 rounded-xl bg-brand px-6 text-sm font-bold text-white shadow-sm shadow-red-900/15 transition hover:bg-brand-hover focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2">نمایش وضعیت</button>
             </form>
         </div>
     </section>

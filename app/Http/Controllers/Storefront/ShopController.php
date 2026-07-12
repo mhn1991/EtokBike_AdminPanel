@@ -116,6 +116,7 @@ class ShopController extends Controller
             'q' => ['nullable', 'string', 'max:120'],
             'availability' => ['nullable', 'string', 'in:in_stock,low_stock,orderable,out_of_stock'],
             'price' => ['nullable', 'string', 'in:under_2m,2m_20m,over_20m'],
+            'min_price' => ['nullable', 'integer', 'min:0'],
             'max_price' => ['nullable', 'integer', 'min:0'],
             'features' => ['nullable', 'array'],
             'features.*' => ['nullable', 'string', 'max:120'],
@@ -124,16 +125,24 @@ class ShopController extends Controller
             'sort' => ['nullable', 'string', 'in:recommended,price_low,price_high,newest'],
         ]);
 
+        $minPrice = filled($validated['min_price'] ?? null) ? (int) $validated['min_price'] : null;
         $maxPrice = filled($validated['max_price'] ?? null) ? (int) $validated['max_price'] : null;
+
+        if ($minPrice !== null && $maxPrice !== null && $minPrice > $maxPrice) {
+            [$minPrice, $maxPrice] = [$maxPrice, $minPrice];
+            $validated['min_price'] = $minPrice;
+            $validated['max_price'] = $maxPrice;
+        }
+
         $variantFilterScope = $this->variantFilterScope($category, $validated);
         $featureFilters = $this->featureFilterOptions($variantFilterScope);
         $selectedFeatures = $this->selectedFeatureFilters($validated, $featureFilters);
-        $featureFilters = $this->featureFilterOptions($variantFilterScope, $selectedFeatures, $maxPrice);
+        $featureFilters = $this->featureFilterOptions($variantFilterScope, $selectedFeatures, $minPrice, $maxPrice);
         $selectedFeatures = $this->selectedFeatureFilters(
             $this->viewFilters($validated, $selectedFeatures),
             $featureFilters,
         );
-        $featureFilters = $this->featureFilterOptions($variantFilterScope, $selectedFeatures, $maxPrice);
+        $featureFilters = $this->featureFilterOptions($variantFilterScope, $selectedFeatures, $minPrice, $maxPrice);
 
         $query = Product::query()
             ->with('category')
@@ -147,14 +156,13 @@ class ShopController extends Controller
         $this->applyProductListingFilters($query, $validated);
 
         if ($selectedFeatures->isNotEmpty()) {
-            $query->whereIn('id', $this->matchingVariantProductIds($variantFilterScope, $selectedFeatures, $maxPrice));
-        } elseif ($maxPrice !== null) {
-            $matchingVariantProductIds = $this->matchingVariantProductIds($variantFilterScope, collect(), $maxPrice);
+            $query->whereIn('id', $this->matchingVariantProductIds($variantFilterScope, $selectedFeatures, $minPrice, $maxPrice));
+        } elseif ($minPrice !== null || $maxPrice !== null) {
+            $matchingVariantProductIds = $this->matchingVariantProductIds($variantFilterScope, collect(), $minPrice, $maxPrice);
 
-            $query->where(function (Builder $query) use ($maxPrice, $matchingVariantProductIds): void {
-                $query
-                    ->where('price_value', '<=', $maxPrice)
-                    ->orWhereIn('id', $matchingVariantProductIds);
+            $query->where(function (Builder $query) use ($minPrice, $maxPrice, $matchingVariantProductIds): void {
+                $this->applyPriceRange($query, $minPrice, $maxPrice);
+                $query->orWhereIn('id', $matchingVariantProductIds);
             });
         }
 
@@ -240,7 +248,12 @@ class ShopController extends Controller
      * @param  Collection<int, ProductVariant>  $variants
      * @return array{features: array<int, array{key: string, label: string, placeholder: string, values: array<int, string>}>}
      */
-    private function featureFilterOptions(Collection $variants, ?Collection $selectedFeatures = null, ?int $maxPrice = null): array
+    private function featureFilterOptions(
+        Collection $variants,
+        ?Collection $selectedFeatures = null,
+        ?int $minPrice = null,
+        ?int $maxPrice = null,
+    ): array
     {
         $features = [];
         $selectedFeatures ??= collect();
@@ -254,7 +267,7 @@ class ShopController extends Controller
             $candidateFilters = $selectedFeatures->except($featureKey);
 
             $candidateVariants = $variants
-                ->filter(fn (ProductVariant $variant): bool => $this->variantMatchesFilters($variant, $candidateFilters, $maxPrice));
+                ->filter(fn (ProductVariant $variant): bool => $this->variantMatchesFilters($variant, $candidateFilters, $minPrice, $maxPrice));
 
             foreach ($candidateVariants as $variant) {
                 $variantFeatures = $this->variantFeatureValues($variant);
@@ -323,10 +336,21 @@ class ShopController extends Controller
         };
     }
 
+    private function applyPriceRange(Builder $query, ?int $minPrice, ?int $maxPrice): void
+    {
+        if ($minPrice !== null) {
+            $query->where('price_value', '>=', $minPrice);
+        }
+
+        if ($maxPrice !== null) {
+            $query->where('price_value', '<=', $maxPrice);
+        }
+    }
+
     /**
      * @param  Collection<string, string>  $filters
      */
-    private function variantMatchesFilters(ProductVariant $variant, Collection $filters, ?int $maxPrice): bool
+    private function variantMatchesFilters(ProductVariant $variant, Collection $filters, ?int $minPrice, ?int $maxPrice): bool
     {
         $features = collect($this->variantFeatureValues($variant))
             ->map(fn (array $feature): string => $feature['value']);
@@ -337,11 +361,10 @@ class ShopController extends Controller
             }
         }
 
-        if ($maxPrice === null) {
-            return true;
-        }
+        $price = $variant->effectivePriceValue($variant->product);
 
-        return $variant->effectivePriceValue($variant->product) <= $maxPrice;
+        return ($minPrice === null || $price >= $minPrice)
+            && ($maxPrice === null || $price <= $maxPrice);
     }
 
     /**
@@ -349,10 +372,10 @@ class ShopController extends Controller
      * @param  Collection<string, string>  $filters
      * @return array<int, int>
      */
-    private function matchingVariantProductIds(Collection $variants, Collection $filters, ?int $maxPrice): array
+    private function matchingVariantProductIds(Collection $variants, Collection $filters, ?int $minPrice, ?int $maxPrice): array
     {
         return $variants
-            ->filter(fn (ProductVariant $variant): bool => $this->variantMatchesFilters($variant, $filters, $maxPrice))
+            ->filter(fn (ProductVariant $variant): bool => $this->variantMatchesFilters($variant, $filters, $minPrice, $maxPrice))
             ->pluck('product_id')
             ->unique()
             ->values()

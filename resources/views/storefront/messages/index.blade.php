@@ -1,15 +1,15 @@
 @extends('storefront.layouts.app')
 
 @section('content')
-    <section class="bg-surface">
+    <section class="storefront-page-hero">
         <div class="mx-auto grid max-w-7xl gap-8 px-4 py-10 sm:px-6 lg:grid-cols-[0.9fr_1.1fr] lg:px-8">
             <div>
-                <p class="inline-flex rounded-full bg-brand-soft px-3 py-1 text-sm font-semibold text-brand">ارتباط با EtokBike</p>
-                <h1 class="mt-4 text-3xl font-bold leading-tight tracking-normal text-ink sm:text-5xl">پیام به پشتیبانی</h1>
+                <p class="storefront-eyebrow">ارتباط با EtokBike</p>
+                <h1 class="mt-4 text-3xl font-extrabold leading-tight tracking-normal text-ink sm:text-5xl">پاسخ درست، برای انتخاب درست</h1>
                 <p class="mt-5 leading-8 text-muted">پیام شما در صندوق ورودی پنل مدیریت ثبت می‌شود و تیم مربوطه آن را بررسی می‌کند.</p>
                 <div class="mt-6 grid gap-3">
                     @forelse ($departments as $department)
-                        <div class="rounded-2xl border border-border bg-surface-page p-4">
+                        <div class="storefront-surface-card p-4">
                             <p class="font-semibold text-ink">{{ $department->title }}</p>
                             @if ($department->subtitle)
                                 <p class="mt-1 text-sm leading-6 text-muted">{{ $department->subtitle }}</p>
@@ -21,7 +21,7 @@
                 </div>
             </div>
 
-            <form method="POST" action="{{ route('storefront.messages.store') }}" class="grid gap-5 rounded-2xl border border-border bg-surface-page p-5 shadow-sm">
+            <form method="POST" action="{{ route('storefront.messages.store') }}" class="storefront-form-card grid gap-5">
                 @csrf
                 <label class="grid gap-2 text-sm font-medium text-neutral-800">
                     واحد دریافت‌کننده
@@ -58,7 +58,7 @@
                     @error('text') <span class="text-xs text-red-700">{{ $message }}</span> @enderror
                 </label>
 
-                <button type="submit" class="min-h-12 rounded-xl bg-brand px-6 text-sm font-semibold text-white transition hover:bg-brand-hover">ارسال پیام</button>
+                <button type="submit" class="min-h-12 rounded-xl bg-brand px-6 text-sm font-bold text-white shadow-sm shadow-red-900/15 transition hover:bg-brand-hover focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2">ارسال پیام</button>
             </form>
         </div>
     </section>

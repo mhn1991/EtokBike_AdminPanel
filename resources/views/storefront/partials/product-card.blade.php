@@ -9,11 +9,11 @@
     };
 @endphp
 
-<article class="group flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-surface shadow-sm shadow-neutral-950/5 transition duration-200 hover:-translate-y-0.5 hover:border-red-200 hover:shadow-lg hover:shadow-neutral-950/10" itemscope itemtype="https://schema.org/Product">
+<article class="group flex h-full max-h-[34rem] flex-col overflow-hidden rounded-2xl border border-border bg-surface shadow-sm shadow-neutral-950/5 transition duration-200 hover:-translate-y-0.5 hover:border-red-200 hover:shadow-lg hover:shadow-neutral-950/10" itemscope itemtype="https://schema.org/Product">
     <a href="{{ route('storefront.products.show', $product) }}" class="block" itemprop="url">
-        @include('storefront.partials.product-visual', ['product' => $product, 'class' => 'aspect-[4/3]', 'radius' => 'rounded-t-2xl', 'loading' => 'lazy'])
+        @include('storefront.partials.product-visual', ['product' => $product, 'class' => 'h-56 sm:h-72', 'radius' => 'rounded-t-2xl', 'loading' => 'lazy'])
     </a>
-    <div class="flex flex-1 flex-col gap-4 p-4 sm:p-5">
+    <div class="flex flex-1 flex-col gap-3 p-4 sm:p-5">
         <div class="grid gap-2">
             <div class="flex items-start justify-between gap-3">
                 <p class="rounded-full bg-brand-soft px-3 py-1 text-xs font-semibold text-brand">{{ $product->category?->label ?: 'محصول' }}</p>
@@ -33,7 +33,7 @@
             @endif
         </div>
 
-        <div class="mt-auto grid gap-3 border-t border-border pt-4">
+        <div class="mt-auto grid gap-3 border-t border-border pt-3">
             <p class="text-xl font-bold text-ink" itemprop="offers" itemscope itemtype="https://schema.org/Offer">
                 <meta itemprop="priceCurrency" content="IRR">
                 <meta itemprop="price" content="{{ $product->price_value }}">

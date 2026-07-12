@@ -71,20 +71,24 @@
         </a>
 
         <header class="sticky top-0 z-40 border-b border-border/80 bg-surface-page/95 backdrop-blur">
-            <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
-                <a href="{{ route('storefront.home') }}" class="flex items-center gap-3" aria-label="EtokBike">
+            <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8">
+                <a href="{{ route('storefront.home') }}" class="flex items-center gap-3 rounded-xl outline-none transition focus:ring-2 focus:ring-brand focus:ring-offset-2" aria-label="EtokBike">
                     <span class="grid size-10 place-items-center rounded-xl bg-brand text-sm font-bold text-white shadow-sm shadow-red-900/10">ET</span>
-                    <span class="text-lg font-semibold tracking-normal text-ink">EtokBike</span>
+                    <span class="grid gap-0.5">
+                        <span class="text-lg font-bold tracking-normal text-ink">EtokBike</span>
+                        <span class="hidden text-[11px] font-medium text-muted sm:block">دوچرخه، قطعات و سرویس تخصصی</span>
+                    </span>
                 </a>
 
-                <nav class="hidden items-center gap-6 text-sm font-medium text-muted md:flex" aria-label="Main navigation">
+                <nav class="hidden items-center gap-1 text-sm font-semibold text-muted md:flex" aria-label="Main navigation">
                     @foreach ($desktopNavItems as $item)
-                        <a href="{{ $item['url'] }}" class="transition hover:text-brand @if($item['active']) text-brand @endif">{{ $item['label'] }}</a>
+                        <a href="{{ $item['url'] }}" class="rounded-lg px-3 py-2 transition hover:bg-brand-soft hover:text-brand @if($item['active']) bg-brand-soft text-brand @endif" @if($item['active']) aria-current="page" @endif>{{ $item['label'] }}</a>
                     @endforeach
                 </nav>
 
-                <a href="{{ route('storefront.cart.show') }}" class="inline-flex min-h-10 items-center gap-2 rounded-xl border border-border bg-surface px-3 py-2 text-sm font-semibold text-ink shadow-sm transition hover:border-brand hover:text-brand">
-                    <span>سبد خرید</span>
+                <a href="{{ route('storefront.cart.show') }}" class="inline-flex min-h-11 items-center gap-2 rounded-xl border border-border bg-surface px-3 py-2 text-sm font-semibold text-ink shadow-sm transition hover:border-brand hover:text-brand focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2">
+                    <span class="hidden sm:inline">سبد خرید</span>
+                    <span class="sm:hidden">سبد</span>
                     <span class="grid min-w-6 place-items-center rounded-lg bg-brand px-2 py-0.5 text-xs text-white">{{ $cartCount ?? 0 }}</span>
                 </a>
             </div>

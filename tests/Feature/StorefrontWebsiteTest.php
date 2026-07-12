@@ -84,7 +84,7 @@ class StorefrontWebsiteTest extends TestCase
             ->assertSee('دوچرخه کوهستان');
     }
 
-    public function test_shop_filters_category_then_variant_features_and_max_price(): void
+    public function test_shop_filters_category_then_variant_features_and_price_range(): void
     {
         $accessories = ProductCategory::query()->create([
             'slug' => 'accessory',
@@ -229,6 +229,7 @@ class StorefrontWebsiteTest extends TestCase
                 'color' => 'blue',
                 'size' => 'xs',
             ],
+            'min_price' => 10000,
             'max_price' => 15000,
         ]))
             ->assertOk()
@@ -239,7 +240,8 @@ class StorefrontWebsiteTest extends TestCase
             ->assertSee('برند: Etok')
             ->assertSee('رنگ: blue')
             ->assertSee('سایز: xs')
-            ->assertSee('کمتر از: 15,000')
+            ->assertSee('قیمت از: 10,000 تومان')
+            ->assertSee('قیمت تا: 15,000 تومان')
             ->assertDontSee('Blue large shirt')
             ->assertDontSee('Other brand blue XS shirt')
             ->assertDontSee('Expensive blue XS shirt')

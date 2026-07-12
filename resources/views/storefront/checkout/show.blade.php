@@ -1,15 +1,17 @@
 @extends('storefront.layouts.app')
 
 @section('content')
-    <section class="bg-surface">
-        <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-            <h1 class="text-3xl font-bold tracking-normal text-ink">تکمیل سفارش</h1>
+    <section class="storefront-page-hero">
+        <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
+            <p class="storefront-eyebrow">مرحله نهایی</p>
+            <h1 class="mt-3 text-3xl font-extrabold tracking-normal text-ink sm:text-4xl">تکمیل سفارش</h1>
+            <p class="mt-2 text-sm leading-6 text-muted">اطلاعات دریافت سفارش را وارد کنید؛ خلاصه سفارش در کنار شما باقی می‌ماند.</p>
         </div>
     </section>
 
     <section class="bg-surface-page py-8">
         <div class="mx-auto grid max-w-7xl gap-6 px-4 sm:px-6 lg:grid-cols-[1fr_380px] lg:px-8">
-            <form method="POST" action="{{ route('storefront.checkout.store') }}" class="grid gap-5 rounded-2xl border border-border bg-surface p-5 shadow-sm">
+            <form method="POST" action="{{ route('storefront.checkout.store') }}" class="storefront-form-card grid gap-6">
                 @csrf
                 <div class="grid gap-5 sm:grid-cols-2">
                     <label class="grid gap-2 text-sm font-medium text-neutral-800">
@@ -31,12 +33,12 @@
                 </label>
 
                 <fieldset class="grid gap-3">
-                    <legend class="text-sm font-semibold text-neutral-950">روش دریافت</legend>
-                    <label class="flex items-center gap-3 rounded-xl border border-border p-3 text-sm font-medium">
+                    <legend class="text-sm font-bold text-ink">روش دریافت</legend>
+                    <label class="flex min-h-12 items-center gap-3 rounded-xl border border-border p-3 text-sm font-semibold transition has-[:checked]:border-brand has-[:checked]:bg-brand-soft">
                         <input type="radio" name="fulfillment_method" value="pickup" @checked(old('fulfillment_method', 'pickup') === 'pickup')>
                         تحویل حضوری
                     </label>
-                    <label class="flex items-center gap-3 rounded-xl border border-border p-3 text-sm font-medium">
+                    <label class="flex min-h-12 items-center gap-3 rounded-xl border border-border p-3 text-sm font-semibold transition has-[:checked]:border-brand has-[:checked]:bg-brand-soft">
                         <input type="radio" name="fulfillment_method" value="delivery" @checked(old('fulfillment_method') === 'delivery')>
                         ارسال
                     </label>
@@ -48,7 +50,7 @@
                         <p class="text-sm font-semibold text-neutral-950">گزینه‌های تحویل</p>
                         <div class="grid gap-3 sm:grid-cols-2">
                             @foreach ($deliveryMethods as $method)
-                                <div class="rounded-xl border border-border bg-surface-page p-3">
+                                <div class="rounded-xl border border-border bg-surface-page p-4">
                                     <p class="text-sm font-semibold text-ink">{{ $method->title }}</p>
                                     @if ($method->subtitle)<p class="mt-1 text-xs leading-5 text-muted">{{ $method->subtitle }}</p>@endif
                                     @if ($method->price_label)<p class="mt-2 text-sm font-semibold text-brand">{{ $method->price_label }}</p>@endif
@@ -100,13 +102,14 @@
                     @error('customer_notes') <span class="text-xs text-red-700">{{ $message }}</span> @enderror
                 </label>
 
-                <button type="submit" class="min-h-12 rounded-xl bg-brand px-6 text-sm font-semibold text-white transition hover:bg-brand-hover">
+                <button type="submit" class="min-h-12 rounded-xl bg-brand px-6 text-sm font-bold text-white shadow-sm shadow-red-900/15 transition hover:bg-brand-hover focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2">
                     ثبت سفارش
                 </button>
             </form>
 
-            <aside class="self-start rounded-2xl border border-border bg-surface p-5 shadow-sm">
-                <h2 class="text-xl font-semibold text-ink">سفارش شما</h2>
+            <aside class="storefront-summary-card self-start">
+                <p class="storefront-eyebrow">مرور نهایی</p>
+                <h2 class="mt-3 text-xl font-bold text-ink">سفارش شما</h2>
                 <div class="mt-5 grid gap-4">
                     @foreach ($lines as $line)
                         <div class="flex items-start justify-between gap-3 border-b border-border pb-3">

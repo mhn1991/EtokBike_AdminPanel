@@ -25,11 +25,13 @@
         $filters['q'] ?? null,
         $filters['availability'] ?? null,
         $filters['price'] ?? null,
+        $filters['min_price'] ?? null,
         $filters['max_price'] ?? null,
         (($filters['sort'] ?? 'recommended') !== 'recommended') ? ($filters['sort'] ?? null) : null,
     ])->filter(fn ($value) => ! blank($value))->count() + $selectedFeatures->count();
     $advancedFilterOpen = $selectedFeatures->isNotEmpty()
         || ! blank($filters['price'] ?? null)
+        || ! blank($filters['min_price'] ?? null)
         || ! blank($filters['max_price'] ?? null);
     $activeCategoryIds = $category?->breadcrumbCategories()->pluck('id')->all() ?? [];
     $activeRootCategoryId = $category?->breadcrumbCategories()->first()?->id;
@@ -42,7 +44,7 @@
         .storefront-mobile-category-link { white-space: nowrap; }
         .storefront-shop-scrollbar { scrollbar-width: none; }
         .storefront-shop-scrollbar::-webkit-scrollbar { display: none; }
-        .storefront-shell .storefront-shop-container { width: 100%; max-width: 80rem !important; }
+        .storefront-shell .storefront-shop-container { width: 100%; max-width: none !important; }
         .storefront-category-menu > summary { list-style: none; }
         .storefront-category-menu > summary::-webkit-details-marker { display: none; }
         .storefront-category-menu-panel { display: none; }
@@ -104,7 +106,7 @@
                 $category ? ['name' => $category->label, 'url' => route('storefront.categories.show', $category)] : null,
             ])])
 
-            <form action="{{ $listingRoute }}" method="GET" class="grid gap-4 rounded-2xl border border-border/80 bg-surface p-3 shadow-sm sm:p-4" data-shop-filter-form>
+            <form action="{{ $listingRoute }}" method="GET" class="grid gap-4 rounded-3xl border border-border/80 bg-surface p-3 shadow-sm sm:p-5" data-shop-filter-form>
                 <h1 class="sr-only">{{ $category ? $category->label : 'فروشگاه دوچرخه EtokBike' }}</h1>
 
                 <div class="grid gap-2 rounded-2xl border border-border bg-surface-alt p-2 shadow-sm sm:grid-cols-[minmax(0,1fr)_auto]">
@@ -278,8 +280,11 @@
                             @if (! blank($filters['price'] ?? null))
                                 <span class="rounded-full bg-surface-alt px-3 py-1.5 text-muted">قیمت: {{ $priceLabels[$filters['price']] ?? $filters['price'] }}</span>
                             @endif
+                            @if (! blank($filters['min_price'] ?? null))
+                                <span class="rounded-full bg-surface-alt px-3 py-1.5 text-muted">قیمت از: {{ number_format((int) $filters['min_price']) }} تومان</span>
+                            @endif
                             @if (! blank($filters['max_price'] ?? null))
-                                <span class="rounded-full bg-surface-alt px-3 py-1.5 text-muted">کمتر از: {{ number_format((int) $filters['max_price']) }}</span>
+                                <span class="rounded-full bg-surface-alt px-3 py-1.5 text-muted">قیمت تا: {{ number_format((int) $filters['max_price']) }} تومان</span>
                             @endif
                             @foreach ($selectedFeatures as $key => $value)
                                 <span class="rounded-full bg-surface-alt px-3 py-1.5 text-muted">{{ $featureLabels->get($key, $key) }}: {{ $value }}</span>
@@ -293,7 +298,7 @@
                     <div id="shop-advanced-filters" class="grid gap-3 border-t border-border/70 pt-3" @if (! $advancedFilterOpen) hidden @endif>
                         <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6">
                             <label class="grid gap-2 text-sm font-semibold text-ink">
-                                بازه قیمت
+                                بازه‌های آماده
                                 <select name="price" class="min-h-11 rounded-xl border border-border bg-surface px-3 text-sm font-medium text-ink outline-none focus:border-brand focus:ring-2 focus:ring-brand/20" data-shop-filter-control>
                                     <option value="">همه قیمت‌ها</option>
                                     @foreach ($priceLabels as $key => $label)
@@ -315,8 +320,13 @@
                             @endforeach
 
                             <label class="grid gap-2 text-sm font-semibold text-ink">
-                                قیمت کمتر از
-                                <input name="max_price" type="number" min="0" value="{{ $filters['max_price'] ?? '' }}" placeholder="15000000" class="min-h-11 rounded-xl border border-border bg-surface px-3 text-sm font-medium text-ink outline-none placeholder:text-muted/60 focus:border-brand focus:ring-2 focus:ring-brand/20" data-shop-filter-control>
+                                قیمت از
+                                <input name="min_price" type="number" min="0" value="{{ $filters['min_price'] ?? '' }}" placeholder="مثلاً ۵۰۰۰۰۰۰" inputmode="numeric" class="min-h-11 rounded-xl border border-border bg-surface px-3 text-sm font-medium text-ink outline-none placeholder:text-muted/60 focus:border-brand focus:ring-2 focus:ring-brand/20">
+                            </label>
+
+                            <label class="grid gap-2 text-sm font-semibold text-ink">
+                                قیمت تا
+                                <input name="max_price" type="number" min="0" value="{{ $filters['max_price'] ?? '' }}" placeholder="مثلاً ۱۵۰۰۰۰۰۰" inputmode="numeric" class="min-h-11 rounded-xl border border-border bg-surface px-3 text-sm font-medium text-ink outline-none placeholder:text-muted/60 focus:border-brand focus:ring-2 focus:ring-brand/20">
                             </label>
                         </div>
 
@@ -345,7 +355,7 @@
                     </div>
                 </div>
             @else
-                <div class="grid grid-cols-[repeat(auto-fit,minmax(min(100%,36rem),1fr))] gap-4">
+                <div class="grid grid-cols-[repeat(auto-fill,minmax(min(100%,38rem),1fr))] gap-4">
                     @foreach ($products as $product)
                         @include('storefront.partials.product-card', ['product' => $product])
                     @endforeach

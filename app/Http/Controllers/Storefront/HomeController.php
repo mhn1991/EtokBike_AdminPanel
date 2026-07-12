@@ -25,9 +25,15 @@ class HomeController extends Controller
             ->limit(6)
             ->get();
 
+        $catalogueProductCount = Product::query()
+            ->where('is_active', true)
+            ->whereHas('category', fn ($query) => $query->where('is_active', true))
+            ->count();
+
         return view('storefront.home', [
             'categories' => $categories,
             'featuredProducts' => $featuredProducts,
+            'catalogueProductCount' => $catalogueProductCount,
             'storeProfile' => StoreProfile::query()->where('is_active', true)->first(),
             'meta' => [
                 'title' => Seo::defaultTitle('EtokBike | فروشگاه دوچرخه و لوازم دوچرخه'),

@@ -1,17 +1,19 @@
 @extends('storefront.layouts.app')
 
 @section('content')
-    <section class="bg-surface">
-        <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-            <h1 class="text-3xl font-bold tracking-normal text-ink">سبد خرید</h1>
+    <section class="storefront-page-hero">
+        <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
+            <p class="storefront-eyebrow">سبد خرید شما</p>
+            <h1 class="mt-3 text-3xl font-extrabold tracking-normal text-ink sm:text-4xl">آماده برای ادامه مسیر</h1>
+            <p class="mt-2 text-sm leading-6 text-muted">تعداد محصولات را بررسی کنید و برای ثبت سفارش ادامه دهید.</p>
         </div>
     </section>
 
     <section class="bg-surface-page py-8">
         @if ($lines->isEmpty())
             <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
-                <div class="rounded-2xl border border-border bg-surface p-8 text-center shadow-sm">
-                    <p class="text-sm font-semibold text-brand">سبد خرید</p>
+                <div class="storefront-surface-card p-8 text-center sm:p-10">
+                    <p class="storefront-eyebrow">سبد خرید</p>
                     <h2 class="mt-3 text-2xl font-bold text-ink">سبد خرید خالی است</h2>
                     <p class="mx-auto mt-3 max-w-md leading-7 text-muted">برای ثبت سفارش، ابتدا یک دوچرخه، قطعه یا لوازم جانبی انتخاب کنید.</p>
                     <div class="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
@@ -25,14 +27,14 @@
                 <div class="grid gap-4">
                     @foreach ($lines as $line)
                     @php($product = $line['product'])
-                    <article class="grid gap-4 rounded-2xl border border-border bg-surface p-4 shadow-sm sm:grid-cols-[140px_1fr]">
+                    <article class="storefront-surface-card grid gap-4 p-4 sm:grid-cols-[140px_1fr] sm:p-5">
                         @include('storefront.partials.product-visual', ['product' => $product, 'class' => 'aspect-[4/3] sm:aspect-square', 'loading' => 'lazy'])
                         <div class="grid gap-4">
                             <div>
                                 <h2 class="text-lg font-semibold text-ink">
                                     <a href="{{ route('storefront.products.show', $product) }}" class="transition hover:text-brand">{{ $product->title }}</a>
                                 </h2>
-                                <p class="mt-1 text-sm text-muted">{{ $product->subtitle }}</p>
+                                @if ($product->subtitle)<p class="mt-1 text-sm leading-6 text-muted">{{ $product->subtitle }}</p>@endif
                             </div>
                             <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                                 <form method="POST" action="{{ route('storefront.cart.items.update', $product) }}" class="flex items-end gap-2">
@@ -45,7 +47,7 @@
                                     <button type="submit" class="h-10 rounded-xl border border-border bg-surface px-3 text-sm font-semibold transition hover:border-brand hover:text-brand">به‌روزرسانی</button>
                                 </form>
                                 <div class="flex items-center justify-between gap-4">
-                                    <p class="font-semibold text-ink">{{ \App\Support\Storefront\PriceFormatter::format($line['line_total']) }}</p>
+                                    <p class="text-lg font-extrabold text-ink">{{ \App\Support\Storefront\PriceFormatter::format($line['line_total']) }}</p>
                                     <form method="POST" action="{{ route('storefront.cart.items.destroy', $product) }}">
                                         @csrf
                                         @method('DELETE')
@@ -58,15 +60,16 @@
                     @endforeach
                 </div>
 
-                <aside class="self-start rounded-2xl border border-border bg-surface p-5 shadow-sm">
-                    <h2 class="text-xl font-semibold text-ink">خلاصه سفارش</h2>
+                <aside class="storefront-summary-card self-start">
+                    <p class="storefront-eyebrow">خلاصه سفارش</p>
+                    <h2 class="mt-3 text-xl font-bold text-ink">آماده ثبت سفارش</h2>
                     <div class="mt-5 flex items-center justify-between border-b border-border pb-4">
                         <span class="text-muted">جمع کل</span>
                         <span class="font-semibold text-ink">{{ \App\Support\Storefront\PriceFormatter::format($subtotal) }}</span>
                     </div>
                     <a
                         href="{{ route('storefront.checkout.show') }}"
-                        class="mt-5 inline-flex min-h-12 w-full items-center justify-center rounded-xl bg-brand px-4 text-sm font-semibold text-white transition hover:bg-brand-hover"
+                        class="mt-5 inline-flex min-h-12 w-full items-center justify-center rounded-xl bg-brand px-4 text-sm font-bold text-white shadow-sm shadow-red-900/15 transition hover:bg-brand-hover focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2"
                     >
                         ادامه ثبت سفارش
                     </a>

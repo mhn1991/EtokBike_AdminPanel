@@ -1,15 +1,16 @@
 @extends('storefront.layouts.app')
 
 @section('content')
-    <section class="bg-surface">
+    <section class="storefront-page-hero">
         <div class="mx-auto grid max-w-7xl gap-8 px-4 py-10 sm:px-6 lg:grid-cols-[1fr_0.8fr] lg:px-8">
             <div>
-                <p class="inline-flex rounded-full bg-brand-soft px-3 py-1 text-sm font-semibold text-brand">برنامه‌ها و رویدادها</p>
-                <h1 class="mt-4 text-3xl font-bold leading-tight tracking-normal text-ink sm:text-5xl">برنامه‌های EtokBike</h1>
+                <p class="storefront-eyebrow">برنامه‌ها و رویدادها</p>
+                <h1 class="mt-4 text-3xl font-extrabold leading-tight tracking-normal text-ink sm:text-5xl">بیرون از فروشگاه هم همراهتان هستیم</h1>
                 <p class="mt-5 max-w-2xl leading-8 text-muted">برنامه‌های آینده را رزرو کنید و گالری برنامه‌های برگزار شده را ببینید.</p>
             </div>
-            <div class="rounded-2xl border border-border bg-surface-page p-5 shadow-sm">
-                <h2 class="text-xl font-semibold text-ink">رزرو برنامه</h2>
+            <div class="storefront-surface-card p-5 sm:p-6">
+                <p class="storefront-eyebrow">رکاب‌زنی گروهی</p>
+                <h2 class="mt-3 text-xl font-bold text-ink">رزرو برنامه</h2>
                 <p class="mt-3 text-sm leading-6 text-muted">رزروها مستقیم در پنل برنامه‌ها ثبت می‌شوند و ظرفیت باقی‌مانده هنگام ثبت بررسی می‌شود.</p>
                 <a href="#programs" class="mt-5 inline-flex min-h-11 items-center rounded-xl bg-brand px-5 text-sm font-semibold text-white transition hover:bg-brand-hover">دیدن برنامه‌ها</a>
             </div>
@@ -33,7 +34,7 @@
                                     $color = preg_match('/^#[0-9A-Fa-f]{3,8}$/', (string) $program->thumbnail_color) ? $program->thumbnail_color : '#101114';
                                     $remaining = $program->capacity === null ? null : max(0, $program->capacity - $program->reserved_count);
                                 @endphp
-                                <article class="overflow-hidden rounded-2xl border border-border bg-surface shadow-sm">
+                                <article class="group overflow-hidden rounded-2xl border border-border bg-surface shadow-sm transition hover:-translate-y-0.5 hover:border-brand hover:shadow-lg">
                                     <a href="{{ route('storefront.events.show', $program) }}" class="block">
                                         @if ($imageUrl)
                                             <img src="{{ $imageUrl }}" alt="{{ $program->title }}" class="aspect-[4/3] w-full object-cover" loading="lazy">
