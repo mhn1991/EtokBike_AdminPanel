@@ -61,7 +61,7 @@
                 @endif
 
                 <div class="grid gap-5 sm:grid-cols-2">
-                    <label class="grid gap-2 text-sm font-medium text-neutral-800">
+                    <label class="grid gap-2 text-sm font-medium text-neutral-800" data-fulfillment-field="delivery">
                         محدوده ارسال
                         <select name="delivery_zone_id" class="storefront-control px-3">
                             <option value="">بدون محدوده / تحویل حضوری</option>
@@ -84,7 +84,7 @@
                     </label>
                 </div>
 
-                <label class="grid gap-2 text-sm font-medium text-neutral-800">
+                <label class="grid gap-2 text-sm font-medium text-neutral-800" data-fulfillment-field="delivery">
                     آدرس تحویل
                     <textarea name="delivery_address" rows="4" class="storefront-control px-3 py-2">{{ old('delivery_address') }}</textarea>
                     @error('delivery_address') <span class="text-xs text-red-700">{{ $message }}</span> @enderror
@@ -106,6 +106,21 @@
                     ثبت سفارش
                 </button>
             </form>
+
+            <script>
+                (function () {
+                    const radios = document.querySelectorAll('input[name="fulfillment_method"]');
+                    const deliveryFields = document.querySelectorAll('[data-fulfillment-field="delivery"]');
+
+                    function sync() {
+                        const isDelivery = document.querySelector('input[name="fulfillment_method"]:checked')?.value === 'delivery';
+                        deliveryFields.forEach((field) => field.classList.toggle('hidden', !isDelivery));
+                    }
+
+                    radios.forEach((radio) => radio.addEventListener('change', sync));
+                    sync();
+                })();
+            </script>
 
             <aside class="storefront-summary-card self-start">
                 <p class="storefront-eyebrow">مرور نهایی</p>

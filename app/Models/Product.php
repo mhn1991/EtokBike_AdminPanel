@@ -120,6 +120,36 @@ class Product extends Model
         ];
     }
 
+    public static function normalizeSlug(?string $value): string
+    {
+        $value = str_replace(["\u{200C}", "\u{200D}"], ' ', trim((string) $value));
+
+        return Str::slug($value, '-', null);
+    }
+
+    public static function suggestUniqueSlug(?string $title, ?self $ignore = null): string
+    {
+        $baseSlug = static::normalizeSlug($title);
+        $baseSlug = rtrim(Str::limit($baseSlug ?: 'product', 240, ''), '-');
+        $candidate = $baseSlug;
+        $suffix = 2;
+
+        while (static::slugExists($candidate, $ignore)) {
+            $candidate = "{$baseSlug}-{$suffix}";
+            $suffix++;
+        }
+
+        return $candidate;
+    }
+
+    private static function slugExists(string $slug, ?self $ignore = null): bool
+    {
+        return static::query()
+            ->where('slug', $slug)
+            ->when($ignore?->exists, fn ($query) => $query->whereKeyNot($ignore->getKey()))
+            ->exists();
+    }
+
     public function availableStock(): int
     {
         return max(0, $this->stock_quantity - $this->reserved_quantity);

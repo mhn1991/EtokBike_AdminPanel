@@ -26,11 +26,10 @@ class HomeScreenBuilder
         }
 
         $featuredProducts = static::featuredProducts();
-        $programCategories = static::programCategories();
         $statusItems = static::statusItems($user);
         $storeProfile = static::storeProfile();
 
-        if ($featuredProducts->isEmpty() && $programCategories->isEmpty() && empty($statusItems) && ! $storeProfile) {
+        if ($featuredProducts->isEmpty() && empty($statusItems) && ! $storeProfile) {
             return $fallback;
         }
 
@@ -45,28 +44,8 @@ class HomeScreenBuilder
                     ->all();
             }
 
-            if (($section['id'] ?? null) === 'weekly-programs' && $programCategories->isNotEmpty()) {
-                $section['data']['defaultSubsection'] = $programCategories->first()->slug;
-                $section['data']['subsections'] = $programCategories
-                    ->map(fn (ProgramCategory $category): array => [
-                        'id' => $category->slug,
-                        'label' => $category->label,
-                        'title' => $category->title,
-                        'items' => $category->programs
-                            ->map(fn (Program $program): array => static::programOfferPayload($program))
-                            ->values()
-                            ->all(),
-                    ])
-                    ->values()
-                    ->all();
-            }
-
             if (($section['id'] ?? null) === 'customer-status') {
                 $section['data']['items'] = $statusItems;
-            }
-
-            if (($section['id'] ?? null) === 'store-status' && $storeProfile) {
-                $section['data']['items'] = [$storeProfile->statusMobilePayload()];
             }
 
             if (($section['id'] ?? null) === 'store-info' && $storeProfile) {
@@ -185,41 +164,20 @@ class HomeScreenBuilder
     }
 
     /**
-     * @return Collection<int, ProgramCategory>
-     */
-    private static function programCategories(): Collection
-    {
-        if (! static::hasTables(['program_categories', 'programs', 'program_gallery_items'])) {
-            return collect();
-        }
-
-        return ProgramCategory::query()
-            ->where('is_active', true)
-            ->with([
-                'programs' => fn ($query) => $query
-                    ->where('is_active', true)
-                    ->where('program_state', 'future')
-                    ->orderBy('sort_order')
-                    ->orderBy('date_value'),
-            ])
-            ->orderBy('sort_order')
-            ->orderBy('label')
-            ->get()
-            ->filter(fn (ProgramCategory $category): bool => $category->programs->isNotEmpty())
-            ->values();
-    }
-
-    /**
      * @return array<int, array<string, mixed>>
      */
     private static function statusItems(?User $user = null): array
     {
+        if (! $user) {
+            return [];
+        }
+
         $items = collect();
 
         if (static::hasTables(['orders', 'order_items'])) {
             $orders = Order::query()
                 ->with('items')
-                ->when($user, fn ($query) => $query->where('user_id', $user->id))
+                ->where('user_id', $user->id)
                 ->whereNotIn('status', ['completed', 'cancelled'])
                 ->latest('updated_at')
                 ->limit(2)
@@ -230,7 +188,7 @@ class HomeScreenBuilder
 
         if (static::hasTables(['service_bookings'])) {
             $bookings = ServiceBooking::query()
-                ->when($user, fn ($query) => $query->where('user_id', $user->id))
+                ->where('user_id', $user->id)
                 ->whereNotIn('status', ['completed', 'cancelled'])
                 ->latest('updated_at')
                 ->limit(2)
@@ -240,22 +198,6 @@ class HomeScreenBuilder
         }
 
         return $items->take(3)->values()->all();
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    private static function programOfferPayload(Program $program): array
-    {
-        return [
-            'title' => $program->title,
-            'subtitle' => $program->date_label ?: $program->subtitle,
-            'description' => $program->advertisement ?: $program->subtitle,
-            'price' => $program->book_label ?: 'رزرو برنامه',
-            'thumbnailText' => $program->thumbnail_text,
-            'thumbnailColor' => $program->thumbnail_color,
-            'imageUrl' => ImageUrl::resolveForMobile($program->image_url),
-        ];
     }
 
     /**

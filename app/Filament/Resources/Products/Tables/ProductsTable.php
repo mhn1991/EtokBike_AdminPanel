@@ -8,6 +8,8 @@ use App\Support\Admin\FilamentLocalization;
 use App\Support\Inventory\InventoryManager;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
+use Filament\Actions\BulkAction;
+use Filament\Actions\BulkActionGroup;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\Textarea;
@@ -19,6 +21,8 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\DB;
 
 class ProductsTable
 {
@@ -205,12 +209,77 @@ class ProductsTable
                     ->visible(fn (Product $record): bool => ! $record->is_active)
                     ->action(fn (Product $record) => $record->update(['is_active' => true]))
                     ->successNotificationTitle(__('Product visible in the app')),
+                Action::make('duplicate')
+                    ->label('Duplicate')
+                    ->icon(Heroicon::OutlinedDocumentDuplicate)
+                    ->color('gray')
+                    ->action(fn (Product $record) => static::duplicateProduct($record))
+                    ->successNotificationTitle(__('Product duplicated as a hidden draft. Review the price, stock, and images before publishing it.')),
             ])
                 ->label('Actions')
                 ->icon(Heroicon::EllipsisHorizontal)
                 ->iconButton()
                 ->color('gray'))
             ->recordActionsColumnLabel('')
-            ->toolbarActions([]);
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    BulkAction::make('bulkShowInApp')
+                        ->label('Show in app')
+                        ->icon(Heroicon::Eye)
+                        ->color('success')
+                        ->action(fn (Collection $records) => $records->each->update(['is_active' => true]))
+                        ->deselectRecordsAfterCompletion()
+                        ->successNotificationTitle(__('Selected products are now visible in the app')),
+                    BulkAction::make('bulkHideFromApp')
+                        ->label('Hide from app')
+                        ->icon(Heroicon::EyeSlash)
+                        ->color('danger')
+                        ->requiresConfirmation()
+                        ->action(fn (Collection $records) => $records->each->update(['is_active' => false]))
+                        ->deselectRecordsAfterCompletion()
+                        ->successNotificationTitle(__('Selected products are hidden from the app')),
+                    BulkAction::make('bulkFeature')
+                        ->label('Feature in app')
+                        ->icon(Heroicon::Fire)
+                        ->color('warning')
+                        ->action(fn (Collection $records) => $records->each->update(['is_featured' => true]))
+                        ->deselectRecordsAfterCompletion()
+                        ->successNotificationTitle(__('Selected products marked featured')),
+                    BulkAction::make('bulkUnfeature')
+                        ->label('Remove featured')
+                        ->icon(Heroicon::NoSymbol)
+                        ->color('gray')
+                        ->action(fn (Collection $records) => $records->each->update(['is_featured' => false]))
+                        ->deselectRecordsAfterCompletion()
+                        ->successNotificationTitle(__('Selected products removed from featured')),
+                ])->label('Bulk actions'),
+            ]);
+    }
+
+    private static function duplicateProduct(Product $record): Product
+    {
+        return DB::transaction(function () use ($record): Product {
+            // 'variants_count' is not a real column: the table's ->counts('variants')
+            // aggregate injects it as a runtime attribute on $record, and replicate()
+            // would otherwise try to insert it.
+            $copy = $record->replicate(['slug', 'sku', 'stock_quantity', 'reserved_quantity', 'variants_count']);
+            $copy->slug = Product::suggestUniqueSlug($record->title);
+            $copy->sku = null;
+            $copy->stock_quantity = 0;
+            $copy->reserved_quantity = 0;
+            $copy->is_active = false;
+            $copy->is_featured = false;
+            $copy->save();
+
+            foreach ($record->variants as $variant) {
+                $variantCopy = $variant->replicate(['sku', 'stock_quantity']);
+                $variantCopy->product_id = $copy->id;
+                $variantCopy->sku = null;
+                $variantCopy->stock_quantity = 0;
+                $variantCopy->save();
+            }
+
+            return $copy;
+        });
     }
 }

@@ -287,8 +287,7 @@ class MobileConfigApiTest extends TestCase
             ->assertJsonPath('screenId', 'home')
             ->assertJsonPath('sections.2.data.items.0.id', 'featured-home-bike')
             ->assertJsonPath('sections.2.data.items.0.title', 'دوچرخه ویژه خانه')
-            ->assertJsonPath('sections.4.data.items.0.title', 'Open for test')
-            ->assertJsonPath('sections.7.data.items.0.title', 'Test branch');
+            ->assertJsonPath('sections.4.data.items.0.title', 'Test branch');
     }
 
     public function test_it_returns_account_content_from_database(): void

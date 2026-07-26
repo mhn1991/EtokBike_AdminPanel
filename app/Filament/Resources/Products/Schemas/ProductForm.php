@@ -5,11 +5,13 @@ namespace App\Filament\Resources\Products\Schemas;
 use App\Models\Product;
 use App\Models\ProductCategory;
 use App\Support\Admin\FilamentLocalization;
+use App\Support\Storefront\Seo;
 use Filament\Actions\Action;
 use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\KeyValue;
+use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
@@ -24,6 +26,7 @@ use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
+use Illuminate\Support\HtmlString;
 use Illuminate\Support\Str;
 
 class ProductForm
@@ -54,7 +57,7 @@ class ProductForm
                                             return;
                                         }
 
-                                        $set('slug', self::suggestUniqueSlug($state, $record));
+                                        $set('slug', Product::suggestUniqueSlug($state, $record));
                                     })
                                     ->helperText(__('The main product name customers see in the shop, app, browser title, and order lines. Include the brand and model when useful.'))
                                     ->placeholder(__('Example: Trek Marlin 7 mountain bike'))
@@ -62,6 +65,7 @@ class ProductForm
                                     ->columnSpanFull(),
                                 TextInput::make('subtitle')
                                     ->required()
+                                    ->live(onBlur: true)
                                     ->helperText(__('A short one-sentence benefit shown under the title. Keep it specific and avoid repeating the product name.'))
                                     ->placeholder(__('Example: Lightweight aluminium frame with hydraulic disc brakes'))
                                     ->maxLength(255)
@@ -77,15 +81,16 @@ class ProductForm
                                     ->columnSpanFull(),
                                 RichEditor::make('description')
                                     ->label('Full description')
-                                    ->helperText(__('Use headings, short paragraphs, lists, links, tables, and images to explain features, fit, included items, and who the product suits. Price and stock are managed below.'))
+                                    ->live(onBlur: true)
+                                    ->helperText(__('Use headings, short paragraphs, lists, links, tables, and images to explain features, fit, included items, and who the product suits. Use collapsible sections for long specs, and a divider to break up long pages. Price and stock are managed below.'))
                                     ->placeholder(__('Write the complete product description...'))
                                     ->toolbarButtons([
-                                        ['bold', 'italic', 'underline', 'link'],
-                                        ['h2', 'h3'],
+                                        ['bold', 'italic', 'underline', 'strike', 'highlight', 'link'],
+                                        ['h2', 'h3', 'lead'],
                                         ['alignStart', 'alignCenter', 'alignEnd'],
-                                        ['blockquote', 'bulletList', 'orderedList'],
-                                        ['table', 'attachFiles'],
-                                        ['undo', 'redo'],
+                                        ['blockquote', 'bulletList', 'orderedList', 'horizontalRule'],
+                                        ['details', 'table', 'attachFiles'],
+                                        ['clearFormatting', 'undo', 'redo'],
                                     ])
                                     ->fileAttachmentsDisk('public')
                                     ->fileAttachmentsDirectory('mobile/product-descriptions')
@@ -94,7 +99,7 @@ class ProductForm
                                     ->fileAttachmentsMaxSize(4096)
                                     ->preventFileAttachmentPathTampering()
                                     ->resizableImages()
-                                    ->extraInputAttributes(['style' => 'min-height: 20rem;'])
+                                    ->extraInputAttributes(['style' => 'min-height: 26rem;'])
                                     ->columnSpanFull(),
                             ]),
                         Section::make(__('Product media'))
@@ -315,13 +320,21 @@ class ProductForm
                             ->persistCollapsed()
                             ->columns(2)
                             ->schema([
+                                Placeholder::make('seo_preview')
+                                    ->label(__('Search result preview'))
+                                    ->helperText(__('This updates live from the fields below (or the product title, subtitle, and description when they are left blank) — no extra work needed to get a reasonable search result.'))
+                                    ->live()
+                                    ->content(fn (Get $get): HtmlString => self::seoPreview($get))
+                                    ->columnSpanFull(),
                                 TextInput::make('seo_title')
                                     ->label('Meta title')
+                                    ->live(onBlur: true)
                                     ->helperText(__('Optional search-result title. Aim for about 50–60 characters; leave blank to use the product title and site name.'))
                                     ->maxLength(255)
                                     ->columnSpanFull(),
                                 Textarea::make('seo_description')
                                     ->label('Meta description')
+                                    ->live(onBlur: true)
                                     ->helperText(__('Optional search-result summary. Aim for about 140–160 characters; leave blank to use the product description or subtitle.'))
                                     ->rows(3)
                                     ->maxLength(500)
@@ -406,10 +419,10 @@ class ProductForm
                                     ->required()
                                     ->live(onBlur: true)
                                     ->afterStateUpdated(function (Set $set, ?string $state): void {
-                                        $set('slug', self::normalizeSlug($state));
+                                        $set('slug', Product::normalizeSlug($state));
                                         $set('slug_is_custom', true);
                                     })
-                                    ->dehydrateStateUsing(fn (?string $state): string => self::normalizeSlug($state))
+                                    ->dehydrateStateUsing(fn (?string $state): string => Product::normalizeSlug($state))
                                     ->unique(ignoreRecord: true)
                                     ->hint(fn (Get $get): string => $get('slug_is_custom') ? __('Custom slug') : __('Suggested from the title'))
                                     ->helperText(__('The unique, readable part of the product URL and the stable ID used by the app. It is suggested from the title; edit it if needed. Avoid changing it after publishing because old links may stop working.'))
@@ -420,7 +433,7 @@ class ProductForm
                                             ->tooltip(__('Replace the slug with a new unique suggestion from the current title'))
                                             ->disabled(fn (Get $get): bool => blank($get('title')))
                                             ->action(function (Get $get, Set $set, ?Product $record): void {
-                                                $set('slug', self::suggestUniqueSlug($get('title'), $record));
+                                                $set('slug', Product::suggestUniqueSlug($get('title'), $record));
                                                 $set('slug_is_custom', true);
                                             }),
                                     )
@@ -447,34 +460,38 @@ class ProductForm
             ]);
     }
 
-    private static function normalizeSlug(?string $value): string
+    /**
+     * Mirrors App\Support\Storefront\Seo::productTitle()/productDescription() so the
+     * preview always matches what the storefront will actually render, without
+     * needing a saved record.
+     */
+    private static function seoPreview(Get $get): HtmlString
     {
-        $value = str_replace(["\u{200C}", "\u{200D}"], ' ', trim((string) $value));
+        $siteName = Seo::siteName();
+        $title = trim((string) $get('title'));
+        $resolvedTitle = trim((string) $get('seo_title')) ?: ($title !== '' ? "{$title} | {$siteName}" : __('Untitled product'));
 
-        return Str::slug($value, '-', null);
-    }
+        $plainDescription = trim(preg_replace('/\s+/u', ' ', strip_tags((string) $get('description'))) ?? '');
+        $fallbackDescription = $plainDescription !== '' ? $plainDescription : trim((string) $get('subtitle'));
+        $resolvedDescription = trim((string) $get('seo_description')) ?: Str::limit($fallbackDescription, 155, '');
 
-    private static function suggestUniqueSlug(?string $title, ?Product $record = null): string
-    {
-        $baseSlug = self::normalizeSlug($title);
-        $baseSlug = rtrim(Str::limit($baseSlug ?: 'product', 240, ''), '-');
-        $candidate = $baseSlug;
-        $suffix = 2;
-
-        while (self::slugExists($candidate, $record)) {
-            $candidate = "{$baseSlug}-{$suffix}";
-            $suffix++;
+        if ($resolvedDescription === '') {
+            $resolvedDescription = __('No description yet — fill in the subtitle or description above and this will fill in automatically.');
         }
 
-        return $candidate;
-    }
+        $slug = trim((string) $get('slug')) ?: 'product-slug';
+        $url = url('/shop/products/'.$slug);
 
-    private static function slugExists(string $slug, ?Product $record = null): bool
-    {
-        return Product::query()
-            ->where('slug', $slug)
-            ->when($record?->exists, fn ($query) => $query->whereKeyNot($record->getKey()))
-            ->exists();
+        return new HtmlString(sprintf(
+            '<div style="border:1px solid rgb(229,231,235);border-radius:0.5rem;padding:0.875rem 1rem;background:#fff;font-family:arial,sans-serif;">'
+            .'<div dir="ltr" style="font-size:0.8rem;color:#4d5156;">%s</div>'
+            .'<div style="font-size:1.125rem;line-height:1.5rem;color:#1a0dab;margin-top:0.15rem;">%s</div>'
+            .'<div dir="rtl" style="font-size:0.85rem;line-height:1.35rem;color:#4d5156;margin-top:0.15rem;">%s</div>'
+            .'</div>',
+            e($url),
+            e($resolvedTitle),
+            e($resolvedDescription),
+        ));
     }
 
     /**
