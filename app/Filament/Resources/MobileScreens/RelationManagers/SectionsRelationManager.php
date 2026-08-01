@@ -3,12 +3,15 @@
 namespace App\Filament\Resources\MobileScreens\RelationManagers;
 
 use App\Models\MobileScreenSection;
+use App\Models\Product;
+use App\Support\Admin\FilamentLocalization;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\CodeEditor;
 use Filament\Forms\Components\CodeEditor\Enums\Language;
+use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TagsInput;
@@ -36,6 +39,7 @@ class SectionsRelationManager extends RelationManager
         'profile_summary',
         'checkout_note',
         'cart_summary',
+        'bundle_offers',
     ];
 
     public function form(Schema $schema): Schema
@@ -50,7 +54,7 @@ class SectionsRelationManager extends RelationManager
                             ->required()
                             ->maxLength(255),
                         Select::make('type')
-                            ->options(\App\Support\Admin\FilamentLocalization::options(MobileScreenSection::TYPE_OPTIONS))
+                            ->options(FilamentLocalization::options(MobileScreenSection::TYPE_OPTIONS))
                             ->native(false)
                             ->searchable()
                             ->live()
@@ -164,6 +168,82 @@ class SectionsRelationManager extends RelationManager
                             ->columnSpanFull(),
                         TagsInput::make('data.timeSlots')
                             ->label('Time slot options')
+                            ->columnSpanFull(),
+                    ]),
+                Section::make('Bundle offers')
+                    ->description(__('Cross-sell bundles that combine two or more products at a special price, shown as a horizontal row of cards.'))
+                    ->visible(fn (Get $get): bool => $get('type') === 'bundle_offers')
+                    ->schema([
+                        TextInput::make('data.title')
+                            ->label('Section title')
+                            ->required(fn (Get $get): bool => $get('type') === 'bundle_offers')
+                            ->columnSpanFull(),
+                        TextInput::make('data.subtitle')
+                            ->label('Section subtitle')
+                            ->helperText(__('Short line shown next to the title, e.g. "با هم بخرید، ارزان‌تر تمام شود".'))
+                            ->columnSpanFull(),
+                        Repeater::make('data.items')
+                            ->label('Bundles')
+                            ->defaultItems(0)
+                            ->itemLabel(fn (array $state): ?string => $state['title'] ?? null)
+                            ->collapsible()
+                            ->columns(2)
+                            ->schema([
+                                TextInput::make('id')
+                                    ->label('Bundle ID')
+                                    ->required()
+                                    ->helperText(__('Unique id, e.g. bundle-etx200-airfit. Used as the cart line item id.')),
+                                TextInput::make('ribbon')
+                                    ->label('Ribbon label')
+                                    ->helperText(__('Small badge on the card, e.g. "بسته کوهستان".')),
+                                TextInput::make('title')
+                                    ->label('Bundle title')
+                                    ->required()
+                                    ->columnSpanFull(),
+                                Textarea::make('subtitle')
+                                    ->label('Bundle subtitle')
+                                    ->rows(2)
+                                    ->columnSpanFull(),
+                                Select::make('productIds')
+                                    ->label('Products in this bundle')
+                                    ->options(fn (): array => Product::query()
+                                        ->where('is_active', true)
+                                        ->orderBy('title')
+                                        ->pluck('title', 'slug')
+                                        ->all())
+                                    ->multiple()
+                                    ->searchable()
+                                    ->preload()
+                                    ->required()
+                                    ->minItems(2)
+                                    ->helperText(__('Pick the products this bundle combines. Their thumbnail badge and combined "original price" are pulled in automatically — no need to retype them.'))
+                                    ->columnSpanFull(),
+                                TextInput::make('priceValue')
+                                    ->label('Bundle price (number)')
+                                    ->numeric()
+                                    ->required()
+                                    ->helperText(__('The special bundle price for the cart total, e.g. 27900000.')),
+                                TextInput::make('price')
+                                    ->label('Bundle price (display)')
+                                    ->required()
+                                    ->helperText(__('Shown in bold, e.g. ۲۷,۹۰۰,۰۰۰ تومان.')),
+                                TextInput::make('wasPrice')
+                                    ->label('Original price override (display)')
+                                    ->helperText(__('Leave blank to auto-calculate from the selected products\' prices. Set this only to override that.')),
+                                TextInput::make('saveLabel')
+                                    ->label('Savings label')
+                                    ->helperText(__('Optional badge, e.g. ۲,۰۰۰,۰۰۰ تومان صرفه‌جویی.')),
+                                TextInput::make('ctaLabel')
+                                    ->label('Button label')
+                                    ->default('افزودن بسته به سبد'),
+                                TextInput::make('thumbnailText')
+                                    ->label('Cart tile text')
+                                    ->default('SET')
+                                    ->helperText(__('Shown on the small tile once the bundle is in the cart.')),
+                                ColorPicker::make('thumbnailColor')
+                                    ->label('Cart tile color')
+                                    ->default('#B06A1A'),
+                            ])
                             ->columnSpanFull(),
                     ]),
                 Section::make('Basic copy')

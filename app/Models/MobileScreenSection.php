@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\Mobile\BundleOfferResolver;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
@@ -26,6 +27,7 @@ class MobileScreenSection extends Model
         'hero' => 'Hero',
         'category_grid' => 'Category grid',
         'product_row' => 'Product row',
+        'bundle_offers' => 'Bundle offers',
         'offer_sections' => 'Offer sections',
         'program_sections' => 'Program sections',
         'product_list' => 'Product list',
@@ -69,7 +71,7 @@ class MobileScreenSection extends Model
         $payload = [
             'id' => $this->section_id,
             'type' => $this->type,
-            'data' => $this->data ?: [],
+            'data' => $this->resolvedData(),
         ];
 
         if ($this->layout !== null) {
@@ -81,6 +83,20 @@ class MobileScreenSection extends Model
         }
 
         return $payload;
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function resolvedData(): array
+    {
+        $data = $this->data ?: [];
+
+        if ($this->type === 'bundle_offers') {
+            return BundleOfferResolver::resolve($data);
+        }
+
+        return $data;
     }
 
     protected function dataJson(): Attribute
