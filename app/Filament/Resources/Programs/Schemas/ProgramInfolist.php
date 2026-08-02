@@ -16,7 +16,7 @@ class ProgramInfolist
     {
         return $schema
             ->components([
-                Section::make('Program')
+                Section::make(__('Program'))
                     ->columns(3)
                     ->schema([
                         TextEntry::make('category.label')
@@ -44,7 +44,7 @@ class ProgramInfolist
                             ->label('Visible in app')
                             ->boolean(),
                     ]),
-                Section::make('Detail page')
+                Section::make(__('Detail page'))
                     ->schema([
                         TextEntry::make('book_label')
                             ->placeholder(__('-')),
@@ -62,7 +62,7 @@ class ProgramInfolist
                         TextEntry::make('gallery_title')
                             ->placeholder(__('-')),
                     ]),
-                Section::make('App card and capacity')
+                Section::make(__('App card and capacity'))
                     ->columns(3)
                     ->schema([
                         TextEntry::make('thumbnail_text'),
@@ -76,7 +76,7 @@ class ProgramInfolist
                         TextEntry::make('reserved_count')
                             ->formatStateUsing(fn (?int $state): string => number_format($state ?? 0)),
                     ]),
-                Section::make('Audit')
+                Section::make(__('Audit'))
                     ->columns(2)
                     ->schema([
                         TextEntry::make('created_at')

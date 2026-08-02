@@ -16,7 +16,7 @@ class StockMovementForm
     {
         return $schema
             ->components([
-                Section::make('Adjustment')
+                Section::make(__('Adjustment'))
                     ->description(__('Record manual warehouse changes. Sales are recorded automatically from orders.'))
                     ->columns(3)
                     ->schema([

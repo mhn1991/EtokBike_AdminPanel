@@ -13,7 +13,7 @@ class ReceiptInfolist
     {
         return $schema
             ->components([
-                Section::make('Receipt')
+                Section::make(__('Receipt'))
                     ->columns(3)
                     ->schema([
                         TextEntry::make('receipt_number'),
@@ -33,7 +33,7 @@ class ReceiptInfolist
                             ->dateTime()
                             ->placeholder(__('-')),
                     ]),
-                Section::make('Customer')
+                Section::make(__('Customer'))
                     ->columns(3)
                     ->schema([
                         TextEntry::make('customer_name'),
@@ -45,7 +45,7 @@ class ReceiptInfolist
                             ->placeholder(__('-'))
                             ->columnSpanFull(),
                     ]),
-                Section::make('Totals')
+                Section::make(__('Totals'))
                     ->columns(5)
                     ->schema([
                         TextEntry::make('subtotal')
@@ -62,7 +62,7 @@ class ReceiptInfolist
                         TextEntry::make('total')
                             ->formatStateUsing(fn (?int $state): string => number_format($state ?? 0)),
                     ]),
-                Section::make('Notes')
+                Section::make(__('Notes'))
                     ->schema([
                         TextEntry::make('notes')
                             ->placeholder(__('-'))

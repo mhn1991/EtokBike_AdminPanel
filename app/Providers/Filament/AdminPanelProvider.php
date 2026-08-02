@@ -32,7 +32,6 @@ class AdminPanelProvider extends PanelProvider
             ->brandName('مدیریت EtokBike')
             ->font('Tahoma', provider: LocalFontProvider::class)
             ->sidebarWidth('18rem')
-            ->collapsibleNavigationGroups(false)
             ->colors([
                 'primary' => Color::hex('#D71920'),
             ])

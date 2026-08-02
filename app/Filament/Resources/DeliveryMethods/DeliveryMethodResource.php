@@ -41,7 +41,7 @@ class DeliveryMethodResource extends Resource
     {
         return $schema
             ->components([
-                Section::make('Delivery method')
+                Section::make(__('Delivery method'))
                     ->description(__('Shown as cards on the mobile cart page.'))
                     ->columns(3)
                     ->schema([
@@ -72,7 +72,6 @@ class DeliveryMethodResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->paginated(false)
             ->striped()
             ->columns([
                 TextColumn::make('title')

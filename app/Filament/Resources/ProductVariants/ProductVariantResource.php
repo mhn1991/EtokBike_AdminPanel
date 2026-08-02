@@ -34,10 +34,14 @@ class ProductVariantResource extends Resource
 
     protected static ?int $navigationSort = 3;
 
+    protected static ?string $modelLabel = 'تنوع کالا';
+
+    protected static ?string $pluralModelLabel = 'تنوع‌های کالا';
+
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
-            Section::make('Variant')
+            Section::make(__('Variant'))
                 ->description(__('Variant-specific SKU, options, price, and stock.'))
                 ->columns(3)
                 ->schema([
@@ -67,7 +71,6 @@ class ProductVariantResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->paginated(false)
             ->striped()
             ->columns([
                 TextColumn::make('product.title')->label('Product')->searchable()->sortable(),

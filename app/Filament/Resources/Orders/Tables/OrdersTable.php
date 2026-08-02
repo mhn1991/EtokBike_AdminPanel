@@ -7,19 +7,21 @@ use App\Models\Order;
 use App\Support\Receipts\ReceiptGenerator;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
+use Filament\Actions\BulkAction;
+use Filament\Actions\BulkActionGroup;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Collection;
 
 class OrdersTable
 {
     public static function configure(Table $table): Table
     {
         return $table
-            ->paginated(false)
             ->striped()
             ->columns([
                 TextColumn::make('order_number')
@@ -180,6 +182,49 @@ class OrdersTable
                 ->iconButton()
                 ->color('gray'))
             ->recordActionsColumnLabel('')
-            ->toolbarActions([]);
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    BulkAction::make('bulkMarkPaid')
+                        ->label('Mark paid')
+                        ->icon(Heroicon::CurrencyDollar)
+                        ->color('success')
+                        ->action(fn (Collection $records) => $records->each(fn (Order $record) => $record->update(['payment_status' => 'paid'])))
+                        ->deselectRecordsAfterCompletion()
+                        ->successNotificationTitle(__('Selected orders marked paid')),
+                    BulkAction::make('bulkConfirm')
+                        ->label('Confirm order')
+                        ->icon(Heroicon::CheckCircle)
+                        ->color('info')
+                        ->action(fn (Collection $records) => $records->each(function (Order $record) {
+                            if ($record->status === 'pending') {
+                                $record->update(['status' => 'confirmed']);
+                            }
+                        }))
+                        ->deselectRecordsAfterCompletion()
+                        ->successNotificationTitle(__('Selected orders confirmed')),
+                    BulkAction::make('bulkMarkReady')
+                        ->label('Mark ready')
+                        ->icon(Heroicon::ArchiveBox)
+                        ->color('primary')
+                        ->action(fn (Collection $records) => $records->each(function (Order $record) {
+                            if (in_array($record->status, ['confirmed', 'processing'], true)) {
+                                $record->update(['status' => 'ready']);
+                            }
+                        }))
+                        ->deselectRecordsAfterCompletion()
+                        ->successNotificationTitle(__('Selected orders marked ready')),
+                    BulkAction::make('bulkComplete')
+                        ->label('Complete')
+                        ->icon(Heroicon::CheckBadge)
+                        ->color('success')
+                        ->action(fn (Collection $records) => $records->each(function (Order $record) {
+                            if (! in_array($record->status, ['completed', 'cancelled'], true)) {
+                                $record->update(['status' => 'completed']);
+                            }
+                        }))
+                        ->deselectRecordsAfterCompletion()
+                        ->successNotificationTitle(__('Selected orders completed')),
+                ])->label('Bulk actions'),
+            ]);
     }
 }

@@ -34,6 +34,10 @@ class ReceiptResource extends Resource
 
     protected static ?int $navigationSort = 2;
 
+    protected static ?string $modelLabel = 'رسید';
+
+    protected static ?string $pluralModelLabel = 'رسیدها';
+
     protected static ?string $recordTitleAttribute = 'receipt_number';
 
     public static function form(Schema $schema): Schema
@@ -49,7 +53,6 @@ class ReceiptResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->paginated(false)
             ->striped()
             ->columns([
                 TextColumn::make('receipt_number')

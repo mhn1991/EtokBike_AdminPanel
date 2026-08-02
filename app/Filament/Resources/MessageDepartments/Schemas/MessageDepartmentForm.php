@@ -16,7 +16,7 @@ class MessageDepartmentForm
     {
         return $schema
             ->components([
-                Section::make('Department')
+                Section::make(__('Department'))
                     ->description(__('Controls how this support department appears in the app.'))
                     ->columns(3)
                     ->schema([
@@ -44,7 +44,7 @@ class MessageDepartmentForm
                             ->required()
                             ->default(true),
                     ]),
-                Section::make('Composer copy')
+                Section::make(__('Composer copy'))
                     ->description(__('Text customers see when opening and sending a message.'))
                     ->columns(2)
                     ->schema([

@@ -12,6 +12,8 @@ use App\Support\Receipts\ReceiptGenerator;
 use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
+use Filament\Actions\BulkAction;
+use Filament\Actions\BulkActionGroup;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Select;
@@ -25,6 +27,7 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Collection;
 
 class ReturnRequestResource extends Resource
 {
@@ -38,13 +41,17 @@ class ReturnRequestResource extends Resource
 
     protected static ?int $navigationSort = 4;
 
+    protected static ?string $modelLabel = 'مرجوعی';
+
+    protected static ?string $pluralModelLabel = 'مرجوعی‌ها';
+
     protected static ?string $recordTitleAttribute = 'return_number';
 
     public static function form(Schema $schema): Schema
     {
         return $schema
             ->components([
-                Section::make('Return')
+                Section::make(__('Return'))
                     ->description(__('Customer return and refund workflow.'))
                     ->columns(3)
                     ->schema([
@@ -96,7 +103,7 @@ class ReturnRequestResource extends Resource
                             ->suffix('IRR')
                             ->default(0),
                     ]),
-                Section::make('Customer')
+                Section::make(__('Customer'))
                     ->columns(3)
                     ->schema([
                         TextInput::make('customer_name')
@@ -118,7 +125,6 @@ class ReturnRequestResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->paginated(false)
             ->striped()
             ->columns([
                 TextColumn::make('return_number')
@@ -189,7 +195,21 @@ class ReturnRequestResource extends Resource
                 ->iconButton()
                 ->color('gray'))
             ->recordActionsColumnLabel('')
-            ->toolbarActions([]);
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    BulkAction::make('bulkApprove')
+                        ->label('Approve')
+                        ->icon(Heroicon::CheckCircle)
+                        ->color('info')
+                        ->action(fn (Collection $records) => $records->each(function (ReturnRequest $record) {
+                            if ($record->status === 'requested') {
+                                $record->update(['status' => 'approved']);
+                            }
+                        }))
+                        ->deselectRecordsAfterCompletion()
+                        ->successNotificationTitle(__('Selected returns approved')),
+                ])->label('Bulk actions'),
+            ]);
     }
 
     public static function getRelations(): array

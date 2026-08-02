@@ -5,19 +5,21 @@ namespace App\Filament\Resources\ServiceBookings\Tables;
 use App\Models\ServiceBooking;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
+use Filament\Actions\BulkAction;
+use Filament\Actions\BulkActionGroup;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Collection;
 
 class ServiceBookingsTable
 {
     public static function configure(Table $table): Table
     {
         return $table
-            ->paginated(false)
             ->striped()
             ->columns([
                 TextColumn::make('user.name')
@@ -115,6 +117,20 @@ class ServiceBookingsTable
                 ->iconButton()
                 ->color('gray'))
             ->recordActionsColumnLabel('')
-            ->toolbarActions([]);
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    BulkAction::make('bulkConfirm')
+                        ->label('Confirm booking')
+                        ->icon(Heroicon::CheckCircle)
+                        ->color('info')
+                        ->action(fn (Collection $records) => $records->each(function (ServiceBooking $record) {
+                            if ($record->status === 'pending') {
+                                $record->update(['status' => 'confirmed']);
+                            }
+                        }))
+                        ->deselectRecordsAfterCompletion()
+                        ->successNotificationTitle(__('Selected bookings confirmed')),
+                ])->label('Bulk actions'),
+            ]);
     }
 }

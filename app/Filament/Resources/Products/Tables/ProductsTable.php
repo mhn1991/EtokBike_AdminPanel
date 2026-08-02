@@ -17,6 +17,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\ColorColumn;
 use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
@@ -32,19 +33,19 @@ class ProductsTable
             ->paginated(false)
             ->striped()
             ->columns([
+                ImageColumn::make('image_url')
+                    ->label('Photo')
+                    ->disk('public')
+                    ->square()
+                    ->size(40),
                 TextColumn::make('category.label')
                     ->label('Category')
                     ->formatStateUsing(fn (?string $state, Product $record): string => $record->category?->pathLabel() ?? (string) $state)
                     ->visibleFrom('md')
                     ->sortable(),
                 TextColumn::make('title')
-                    ->description(fn (Product $record): string => collect([
-                        $record->subtitle,
-                        $record->price_value ? number_format($record->price_value) : null,
-                        $record->stock_label,
-                    ])->filter()->join(' · '))
+                    ->description(fn (Product $record): ?string => $record->subtitle)
                     ->searchable()
-                    ->wrap()
                     ->extraCellAttributes(['dir' => 'rtl'])
                     ->sortable(),
                 TextColumn::make('availability')

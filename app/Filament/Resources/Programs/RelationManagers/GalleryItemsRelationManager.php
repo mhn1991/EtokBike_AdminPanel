@@ -21,11 +21,17 @@ class GalleryItemsRelationManager extends RelationManager
 {
     protected static string $relationship = 'galleryItems';
 
+    protected static ?string $title = 'گالری تصاویر';
+
+    protected static ?string $modelLabel = 'تصویر گالری';
+
+    protected static ?string $pluralModelLabel = 'تصاویر گالری';
+
     public function form(Schema $schema): Schema
     {
         return $schema
             ->components([
-                Section::make('Gallery item')
+                Section::make(__('Gallery item'))
                     ->description(__('Photo metadata used when a finished program shows its gallery.'))
                     ->columns(3)
                     ->schema([

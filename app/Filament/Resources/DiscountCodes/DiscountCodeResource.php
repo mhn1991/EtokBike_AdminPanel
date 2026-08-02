@@ -34,10 +34,14 @@ class DiscountCodeResource extends Resource
 
     protected static ?int $navigationSort = 1;
 
+    protected static ?string $modelLabel = 'تخفیف';
+
+    protected static ?string $pluralModelLabel = 'تخفیف‌ها';
+
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
-            Section::make('Discount')
+            Section::make(__('Discount'))
                 ->description(__('Create coupon codes and campaign rules for checkout integration.'))
                 ->columns(3)
                 ->schema([
@@ -58,7 +62,7 @@ class DiscountCodeResource extends Resource
 
     public static function table(Table $table): Table
     {
-        return $table->paginated(false)->striped()->columns([
+        return $table->striped()->columns([
             TextColumn::make('code')->description(fn (DiscountCode $record): string => $record->name)->searchable()->sortable(),
             TextColumn::make('type')->badge()->formatStateUsing(fn (string $state): string => __(DiscountCode::TYPE_OPTIONS[$state] ?? $state))->sortable(),
             TextColumn::make('value')->formatStateUsing(fn (?int $state): string => number_format($state ?? 0))->sortable(),

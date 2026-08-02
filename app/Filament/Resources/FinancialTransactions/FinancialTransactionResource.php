@@ -41,7 +41,7 @@ class FinancialTransactionResource extends Resource
     {
         return $schema
             ->components([
-                Section::make('Transaction')
+                Section::make(__('Transaction'))
                     ->description(__('Track money moving in or out of the ecommerce operation.'))
                     ->columns(3)
                     ->schema([
@@ -89,7 +89,7 @@ class FinancialTransactionResource extends Resource
                             ->placeholder(__('Receipt, bank ref, invoice'))
                             ->maxLength(255),
                     ]),
-                Section::make('Links')
+                Section::make(__('Links'))
                     ->columns(3)
                     ->schema([
                         Select::make('order_id')
@@ -120,7 +120,6 @@ class FinancialTransactionResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->paginated(false)
             ->striped()
             ->columns([
                 TextColumn::make('occurred_at')

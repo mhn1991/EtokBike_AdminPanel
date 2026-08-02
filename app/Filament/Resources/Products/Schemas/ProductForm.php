@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Products\Schemas;
 
+use App\Filament\Resources\ProductOffers\Schemas\ProductOfferForm;
 use App\Models\Product;
 use App\Models\ProductCategory;
 use App\Support\Admin\FilamentLocalization;
@@ -276,6 +277,25 @@ class ProductForm
                                             ->maxSize(4096)
                                             ->columnSpanFull(),
                                     ])
+                                    ->columnSpanFull(),
+                            ]),
+                        Section::make(__('Offers'))
+                            ->description(__('Add a time-limited sale price, a buy-X-get-Y deal, or an automatic quantity discount for this product. To bundle it together with other products for a combined price, use Product bundles in the marketing section instead.'))
+                            ->icon(Heroicon::OutlinedTag)
+                            ->collapsible()
+                            ->collapsed()
+                            ->persistCollapsed()
+                            ->schema([
+                                Repeater::make('offers')
+                                    ->label('Product offers')
+                                    ->relationship('offers', fn ($query) => $query->orderBy('sort_order'))
+                                    ->defaultItems(0)
+                                    ->columns(3)
+                                    ->itemLabel(fn (array $state): string => filled($state['title'] ?? null) ? $state['title'] : __('New offer'))
+                                    ->addActionLabel(__('Add offer'))
+                                    ->orderColumn('sort_order')
+                                    ->reorderableWithButtons()
+                                    ->schema(ProductOfferForm::fields())
                                     ->columnSpanFull(),
                             ]),
                         Section::make(__('Warehouse'))

@@ -14,7 +14,7 @@ class MobileScreenInfolist
     {
         return $schema
             ->components([
-                Section::make('App page')
+                Section::make(__('App page'))
                     ->columns(3)
                     ->schema([
                         TextEntry::make('screen_id')
@@ -32,7 +32,7 @@ class MobileScreenInfolist
                             ->label('API active')
                             ->boolean(),
                     ]),
-                Section::make('Audit')
+                Section::make(__('Audit'))
                     ->columns(2)
                     ->schema([
                         TextEntry::make('created_at')

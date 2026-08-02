@@ -28,6 +28,23 @@ class MobileActivityTrendChart extends ChartWidget
         return 'line';
     }
 
+    /**
+     * @return array<string, mixed>
+     */
+    protected function getOptions(): array
+    {
+        return [
+            'scales' => [
+                'y' => [
+                    'beginAtZero' => true,
+                    'ticks' => [
+                        'precision' => 0,
+                    ],
+                ],
+            ],
+        ];
+    }
+
     public static function canView(): bool
     {
         return MobileAnalyticsEvent::query()->exists();

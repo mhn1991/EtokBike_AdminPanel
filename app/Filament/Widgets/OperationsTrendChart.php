@@ -32,6 +32,23 @@ class OperationsTrendChart extends ChartWidget
         return 'line';
     }
 
+    /**
+     * @return array<string, mixed>
+     */
+    protected function getOptions(): array
+    {
+        return [
+            'scales' => [
+                'y' => [
+                    'beginAtZero' => true,
+                    'ticks' => [
+                        'precision' => 0,
+                    ],
+                ],
+            ],
+        ];
+    }
+
     public static function canView(): bool
     {
         return Order::query()->exists()

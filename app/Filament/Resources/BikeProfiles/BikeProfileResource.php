@@ -41,7 +41,7 @@ class BikeProfileResource extends Resource
     {
         return $schema
             ->components([
-                Section::make('Bike')
+                Section::make(__('Bike'))
                     ->columns(3)
                     ->schema([
                         Select::make('customer_profile_id')
@@ -80,7 +80,6 @@ class BikeProfileResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->paginated(false)
             ->striped()
             ->columns([
                 TextColumn::make('customerProfile.name')

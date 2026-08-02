@@ -19,11 +19,17 @@ class ItemsRelationManager extends RelationManager
 {
     protected static string $relationship = 'items';
 
+    protected static ?string $title = 'اقلام رسید';
+
+    protected static ?string $modelLabel = 'قلم رسید';
+
+    protected static ?string $pluralModelLabel = 'اقلام رسید';
+
     public function form(Schema $schema): Schema
     {
         return $schema
             ->components([
-                Section::make('Receipt item')
+                Section::make(__('Receipt item'))
                     ->description(__('Snapshot line shown on the receipt printout.'))
                     ->columns(3)
                     ->schema([

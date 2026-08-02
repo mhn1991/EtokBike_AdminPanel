@@ -42,7 +42,7 @@ class CustomerProfileResource extends Resource
     {
         return $schema
             ->components([
-                Section::make('Customer')
+                Section::make(__('Customer'))
                     ->columns(3)
                     ->schema([
                         Select::make('user_id')
@@ -65,7 +65,7 @@ class CustomerProfileResource extends Resource
                             ->required()
                             ->default(true),
                     ]),
-                Section::make('Delivery and notes')
+                Section::make(__('Delivery and notes'))
                     ->schema([
                         Textarea::make('delivery_address')
                             ->rows(3)
@@ -80,7 +80,6 @@ class CustomerProfileResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->paginated(false)
             ->striped()
             ->columns([
                 TextColumn::make('name')

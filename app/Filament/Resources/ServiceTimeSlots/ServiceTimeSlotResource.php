@@ -40,7 +40,7 @@ class ServiceTimeSlotResource extends Resource
     {
         return $schema
             ->components([
-                Section::make('Time slot')
+                Section::make(__('Time slot'))
                     ->columns(3)
                     ->schema([
                         TextInput::make('label')
@@ -62,7 +62,6 @@ class ServiceTimeSlotResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->paginated(false)
             ->striped()
             ->columns([
                 TextColumn::make('label')

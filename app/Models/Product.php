@@ -90,6 +90,16 @@ class Product extends Model
         return $this->hasMany(ProductVariant::class);
     }
 
+    public function offers(): HasMany
+    {
+        return $this->hasMany(ProductOffer::class)->orderBy('sort_order');
+    }
+
+    public function bundleItems(): HasMany
+    {
+        return $this->hasMany(ProductBundleItem::class);
+    }
+
     protected static function booted(): void
     {
         static::updated(function (Product $product): void {

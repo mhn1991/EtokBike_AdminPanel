@@ -40,7 +40,7 @@ class ProductUnitResource extends Resource
     {
         return $schema
             ->components([
-                Section::make('Unit conversion')
+                Section::make(__('Unit conversion'))
                     ->description(__('Define packaging as a quantity of the product base unit.'))
                     ->columns(3)
                     ->schema([
@@ -80,7 +80,6 @@ class ProductUnitResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->paginated(false)
             ->striped()
             ->columns([
                 TextColumn::make('product.title')

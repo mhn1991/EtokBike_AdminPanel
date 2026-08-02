@@ -21,11 +21,17 @@ class ItemsRelationManager extends RelationManager
 {
     protected static string $relationship = 'items';
 
+    protected static ?string $title = 'اقلام سفارش';
+
+    protected static ?string $modelLabel = 'قلم سفارش';
+
+    protected static ?string $pluralModelLabel = 'اقلام سفارش';
+
     public function form(Schema $schema): Schema
     {
         return $schema
             ->components([
-                Section::make('Item')
+                Section::make(__('Item'))
                     ->description(__('Line total updates from quantity and unit price.'))
                     ->columns(3)
                     ->schema([

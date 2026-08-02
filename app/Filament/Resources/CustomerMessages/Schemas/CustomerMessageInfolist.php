@@ -14,7 +14,7 @@ class CustomerMessageInfolist
     {
         return $schema
             ->components([
-                Section::make('Conversation')
+                Section::make(__('Conversation'))
                     ->columns(3)
                     ->schema([
                         TextEntry::make('department.title')
@@ -32,13 +32,13 @@ class CustomerMessageInfolist
                         TextEntry::make('time_label')
                             ->placeholder(__('-')),
                     ]),
-                Section::make('Message')
+                Section::make(__('Message'))
                     ->schema([
                         TextEntry::make('label'),
                         TextEntry::make('text')
                             ->columnSpanFull(),
                     ]),
-                Section::make('Audit')
+                Section::make(__('Audit'))
                     ->columns(2)
                     ->schema([
                         TextEntry::make('created_at')

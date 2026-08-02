@@ -33,13 +33,17 @@ class ShipmentResource extends Resource
 
     protected static ?int $navigationSort = 2;
 
+    protected static ?string $modelLabel = 'ارسال';
+
+    protected static ?string $pluralModelLabel = 'ارسال‌ها';
+
     protected static ?string $recordTitleAttribute = 'tracking_number';
 
     public static function form(Schema $schema): Schema
     {
         return $schema
             ->components([
-                Section::make('Shipment')
+                Section::make(__('Shipment'))
                     ->description(__('Track packing, carrier handoff, delivery, and failures.'))
                     ->columns(3)
                     ->schema([
@@ -84,7 +88,7 @@ class ShipmentResource extends Resource
                         DateTimePicker::make('delivered_at')
                             ->seconds(false),
                     ]),
-                Section::make('Delivery details')
+                Section::make(__('Delivery details'))
                     ->schema([
                         Textarea::make('delivery_address')
                             ->rows(4)
@@ -99,7 +103,6 @@ class ShipmentResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->paginated(false)
             ->striped()
             ->columns([
                 TextColumn::make('order.order_number')

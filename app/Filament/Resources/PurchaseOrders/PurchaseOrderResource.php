@@ -34,13 +34,17 @@ class PurchaseOrderResource extends Resource
 
     protected static ?int $navigationSort = 2;
 
+    protected static ?string $modelLabel = 'سفارش خرید';
+
+    protected static ?string $pluralModelLabel = 'سفارش‌های خرید';
+
     protected static ?string $recordTitleAttribute = 'purchase_order_number';
 
     public static function form(Schema $schema): Schema
     {
         return $schema
             ->components([
-                Section::make('Purchase order')
+                Section::make(__('Purchase order'))
                     ->description(__('Supplier order header, dates, and receiving status.'))
                     ->columns(3)
                     ->schema([
@@ -75,7 +79,7 @@ class PurchaseOrderResource extends Resource
                             ->maxLength(8)
                             ->default('IRR'),
                     ]),
-                Section::make('Totals')
+                Section::make(__('Totals'))
                     ->description(__('Subtotal is calculated from purchase items.'))
                     ->columns(4)
                     ->schema([
@@ -94,7 +98,7 @@ class PurchaseOrderResource extends Resource
                             ->suffix('IRR')
                             ->default(0),
                         TextInput::make('shipping_total')
-                            ->label('ارسال')
+                            ->label('Shipping')
                             ->required()
                             ->integer()
                             ->minValue(0)
@@ -117,7 +121,6 @@ class PurchaseOrderResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->paginated(false)
             ->striped()
             ->columns([
                 TextColumn::make('purchase_order_number')

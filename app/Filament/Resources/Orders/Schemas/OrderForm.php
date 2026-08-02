@@ -17,7 +17,7 @@ class OrderForm
     {
         return $schema
             ->components([
-                Section::make('Order')
+                Section::make(__('Order'))
                     ->description(__('Track fulfilment, payment, and the linked customer account.'))
                     ->columns(3)
                     ->schema([
@@ -69,7 +69,7 @@ class OrderForm
                             ->searchable()
                             ->preload(),
                     ]),
-                Section::make('Customer')
+                Section::make(__('Customer'))
                     ->description(__('Details used by staff to contact the buyer.'))
                     ->columns(3)
                     ->schema([
@@ -86,7 +86,7 @@ class OrderForm
                             ->rows(4)
                             ->columnSpanFull(),
                     ]),
-                Section::make('Totals')
+                Section::make(__('Totals'))
                     ->description(__('Subtotal is calculated from order items; discounts and delivery adjust the final total.'))
                     ->columns(4)
                     ->schema([
@@ -123,7 +123,7 @@ class OrderForm
                             ->suffix('IRR')
                             ->default(0),
                     ]),
-                Section::make('Admin notes')
+                Section::make(__('Admin notes'))
                     ->schema([
                         Textarea::make('admin_notes')
                             ->hiddenLabel()

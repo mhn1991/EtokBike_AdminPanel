@@ -23,11 +23,17 @@ class ItemsRelationManager extends RelationManager
 {
     protected static string $relationship = 'items';
 
+    protected static ?string $title = 'اقلام مرجوعی';
+
+    protected static ?string $modelLabel = 'قلم مرجوعی';
+
+    protected static ?string $pluralModelLabel = 'اقلام مرجوعی';
+
     public function form(Schema $schema): Schema
     {
         return $schema
             ->components([
-                Section::make('Returned item')
+                Section::make(__('Returned item'))
                     ->description(__('Set item condition and whether it should go back into sellable stock.'))
                     ->columns(3)
                     ->schema([

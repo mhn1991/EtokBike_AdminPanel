@@ -33,10 +33,14 @@ class NotificationTemplateResource extends Resource
 
     protected static ?int $navigationSort = 1;
 
+    protected static ?string $modelLabel = 'قالب اعلان';
+
+    protected static ?string $pluralModelLabel = 'قالب‌های اعلان';
+
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
-            Section::make('Template')
+            Section::make(__('Template'))
                 ->description(__('Reusable notification copy for email, SMS, WhatsApp, or push integrations.'))
                 ->columns(3)
                 ->schema([
@@ -51,7 +55,7 @@ class NotificationTemplateResource extends Resource
 
     public static function table(Table $table): Table
     {
-        return $table->paginated(false)->striped()->columns([
+        return $table->striped()->columns([
             TextColumn::make('key')->searchable()->sortable(),
             TextColumn::make('channel')->badge()->formatStateUsing(fn (string $state): string => __(NotificationTemplate::CHANNEL_OPTIONS[$state] ?? $state))->sortable(),
             TextColumn::make('subject')->placeholder(__('-'))->wrap()->visibleFrom('md'),

@@ -3,19 +3,21 @@
 namespace App\Filament\Resources\ProgramBookings\Tables;
 
 use App\Models\ProgramBooking;
+use Filament\Actions\BulkAction;
+use Filament\Actions\BulkActionGroup;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Collection;
 
 class ProgramBookingsTable
 {
     public static function configure(Table $table): Table
     {
         return $table
-            ->paginated(false)
             ->striped()
             ->columns([
                 TextColumn::make('program.title')
@@ -69,6 +71,20 @@ class ProgramBookingsTable
                 ViewAction::make(),
                 EditAction::make(),
             ])
-            ->toolbarActions([]);
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    BulkAction::make('bulkConfirm')
+                        ->label('Confirm booking')
+                        ->icon(Heroicon::CheckCircle)
+                        ->color('info')
+                        ->action(fn (Collection $records) => $records->each(function (ProgramBooking $record) {
+                            if ($record->status === 'pending') {
+                                $record->update(['status' => 'confirmed']);
+                            }
+                        }))
+                        ->deselectRecordsAfterCompletion()
+                        ->successNotificationTitle(__('Selected bookings confirmed')),
+                ])->label('Bulk actions'),
+            ]);
     }
 }

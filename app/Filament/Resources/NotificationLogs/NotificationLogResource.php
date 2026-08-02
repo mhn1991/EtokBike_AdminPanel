@@ -8,6 +8,8 @@ use App\Filament\Resources\NotificationLogs\Pages\ListNotificationLogs;
 use App\Models\NotificationLog;
 use App\Models\NotificationTemplate;
 use BackedEnum;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Select;
@@ -34,10 +36,14 @@ class NotificationLogResource extends Resource
 
     protected static ?int $navigationSort = 2;
 
+    protected static ?string $modelLabel = 'لاگ اعلان';
+
+    protected static ?string $pluralModelLabel = 'لاگ‌های اعلان';
+
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
-            Section::make('Notification log')
+            Section::make(__('Notification log'))
                 ->description(__('Track sent, failed, and pending notification attempts.'))
                 ->columns(3)
                 ->schema([
@@ -61,7 +67,7 @@ class NotificationLogResource extends Resource
 
     public static function table(Table $table): Table
     {
-        return $table->paginated(false)->striped()->columns([
+        return $table->striped()->columns([
             TextColumn::make('recipient')->description(fn (NotificationLog $record): string => collect([$record->channel, $record->order?->order_number])->filter()->join(' · '))->searchable()->wrap(),
             TextColumn::make('status')->badge()->formatStateUsing(fn (string $state): string => __(NotificationLog::STATUS_OPTIONS[$state] ?? $state))->color(fn (string $state): string => match ($state) {
                 'sent' => 'success',
@@ -78,7 +84,11 @@ class NotificationLogResource extends Resource
             ->filters([SelectFilter::make('status')->options(\App\Support\Admin\FilamentLocalization::options(NotificationLog::STATUS_OPTIONS))])
             ->defaultSort('created_at', 'desc')
             ->recordActions([EditAction::make()])
-            ->toolbarActions([]);
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
+                ])->label('Bulk actions'),
+            ]);
     }
 
     public static function getPages(): array

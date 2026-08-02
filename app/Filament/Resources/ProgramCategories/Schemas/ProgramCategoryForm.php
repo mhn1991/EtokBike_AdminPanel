@@ -16,7 +16,7 @@ class ProgramCategoryForm
     {
         return $schema
             ->components([
-                Section::make('Category')
+                Section::make(__('Category'))
                     ->description(__('Groups ride/event programs in the mobile app.'))
                     ->columns(3)
                     ->schema([

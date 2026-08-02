@@ -17,7 +17,7 @@ class ReceiptForm
     {
         return $schema
             ->components([
-                Section::make('Receipt')
+                Section::make(__('Receipt'))
                     ->description(__('Receipt identity, linked records, and issue status.'))
                     ->columns(3)
                     ->schema([
@@ -57,7 +57,7 @@ class ReceiptForm
                         DateTimePicker::make('cancelled_at')
                             ->seconds(false),
                     ]),
-                Section::make('Customer')
+                Section::make(__('Customer'))
                     ->columns(3)
                     ->schema([
                         TextInput::make('customer_name')
@@ -73,7 +73,7 @@ class ReceiptForm
                             ->rows(3)
                             ->columnSpanFull(),
                     ]),
-                Section::make('Payment and totals')
+                Section::make(__('Payment and totals'))
                     ->columns(4)
                     ->schema([
                         TextInput::make('currency')

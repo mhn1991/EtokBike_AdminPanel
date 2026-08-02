@@ -18,7 +18,7 @@ class ProductInfolist
     {
         return $schema
             ->components([
-                Section::make('Product')
+                Section::make(__('Product'))
                     ->columns(3)
                     ->schema([
                         TextEntry::make('category.label')
@@ -46,7 +46,7 @@ class ProductInfolist
                             ->placeholder(__('-'))
                             ->columnSpanFull(),
                     ]),
-                Section::make('Pricing and stock')
+                Section::make(__('Pricing and stock'))
                     ->columns(4)
                     ->schema([
                         TextEntry::make('price_value')
@@ -74,7 +74,7 @@ class ProductInfolist
                             ->label('Visible in app')
                             ->boolean(),
                     ]),
-                Section::make('Variants')
+                Section::make(__('Variants'))
                     ->description(__('Color, size, stock amount, and price options for this product.'))
                     ->schema([
                         RepeatableEntry::make('variants')
@@ -106,7 +106,7 @@ class ProductInfolist
                                     ->boolean(),
                             ]),
                     ]),
-                Section::make('App card')
+                Section::make(__('App card'))
                     ->columns(3)
                     ->schema([
                         TextEntry::make('thumbnail_text'),
@@ -115,7 +115,7 @@ class ProductInfolist
                             ->disk('public')
                             ->placeholder(__('-')),
                     ]),
-                Section::make('Audit')
+                Section::make(__('Audit'))
                     ->columns(2)
                     ->schema([
                         TextEntry::make('created_at')

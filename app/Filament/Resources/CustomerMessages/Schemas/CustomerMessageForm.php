@@ -17,7 +17,7 @@ class CustomerMessageForm
     {
         return $schema
             ->components([
-                Section::make('Conversation')
+                Section::make(__('Conversation'))
                     ->description(__('Route the message to the right department and customer account.'))
                     ->columns(3)
                     ->schema([
@@ -44,7 +44,7 @@ class CustomerMessageForm
                             ->required()
                             ->default('client'),
                     ]),
-                Section::make('Message')
+                Section::make(__('Message'))
                     ->columns(2)
                     ->schema([
                         TextInput::make('label')

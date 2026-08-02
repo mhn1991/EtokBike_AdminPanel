@@ -13,7 +13,7 @@ class StockMovementInfolist
     {
         return $schema
             ->components([
-                Section::make('Movement')
+                Section::make(__('Movement'))
                     ->columns(3)
                     ->schema([
                         TextEntry::make('product.title')
@@ -41,7 +41,7 @@ class StockMovementInfolist
                             ->placeholder(__('-'))
                             ->columnSpanFull(),
                     ]),
-                Section::make('Linked records')
+                Section::make(__('Linked records'))
                     ->columns(3)
                     ->schema([
                         TextEntry::make('order.order_number')

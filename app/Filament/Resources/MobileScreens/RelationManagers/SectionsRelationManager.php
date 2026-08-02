@@ -31,6 +31,12 @@ class SectionsRelationManager extends RelationManager
 {
     protected static string $relationship = 'sections';
 
+    protected static ?string $title = 'بخش‌ها';
+
+    protected static ?string $modelLabel = 'بخش';
+
+    protected static ?string $pluralModelLabel = 'بخش‌ها';
+
     private const STRUCTURED_DATA_TYPES = [
         'hero',
         'category_grid',
@@ -46,7 +52,7 @@ class SectionsRelationManager extends RelationManager
     {
         return $schema
             ->components([
-                Section::make('Section')
+                Section::make(__('Section'))
                     ->columns(3)
                     ->schema([
                         TextInput::make('section_id')
@@ -69,7 +75,7 @@ class SectionsRelationManager extends RelationManager
                             ->required()
                             ->default(true),
                     ]),
-                Section::make('Hero content')
+                Section::make(__('Hero content'))
                     ->description(__('Structured fields for the hero renderer.'))
                     ->columns(3)
                     ->visible(fn (Get $get): bool => $get('type') === 'hero')
@@ -111,7 +117,7 @@ class SectionsRelationManager extends RelationManager
                             ])
                             ->columnSpanFull(),
                     ]),
-                Section::make('Card content')
+                Section::make(__('Card content'))
                     ->description(__('Structured cards for shortcut grids and business information sections.'))
                     ->columns(2)
                     ->visible(fn (Get $get): bool => in_array($get('type'), ['category_grid', 'business_info'], true))
@@ -140,7 +146,7 @@ class SectionsRelationManager extends RelationManager
                             ])
                             ->columnSpanFull(),
                     ]),
-                Section::make('Service booking form')
+                Section::make(__('Service booking form'))
                     ->description(__('Labels and option lists used by the mobile booking form.'))
                     ->columns(3)
                     ->visible(fn (Get $get): bool => $get('type') === 'service_booking_form')
@@ -170,7 +176,7 @@ class SectionsRelationManager extends RelationManager
                             ->label('Time slot options')
                             ->columnSpanFull(),
                     ]),
-                Section::make('Bundle offers')
+                Section::make(__('Bundle offers'))
                     ->description(__('Cross-sell bundles that combine two or more products at a special price, shown as a horizontal row of cards.'))
                     ->visible(fn (Get $get): bool => $get('type') === 'bundle_offers')
                     ->schema([
@@ -246,7 +252,7 @@ class SectionsRelationManager extends RelationManager
                             ])
                             ->columnSpanFull(),
                     ]),
-                Section::make('Basic copy')
+                Section::make(__('Basic copy'))
                     ->description(__('Simple copy blocks that do not need custom JSON editing.'))
                     ->columns(2)
                     ->visible(fn (Get $get): bool => in_array($get('type'), ['profile_summary', 'checkout_note', 'cart_summary'], true))
@@ -260,7 +266,7 @@ class SectionsRelationManager extends RelationManager
                             ->label('Empty state text')
                             ->columnSpanFull(),
                     ]),
-                Section::make('Raw data payload')
+                Section::make(__('Raw data payload'))
                     ->description(__('Use raw JSON only for complex section types that do not yet have structured fields.'))
                     ->visible(fn (Get $get): bool => ! self::hasStructuredDataEditor((string) $get('type')))
                     ->schema([
@@ -273,7 +279,7 @@ class SectionsRelationManager extends RelationManager
                             ->columnSpanFull()
                             ->helperText(__('This is the section data consumed by the Android renderer.')),
                     ]),
-                Section::make('Advanced layout and style')
+                Section::make(__('Advanced layout and style'))
                     ->description(__('Renderer-specific JSON for layout and styling. Most routine copy edits do not need this.'))
                     ->collapsible()
                     ->collapsed()

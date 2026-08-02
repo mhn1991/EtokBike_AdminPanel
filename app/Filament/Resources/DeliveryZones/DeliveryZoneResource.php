@@ -31,13 +31,17 @@ class DeliveryZoneResource extends Resource
 
     protected static ?int $navigationSort = 1;
 
+    protected static ?string $modelLabel = 'منطقه ارسال';
+
+    protected static ?string $pluralModelLabel = 'مناطق ارسال';
+
     protected static ?string $recordTitleAttribute = 'name';
 
     public static function form(Schema $schema): Schema
     {
         return $schema
             ->components([
-                Section::make('Delivery zone')
+                Section::make(__('Delivery zone'))
                     ->description(__('Delivery fee and timing rules for a city, region, or service area.'))
                     ->columns(3)
                     ->schema([
@@ -79,7 +83,6 @@ class DeliveryZoneResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->paginated(false)
             ->striped()
             ->columns([
                 TextColumn::make('name')

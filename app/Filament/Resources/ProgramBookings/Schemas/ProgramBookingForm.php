@@ -16,7 +16,7 @@ class ProgramBookingForm
     {
         return $schema
             ->components([
-                Section::make('Program')
+                Section::make(__('Program'))
                     ->description(__('The ride, class, or event the customer wants to attend.'))
                     ->columns(3)
                     ->schema([
@@ -45,7 +45,7 @@ class ProgramBookingForm
                             ->required()
                             ->default('pending'),
                     ]),
-                Section::make('Customer')
+                Section::make(__('Customer'))
                     ->description(__('Contact details used to confirm attendance and meeting point.'))
                     ->columns(3)
                     ->schema([
@@ -65,7 +65,7 @@ class ProgramBookingForm
                             ->email()
                             ->maxLength(255),
                     ]),
-                Section::make('Notes')
+                Section::make(__('Notes'))
                     ->schema([
                         Textarea::make('customer_notes')
                             ->rows(4)

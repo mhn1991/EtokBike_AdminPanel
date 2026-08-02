@@ -31,10 +31,14 @@ class TaxRateResource extends Resource
 
     protected static ?int $navigationSort = 4;
 
+    protected static ?string $modelLabel = 'نرخ مالیات';
+
+    protected static ?string $pluralModelLabel = 'نرخ‌های مالیات';
+
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
-            Section::make('Tax rate')
+            Section::make(__('Tax rate'))
                 ->description(__('Define VAT/tax rates for future order and invoice calculations.'))
                 ->columns(3)
                 ->schema([
@@ -50,7 +54,7 @@ class TaxRateResource extends Resource
 
     public static function table(Table $table): Table
     {
-        return $table->paginated(false)->striped()->columns([
+        return $table->striped()->columns([
             TextColumn::make('name')->description(fn (TaxRate $record): string => $record->code)->searchable()->sortable(),
             TextColumn::make('rate')->formatStateUsing(fn ($state): string => number_format((float) $state, 2).'%')->sortable(),
             IconColumn::make('is_inclusive')->label('Inclusive')->boolean(),

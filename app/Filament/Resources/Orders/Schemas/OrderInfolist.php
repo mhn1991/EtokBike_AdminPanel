@@ -13,7 +13,7 @@ class OrderInfolist
     {
         return $schema
             ->components([
-                Section::make('Order')
+                Section::make(__('Order'))
                     ->columns(3)
                     ->schema([
                         TextEntry::make('order_number'),
@@ -36,7 +36,7 @@ class OrderInfolist
                             ->label('Linked user')
                             ->placeholder(__('-')),
                     ]),
-                Section::make('Customer')
+                Section::make(__('Customer'))
                     ->columns(3)
                     ->schema([
                         TextEntry::make('customer_name'),
@@ -48,7 +48,7 @@ class OrderInfolist
                             ->placeholder(__('-'))
                             ->columnSpanFull(),
                     ]),
-                Section::make('Totals')
+                Section::make(__('Totals'))
                     ->columns(5)
                     ->schema([
                         TextEntry::make('currency'),
@@ -61,7 +61,7 @@ class OrderInfolist
                         TextEntry::make('total')
                             ->formatStateUsing(fn (?int $state): string => number_format($state ?? 0)),
                     ]),
-                Section::make('Admin')
+                Section::make(__('Admin'))
                     ->schema([
                         TextEntry::make('admin_notes')
                             ->placeholder(__('-'))

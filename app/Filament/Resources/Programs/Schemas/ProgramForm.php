@@ -24,7 +24,7 @@ class ProgramForm
     {
         return $schema
             ->components([
-                Section::make('Program')
+                Section::make(__('Program'))
                     ->description(__('Event listing information and publication status.'))
                     ->columns(3)
                     ->schema([
@@ -79,7 +79,7 @@ class ProgramForm
                             ->required()
                             ->default(true),
                     ]),
-                Section::make('App card')
+                Section::make(__('App card'))
                     ->description(__('Visual treatment for program cards in the mobile app.'))
                     ->columns(3)
                     ->schema([
@@ -102,7 +102,7 @@ class ProgramForm
                             ->downloadable()
                             ->maxSize(4096),
                     ]),
-                Section::make('Detail page')
+                Section::make(__('Detail page'))
                     ->description(__('Copy, tags, and labels used after a customer opens the program.'))
                     ->schema([
                         TextInput::make('ad_title')
@@ -124,7 +124,7 @@ class ProgramForm
                             ->helperText(__('Only used for finished programs.'))
                             ->maxLength(255),
                     ]),
-                Section::make('Capacity')
+                Section::make(__('Capacity'))
                     ->description(__('Optional availability numbers shown to staff.'))
                     ->columns(2)
                     ->schema([

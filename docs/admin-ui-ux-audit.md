@@ -2,9 +2,169 @@
 
 Date: 2026-07-20
 
-Status: **Findings recorded, no code changes made yet.** Pick this back up by
-reading this file, confirming scope with the user (see "Open decisions"
-below), then executing the plan.
+Status: **All three findings below were fixed on 2026-08-02.** Summary:
+
+- **Finding 1 (translation sweep):** Turned out smaller than it looked —
+  `app/Providers/Filament/AppServiceProvider.php` already force-enables
+  `translateLabel()` on every Filament component globally, so `->label(...)`
+  strings were already auto-translated via `lang/fa.json`; the only real gaps
+  were (a) ~108 `Section::make('English')` calls across ~51 files that don't
+  auto-translate their heading (Filament's `Section` uses a separate
+  `HasHeading` concern with no translation hook) — fixed by a one-off script
+  wrapping them all in `__()`, and (b) ~64 missing English→Persian entries in
+  `lang/fa.json` (labels, section headings, and `->description()`/
+  `->helperText()` strings), which were added. Verified with a full grep
+  sweep (`->label()`, `Section::make()`, and every `__()` call) confirming
+  zero untranslated strings remain in `app/Filament`.
+- **Finding 2 (sidebar):** Fixed — removed
+  `->collapsibleNavigationGroups(false)` from `AdminPanelProvider.php` (one
+  line), restoring Filament's default collapsible groups.
+- **Finding 3 (product table density):** Fixed in
+  `app/Filament/Resources/Products/Tables/ProductsTable.php` — added a small
+  `ImageColumn` thumbnail as the first column, and trimmed the title column's
+  description to just the subtitle (dropped price/stock, which already have
+  their own dedicated columns and were making rows tall for no new
+  information). ~12 rows now visible per screen instead of ~4-5.
+
+No regressions: `php artisan test` shows the same single pre-existing
+failure (`MobileConfigApiTest`, unrelated) as on a clean checkout.
+
+## Bundling / offers feature (built 2026-08-02)
+
+Separate from this audit: a new product-bundles/offers feature was built —
+`App\Models\ProductBundle` / `ProductBundleItem` / `ProductOffer`, resources
+`ProductBundleResource` and `ProductOfferResource` (nav group بازاریابی), and
+an "Offers" repeater section added to `ProductForm.php` so offers can be
+created directly on both the add-product and edit-product pages. See git
+history for the migrations/models/resources. Cart/checkout pricing
+integration was explicitly left out of scope.
+
+## Full panel audit (2026-08-02)
+
+Following up on the original request ("make it easier for admins to work in
+the panel"), all 37 Filament resources were reviewed at the code level
+(every `Table` and `Resource` class), plus live checks of the dashboard,
+global search, and dark mode. Findings below, roughly in priority order.
+
+### Finding 4 (systemic, highest impact): almost no table is paginated
+
+`grep -rl "paginated(false)" app/Filament` hits **37 of 39** table
+definitions — effectively every list in the panel loads its *entire* table
+in one request with no paging. This isn't hypothetical: `MobileAnalyticsEvent`
+already has **1,030 rows** in the dev database and its table
+(`app/Filament/Resources/MobileAnalyticsEvents/Tables/MobileAnalyticsEventsTable.php`)
+still renders all of them unpaginated on every visit. `AdminActivityLog` and
+`NotificationLog` are pure event logs that only grow over time with no
+built-in pruning, so they'll hit the same wall. `Order`, `CustomerMessage`,
+`StockMovement` will too, just on a slower clock, as the store gets more
+real usage.
+
+**Fix:** for the append-only/log-style resources especially
+(`MobileAnalyticsEvents`, `AdminActivityLogs`, `NotificationLogs`,
+`StockMovements`), drop `->paginated(false)` (Filament's default pagination
+is fine) or set an explicit page size. Worth doing panel-wide over time, but
+those four are the ones already carrying real or fast-growing row counts.
+
+### Finding 5 (systemic): no bulk actions anywhere except Products
+
+Only `ProductsTable` has a real `BulkActionGroup` (show/hide, feature,
+unfeature in bulk). All other 38 resources have `->toolbarActions([])` or no
+bulk actions at all. For an admin processing a queue, this means every
+status change is one record at a time. Highest-value candidates, based on
+what the row-level quick actions already suggest they need:
+
+- **Orders** (`OrdersTable.php`) — already has excellent per-row actions
+  (assign to me, mark paid, confirm, mark ready, complete) but no bulk
+  equivalent for processing several similar orders at once.
+- **CustomerMessages** — bulk "mark replied" for triaging a backlog.
+- **ReturnRequests / ServiceBookings / ProgramBookings** — bulk
+  confirm/approve.
+- **NotificationLogs** — bulk delete for cleanup, given Finding 4.
+
+### Finding 6: dashboard trend chart has a real axis bug, not just sparse data
+
+The prior audit flagged the "عملیات روزانه" trend chart
+(`app/Filament/Widgets/OperationsTrendChart.php`) as a flat line and
+attributed it to sparse demo data. Re-checked live: it's *also* flat because
+there's genuinely little historical data yet (expected for a new store), but
+the y-axis independently has a real bug — it renders `-1.0, -0.6, -0.2, 0.2,
+0.6, 1.0`, i.e. symmetric negative padding around a non-negative count
+metric (orders/bookings/messages can't be negative). The chart's y-axis
+min should be pinned to 0.
+
+### Finding 7: purchase-order line items require re-typing the product name
+
+`app/Filament/Resources/PurchaseOrders/RelationManagers/ItemsRelationManager.php`
+— when adding a line item, `product_id` is a searchable product `Select`,
+but `description` is a separate *required* free-text field right next to it
+with no auto-fill. An admin building a 10-line purchase order has to
+manually retype every product name after already picking it from the
+dropdown. Auto-filling `description` from the selected product's title
+(editable after, for cases where they want a different label) would remove
+pure friction on a form procurement staff use often. (Everything else here
+is well done — `line_total` and the parent PO's `subtotal`/`total`
+auto-recalculate correctly via `PurchaseOrderItem`'s model events.)
+
+### Finding 8: customer-message inbox sorts by recency only
+
+`CustomerMessagesTable.php` defaults to `->defaultSort('created_at', 'desc')`
+and has a "Needs response" filter, but doesn't sort unread/unresolved
+messages to the top by default. A support inbox worked newest-first can bury
+an unanswered message from days ago under newer already-handled ones.
+Sorting by `is_unread` (desc) then `created_at` would surface what actually
+needs attention first.
+
+### Finding 9 (minor, cosmetic): one raw Persian label bypasses the translation convention
+
+`app/Filament/Resources/PurchaseOrders/PurchaseOrderResource.php:97` has
+`TextInput::make('shipping_total')->label('ارسال')` — every other field in
+the panel passes an **English** string to `->label()` and lets the global
+`translateLabel()` hook (`AppServiceProvider.php:53`) resolve it via
+`lang/fa.json`. This one happens to render correctly by coincidence (`__()`
+falls back to returning an unknown key verbatim), but it's inconsistent with
+the convention and would silently break if `lang/fa.json` ever gained a key
+literally named `ارسال`. Should be `->label('Shipping')` with a
+`lang/fa.json` entry, matching every other field.
+
+### Confirmed working well (checked live, no action needed)
+
+- **Global search** — works correctly, returns grouped, relevant, Persian
+  results (tested searching "دوچرخه", got matching products and categories).
+  The earlier audit had this as "not tested."
+- **Dark mode toggle** — works cleanly, badges/colors stay legible. Earlier
+  audit had this as "not visually confirmed."
+- **Orders table row actions** — genuinely well designed for the daily
+  fulfilment workflow (assign, mark paid, confirm, mark ready, complete,
+  generate receipt/invoice, call customer all in one dropdown).
+- **PurchaseOrder totals** — subtotal/total correctly auto-recalculate from
+  line items via model events, no manual math needed.
+
+### Not yet checked
+
+- Mobile/narrow-viewport responsiveness (still only checked at desktop
+  width).
+- Full accessibility pass (contrast, focus states, aria labels).
+- The other ~30 resources not named above were reviewed for structural
+  red flags (pagination, bulk actions, column count) via the metrics script
+  below, but not individually walked through for form/workflow quality the
+  way Orders/CustomerMessages/PurchaseOrders were.
+
+Regenerate the structural metrics table with:
+
+```bash
+python3 -c "
+import re, glob, os
+resource_dirs = sorted(d for d in os.listdir('app/Filament/Resources') if os.path.isdir(f'app/Filament/Resources/{d}'))
+for d in resource_dirs:
+    files = glob.glob(f'app/Filament/Resources/{d}/Tables/*.php') or glob.glob(f'app/Filament/Resources/{d}/*Resource.php')
+    for tf in files:
+        content = open(tf, encoding='utf-8').read()
+        if '(Table \$table): Table' not in content: continue
+        print(d, 'paginated(false):', 'paginated(false)' in content, 'bulk:', 'toolbarActions([' in content and 'toolbarActions([])' not in content)
+"
+```
+
+Original audit notes below, kept for context.
 
 ## How this was produced
 

@@ -15,7 +15,7 @@ class MobileScreenForm
     {
         return $schema
             ->components([
-                Section::make('App page')
+                Section::make(__('App page'))
                     ->description(__('Enable dynamic screen content served by the mobile API.'))
                     ->columns(3)
                     ->schema([

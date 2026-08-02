@@ -16,7 +16,7 @@ class ServiceCategoryForm
     {
         return $schema
             ->components([
-                Section::make('Category')
+                Section::make(__('Category'))
                     ->description(__('Groups workshop services in the mobile app.'))
                     ->columns(3)
                     ->schema([

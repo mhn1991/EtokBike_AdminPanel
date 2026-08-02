@@ -13,7 +13,7 @@ class ProgramBookingInfolist
     {
         return $schema
             ->components([
-                Section::make('Program')
+                Section::make(__('Program'))
                     ->columns(3)
                     ->schema([
                         TextEntry::make('program.title')
@@ -35,7 +35,7 @@ class ProgramBookingInfolist
                                 default => 'gray',
                             }),
                     ]),
-                Section::make('Customer')
+                Section::make(__('Customer'))
                     ->columns(3)
                     ->schema([
                         TextEntry::make('user.name')
@@ -47,7 +47,7 @@ class ProgramBookingInfolist
                         TextEntry::make('customer_email')
                             ->placeholder(__('-')),
                     ]),
-                Section::make('Notes')
+                Section::make(__('Notes'))
                     ->schema([
                         TextEntry::make('customer_notes')
                             ->placeholder(__('-'))
@@ -56,7 +56,7 @@ class ProgramBookingInfolist
                             ->placeholder(__('-'))
                             ->columnSpanFull(),
                     ]),
-                Section::make('Audit')
+                Section::make(__('Audit'))
                     ->columns(2)
                     ->schema([
                         TextEntry::make('created_at')

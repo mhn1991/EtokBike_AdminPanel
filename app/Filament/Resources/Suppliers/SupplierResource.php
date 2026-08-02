@@ -31,13 +31,17 @@ class SupplierResource extends Resource
 
     protected static ?int $navigationSort = 1;
 
+    protected static ?string $modelLabel = 'تامین‌کننده';
+
+    protected static ?string $pluralModelLabel = 'تامین‌کنندگان';
+
     protected static ?string $recordTitleAttribute = 'name';
 
     public static function form(Schema $schema): Schema
     {
         return $schema
             ->components([
-                Section::make('Supplier')
+                Section::make(__('Supplier'))
                     ->description(__('Contact, payment, and compliance details for purchasing.'))
                     ->columns(3)
                     ->schema([
@@ -76,7 +80,6 @@ class SupplierResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->paginated(false)
             ->striped()
             ->columns([
                 TextColumn::make('name')

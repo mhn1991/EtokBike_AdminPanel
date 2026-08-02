@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\PurchaseOrders\RelationManagers;
 
+use App\Models\Product;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
@@ -19,11 +20,17 @@ class ItemsRelationManager extends RelationManager
 {
     protected static string $relationship = 'items';
 
+    protected static ?string $title = 'اقلام سفارش خرید';
+
+    protected static ?string $modelLabel = 'قلم سفارش خرید';
+
+    protected static ?string $pluralModelLabel = 'اقلام سفارش خرید';
+
     public function form(Schema $schema): Schema
     {
         return $schema
             ->components([
-                Section::make('Purchase item')
+                Section::make(__('Purchase item'))
                     ->description(__('Quantities are captured in the selected purchase unit.'))
                     ->columns(3)
                     ->schema([
@@ -32,7 +39,19 @@ class ItemsRelationManager extends RelationManager
                             ->relationship('product', 'title')
                             ->native(false)
                             ->searchable()
-                            ->preload(),
+                            ->preload()
+                            ->live()
+                            ->afterStateUpdated(function (Get $get, Set $set, ?string $state): void {
+                                $product = filled($state) ? Product::query()->find($state) : null;
+
+                                if (blank($get('description'))) {
+                                    $set('description', $product?->title);
+                                }
+
+                                if (blank($get('sku'))) {
+                                    $set('sku', $product?->sku);
+                                }
+                            }),
                         Select::make('product_unit_id')
                             ->label('Unit')
                             ->relationship('productUnit', 'name')

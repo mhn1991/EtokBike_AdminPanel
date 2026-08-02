@@ -16,7 +16,7 @@ class ServiceBookingForm
     {
         return $schema
             ->components([
-                Section::make('Customer')
+                Section::make(__('Customer'))
                     ->description(__('Contact details for service follow-up.'))
                     ->columns(3)
                     ->schema([
@@ -36,7 +36,7 @@ class ServiceBookingForm
                             ->email()
                             ->maxLength(255),
                     ]),
-                Section::make('Service request')
+                Section::make(__('Service request'))
                     ->description(__('What the customer needs and when they prefer to visit.'))
                     ->columns(3)
                     ->schema([
@@ -51,7 +51,7 @@ class ServiceBookingForm
                             ->rows(4)
                             ->columnSpanFull(),
                     ]),
-                Section::make('Workshop status')
+                Section::make(__('Workshop status'))
                     ->columns(2)
                     ->schema([
                         ToggleButtons::make('status')

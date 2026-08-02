@@ -33,10 +33,14 @@ class SeoSettingResource extends Resource
 
     protected static ?int $navigationSort = 1;
 
+    protected static ?string $modelLabel = 'تنظیمات سئو';
+
+    protected static ?string $pluralModelLabel = 'تنظیمات سئو';
+
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
-            Section::make('Defaults')
+            Section::make(__('Defaults'))
                 ->description(__('Fallback metadata used when a page, category, or product does not define its own SEO fields.'))
                 ->columns(2)
                 ->schema([
@@ -65,7 +69,6 @@ class SeoSettingResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->paginated(false)
             ->striped()
             ->columns([
                 TextColumn::make('site_name')->searchable()->sortable(),

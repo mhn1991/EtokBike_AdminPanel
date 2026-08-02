@@ -41,7 +41,7 @@ class StoreProfileResource extends Resource
     {
         return $schema
             ->components([
-                Section::make('Current status')
+                Section::make(__('Current status'))
                     ->description(__('Shown in the Home screen store status block.'))
                     ->columns(2)
                     ->schema([
@@ -57,7 +57,7 @@ class StoreProfileResource extends Resource
                             ->rows(3)
                             ->columnSpanFull(),
                     ]),
-                Section::make('Store info')
+                Section::make(__('Store info'))
                     ->description(__('Shown in the Home screen store info block.'))
                     ->columns(2)
                     ->schema([
@@ -84,7 +84,6 @@ class StoreProfileResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->paginated(false)
             ->striped()
             ->columns([
                 TextColumn::make('branch_title')

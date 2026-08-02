@@ -34,10 +34,14 @@ class PaymentTransactionResource extends Resource
 
     protected static ?int $navigationSort = 3;
 
+    protected static ?string $modelLabel = 'پرداخت';
+
+    protected static ?string $pluralModelLabel = 'پرداخت‌ها';
+
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
-            Section::make('Payment')
+            Section::make(__('Payment'))
                 ->description(__('Track manual or gateway payment attempts and reconciliation references.'))
                 ->columns(3)
                 ->schema([
@@ -66,7 +70,7 @@ class PaymentTransactionResource extends Resource
 
     public static function table(Table $table): Table
     {
-        return $table->paginated(false)->striped()->columns([
+        return $table->striped()->columns([
             TextColumn::make('order.order_number')->label('Order')->placeholder(__('-'))->searchable()->sortable(),
             TextColumn::make('provider')->searchable()->sortable(),
             TextColumn::make('status')->badge()->formatStateUsing(fn (string $state): string => __(PaymentTransaction::STATUS_OPTIONS[$state] ?? $state))->color(fn (string $state): string => match ($state) {

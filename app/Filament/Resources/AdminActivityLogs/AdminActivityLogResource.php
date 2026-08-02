@@ -22,9 +22,13 @@ class AdminActivityLogResource extends Resource
 
     protected static ?int $navigationSort = 1;
 
+    protected static ?string $modelLabel = 'لاگ فعالیت';
+
+    protected static ?string $pluralModelLabel = 'لاگ‌های فعالیت';
+
     public static function table(Table $table): Table
     {
-        return $table->paginated(false)->striped()->columns([
+        return $table->striped()->columns([
             TextColumn::make('created_at')->label('Time')->dateTime()->sortable(),
             TextColumn::make('event')->searchable()->sortable(),
             TextColumn::make('user.name')->label('User')->placeholder(__('-'))->visibleFrom('md'),

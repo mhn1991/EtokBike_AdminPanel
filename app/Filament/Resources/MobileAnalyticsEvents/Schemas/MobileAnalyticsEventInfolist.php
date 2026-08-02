@@ -14,7 +14,7 @@ class MobileAnalyticsEventInfolist
     {
         return $schema
             ->components([
-                Section::make('Event')
+                Section::make(__('Event'))
                     ->columns(3)
                     ->schema([
                         TextEntry::make('event_name')
@@ -35,7 +35,7 @@ class MobileAnalyticsEventInfolist
                         TextEntry::make('updated_at')
                             ->dateTime(),
                     ]),
-                Section::make('Device')
+                Section::make(__('Device'))
                     ->columns(2)
                     ->schema([
                         TextEntry::make('device_id')
@@ -58,7 +58,7 @@ class MobileAnalyticsEventInfolist
                             ->columnSpanFull()
                             ->placeholder(__('-')),
                     ]),
-                Section::make('Metadata')
+                Section::make(__('Metadata'))
                     ->schema([
                         KeyValueEntry::make('metadata')
                             ->placeholder(__('No metadata was sent.')),

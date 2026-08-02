@@ -15,7 +15,6 @@ class ProductCategoriesTable
     public static function configure(Table $table): Table
     {
         return $table
-            ->paginated(false)
             ->striped()
             ->columns([
                 TextColumn::make('label')

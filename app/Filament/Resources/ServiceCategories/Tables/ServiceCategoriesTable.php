@@ -14,7 +14,6 @@ class ServiceCategoriesTable
     public static function configure(Table $table): Table
     {
         return $table
-            ->paginated(false)
             ->striped()
             ->columns([
                 TextColumn::make('slug')

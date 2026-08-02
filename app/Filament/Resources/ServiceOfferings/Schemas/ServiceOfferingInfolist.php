@@ -15,7 +15,7 @@ class ServiceOfferingInfolist
     {
         return $schema
             ->components([
-                Section::make('Service offering')
+                Section::make(__('Service offering'))
                     ->columns(3)
                     ->schema([
                         TextEntry::make('category.label')
@@ -34,7 +34,7 @@ class ServiceOfferingInfolist
                             ->label('Visible in app')
                             ->boolean(),
                     ]),
-                Section::make('App card')
+                Section::make(__('App card'))
                     ->columns(3)
                     ->schema([
                         TextEntry::make('thumbnail_text'),
@@ -43,7 +43,7 @@ class ServiceOfferingInfolist
                             ->disk('public')
                             ->placeholder(__('-')),
                     ]),
-                Section::make('Audit')
+                Section::make(__('Audit'))
                     ->columns(2)
                     ->schema([
                         TextEntry::make('created_at')

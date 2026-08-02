@@ -13,7 +13,7 @@ class ServiceBookingInfolist
     {
         return $schema
             ->components([
-                Section::make('Customer')
+                Section::make(__('Customer'))
                     ->columns(3)
                     ->schema([
                         TextEntry::make('user.name')
@@ -25,7 +25,7 @@ class ServiceBookingInfolist
                         TextEntry::make('customer_email')
                             ->placeholder(__('-')),
                     ]),
-                Section::make('Service request')
+                Section::make(__('Service request'))
                     ->columns(3)
                     ->schema([
                         TextEntry::make('service_type'),
@@ -37,7 +37,7 @@ class ServiceBookingInfolist
                             ->placeholder(__('-'))
                             ->columnSpanFull(),
                     ]),
-                Section::make('Workshop status')
+                Section::make(__('Workshop status'))
                     ->schema([
                         TextEntry::make('status')
                             ->badge()
@@ -54,7 +54,7 @@ class ServiceBookingInfolist
                             ->placeholder(__('-'))
                             ->columnSpanFull(),
                     ]),
-                Section::make('Audit')
+                Section::make(__('Audit'))
                     ->columns(2)
                     ->schema([
                         TextEntry::make('created_at')

@@ -5,6 +5,8 @@ namespace App\Filament\Resources\CustomerMessages\Tables;
 use App\Models\CustomerMessage;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
+use Filament\Actions\BulkAction;
+use Filament\Actions\BulkActionGroup;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Support\Icons\Heroicon;
@@ -13,13 +15,14 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 
 class CustomerMessagesTable
 {
     public static function configure(Table $table): Table
     {
         return $table
-            ->paginated(false)
             ->striped()
             ->columns([
                 TextColumn::make('department.title')
@@ -75,7 +78,7 @@ class CustomerMessagesTable
                 TernaryFilter::make('is_unread')
                     ->label('Needs response'),
             ])
-            ->defaultSort('created_at', 'desc')
+            ->defaultSort(fn (Builder $query): Builder => $query->orderByDesc('is_unread')->orderByDesc('created_at'))
             ->recordActions(ActionGroup::make([
                 ViewAction::make()
                     ->label('Open thread'),
@@ -101,6 +104,16 @@ class CustomerMessagesTable
                 ->iconButton()
                 ->color('gray'))
             ->recordActionsColumnLabel('')
-            ->toolbarActions([]);
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    BulkAction::make('bulkMarkReplied')
+                        ->label('Mark replied')
+                        ->icon(Heroicon::CheckCircle)
+                        ->color('success')
+                        ->action(fn (Collection $records) => $records->each(fn (CustomerMessage $record) => $record->update(['is_unread' => false])))
+                        ->deselectRecordsAfterCompletion()
+                        ->successNotificationTitle(__('Selected messages marked replied')),
+                ])->label('Bulk actions'),
+            ]);
     }
 }

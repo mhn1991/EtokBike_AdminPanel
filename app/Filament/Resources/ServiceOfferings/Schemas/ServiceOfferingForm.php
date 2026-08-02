@@ -20,7 +20,7 @@ class ServiceOfferingForm
     {
         return $schema
             ->components([
-                Section::make('Service offering')
+                Section::make(__('Service offering'))
                     ->description(__('The service card customers see in the mobile app.'))
                     ->columns(3)
                     ->schema([
@@ -62,7 +62,7 @@ class ServiceOfferingForm
                             ->required()
                             ->default(true),
                     ]),
-                Section::make('App card')
+                Section::make(__('App card'))
                     ->description(__('Thumbnail treatment for service lists.'))
                     ->columns(3)
                     ->schema([

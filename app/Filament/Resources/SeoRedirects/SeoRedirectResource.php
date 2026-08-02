@@ -33,10 +33,14 @@ class SeoRedirectResource extends Resource
 
     protected static ?int $navigationSort = 2;
 
+    protected static ?string $modelLabel = 'ریدایرکت';
+
+    protected static ?string $pluralModelLabel = 'ریدایرکت‌ها';
+
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
-            Section::make('Redirect')
+            Section::make(__('Redirect'))
                 ->description(__('Redirect an old storefront URL to a current page.'))
                 ->columns(3)
                 ->schema([
@@ -52,7 +56,6 @@ class SeoRedirectResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->paginated(false)
             ->striped()
             ->columns([
                 TextColumn::make('source_path')->searchable()->sortable(),

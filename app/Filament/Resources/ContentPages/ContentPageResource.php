@@ -36,12 +36,16 @@ class ContentPageResource extends Resource
 
     protected static ?int $navigationSort = 3;
 
+    protected static ?string $modelLabel = 'صفحه محتوا';
+
+    protected static ?string $pluralModelLabel = 'صفحات محتوا';
+
     protected static ?string $recordTitleAttribute = 'title';
 
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
-            Section::make('Page')
+            Section::make(__('Page'))
                 ->description(__('Create SEO-managed storefront content pages.'))
                 ->columns(3)
                 ->schema([
@@ -60,7 +64,7 @@ class ContentPageResource extends Resource
                     Textarea::make('body')->rows(10)->columnSpanFull(),
                     Toggle::make('is_active')->default(true),
                 ]),
-            Section::make('SEO')
+            Section::make(__('SEO'))
                 ->columns(3)
                 ->schema([
                     TextInput::make('seo_title')->maxLength(255)->columnSpanFull(),
@@ -88,7 +92,6 @@ class ContentPageResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->paginated(false)
             ->striped()
             ->columns([
                 TextColumn::make('title')->description(fn (ContentPage $record): string => '/pages/'.$record->slug)->searchable()->sortable()->wrap(),

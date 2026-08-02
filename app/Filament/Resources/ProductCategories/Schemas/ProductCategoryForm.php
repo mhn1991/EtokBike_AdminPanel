@@ -21,7 +21,7 @@ class ProductCategoryForm
     {
         return $schema
             ->components([
-                Section::make('Category')
+                Section::make(__('Category'))
                     ->description(__('Organizes product lists in the mobile shop.'))
                     ->columns(3)
                     ->schema([
@@ -56,7 +56,7 @@ class ProductCategoryForm
                             ->required()
                             ->default(true),
                     ]),
-                Section::make('SEO')
+                Section::make(__('SEO'))
                     ->description(__('Controls category page metadata, social preview, and sitemap settings.'))
                     ->columns(3)
                     ->schema([
