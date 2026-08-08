@@ -30,7 +30,7 @@ class FilamentAdminPagesSmokeTest extends TestCase
 
     public function test_admin_pages_render_page_by_page(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->admin()->create();
 
         $order = Order::query()->create([
             'customer_name' => 'Smoke Order Customer',

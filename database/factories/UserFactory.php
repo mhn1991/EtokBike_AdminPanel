@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Spatie\Permission\Models\Role;
 
 /**
  * @extends Factory<User>
@@ -41,5 +42,20 @@ class UserFactory extends Factory
         return $this->state(fn (array $attributes) => [
             'email_verified_at' => null,
         ]);
+    }
+
+    /**
+     * Grant this user the admin role, so it can access the Filament panel.
+     */
+    public function admin(): static
+    {
+        return $this->afterCreating(function (User $user): void {
+            $role = Role::query()->firstOrCreate([
+                'name' => 'admin',
+                'guard_name' => 'web',
+            ]);
+
+            $user->assignRole($role);
+        });
     }
 }

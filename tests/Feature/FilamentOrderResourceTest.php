@@ -13,7 +13,7 @@ class FilamentOrderResourceTest extends TestCase
 
     public function test_the_orders_resource_renders_in_the_admin_panel(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->admin()->create();
 
         $order = Order::query()->create([
             'customer_name' => 'Panel Customer',

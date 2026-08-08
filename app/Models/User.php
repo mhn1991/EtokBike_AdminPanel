@@ -13,7 +13,6 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Schema;
 use Laravel\Sanctum\HasApiTokens;
-use Spatie\Permission\Models\Role;
 use Spatie\Permission\Traits\HasRoles;
 
 #[Fillable(['name', 'email', 'password'])]
@@ -43,14 +42,9 @@ class User extends Authenticatable implements FilamentUser
         }
 
         if (! Schema::hasTable('roles')) {
-            return true;
+            return false;
         }
 
-        $adminRoleExists = Role::query()
-            ->where('name', 'admin')
-            ->where('guard_name', 'web')
-            ->exists();
-
-        return ! $adminRoleExists || $this->hasRole('admin');
+        return $this->hasRole('admin');
     }
 }

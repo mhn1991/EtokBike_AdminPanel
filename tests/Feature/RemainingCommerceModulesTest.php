@@ -25,7 +25,7 @@ class RemainingCommerceModulesTest extends TestCase
 
     public function test_remaining_module_admin_screens_render(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->admin()->create();
 
         $category = ProductCategory::query()->create([
             'slug' => 'bikes',

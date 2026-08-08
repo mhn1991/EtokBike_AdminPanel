@@ -19,7 +19,7 @@ class FilamentDashboardTest extends TestCase
 
     public function test_the_dashboard_shows_operational_widgets(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->admin()->create();
 
         Order::query()->create([
             'customer_name' => 'Dashboard Customer',

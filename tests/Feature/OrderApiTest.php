@@ -16,6 +16,21 @@ class OrderApiTest extends TestCase
 
     public function test_it_creates_an_order_from_the_api(): void
     {
+        $category = ProductCategory::query()->create([
+            'slug' => 'bikes',
+            'label' => 'Bikes',
+        ]);
+
+        Product::query()->create([
+            'product_category_id' => $category->id,
+            'slug' => 'bike-etx-200',
+            'title' => 'دوچرخه کوهستان ETX 200',
+            'subtitle' => 'Demo bike',
+            'availability' => 'in_stock',
+            'price_value' => 28500000,
+            'stock_quantity' => 10,
+        ]);
+
         $response = $this->postJson('/api/orders', [
             'customer_name' => 'Mobile Customer',
             'customer_phone' => '+989120000000',
@@ -49,6 +64,72 @@ class OrderApiTest extends TestCase
         ]);
 
         $this->assertTrue(Order::query()->where('customer_name', 'Mobile Customer')->exists());
+    }
+
+    public function test_it_ignores_a_tampered_client_supplied_unit_price(): void
+    {
+        $category = ProductCategory::query()->create([
+            'slug' => 'bikes',
+            'label' => 'Bikes',
+        ]);
+
+        Product::query()->create([
+            'product_category_id' => $category->id,
+            'slug' => 'bike-price-integrity',
+            'title' => 'Bike Price Integrity Test',
+            'subtitle' => 'Demo bike',
+            'availability' => 'in_stock',
+            'price_value' => 28500000,
+            'stock_quantity' => 10,
+        ]);
+
+        $response = $this->postJson('/api/orders', [
+            'customer_name' => 'Attacker',
+            'customer_phone' => '+989120000000',
+            'fulfillment_method' => 'pickup',
+            'items' => [
+                [
+                    'product_id' => 'bike-price-integrity',
+                    'title' => 'Bike Price Integrity Test',
+                    'quantity' => 1,
+                    'unit_price' => 1,
+                ],
+            ],
+        ]);
+
+        $response
+            ->assertCreated()
+            ->assertJsonPath('data.subtotal', 28500000)
+            ->assertJsonPath('data.total', 28500000);
+
+        $this->assertDatabaseHas('order_items', [
+            'title' => 'Bike Price Integrity Test',
+            'unit_price' => 28500000,
+            'line_total' => 28500000,
+        ]);
+    }
+
+    public function test_it_rejects_an_order_for_a_product_that_does_not_exist(): void
+    {
+        $response = $this->postJson('/api/orders', [
+            'customer_name' => 'Mobile Customer',
+            'customer_phone' => '+989120000000',
+            'fulfillment_method' => 'pickup',
+            'items' => [
+                [
+                    'product_id' => 'does-not-exist',
+                    'title' => 'Ghost Product',
+                    'quantity' => 1,
+                    'unit_price' => 1000,
+                ],
+            ],
+        ]);
+
+        $response->assertStatus(422);
+
+        $this->assertDatabaseMissing('orders', [
+            'customer_name' => 'Mobile Customer',
+        ]);
     }
 
     public function test_authenticated_order_api_links_customer_and_delivery_records(): void

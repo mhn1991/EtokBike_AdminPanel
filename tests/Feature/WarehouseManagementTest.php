@@ -154,7 +154,7 @@ class WarehouseManagementTest extends TestCase
 
     public function test_stock_movements_resource_renders_in_the_admin_panel(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->admin()->create();
         $product = $this->createProduct(['stock_quantity' => 2]);
 
         StockMovement::query()->create([

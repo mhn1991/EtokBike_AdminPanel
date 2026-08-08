@@ -13,7 +13,7 @@ class FilamentMobileScreenResourceTest extends TestCase
 
     public function test_the_mobile_screens_resource_renders_in_the_admin_panel(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->admin()->create();
 
         $screen = MobileScreen::query()->create([
             'screen_id' => 'home',

@@ -75,7 +75,7 @@ class ReceiptGenerationTest extends TestCase
 
     public function test_receipt_admin_and_print_pages_render(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->admin()->create();
         [$order] = $this->createOrderWithItem();
         $receipt = app(ReceiptGenerator::class)->forOrder($order);
 

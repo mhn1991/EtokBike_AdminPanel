@@ -21,6 +21,7 @@ use App\Models\StoreProfile;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
 use Spatie\Permission\Models\Role;
 
 class DatabaseSeeder extends Seeder
@@ -37,15 +38,7 @@ class DatabaseSeeder extends Seeder
             'guard_name' => 'web',
         ]);
 
-        $admin = User::query()->updateOrCreate(
-            ['email' => 'admin@example.com'],
-            [
-                'name' => 'Admin User',
-                'password' => 'password',
-            ],
-        );
-
-        $admin->assignRole($adminRole);
+        $this->seedAdminUser($adminRole);
 
         $order = Order::query()->firstOrCreate(
             ['order_number' => 'ETB-DEMO-001'],
@@ -86,6 +79,31 @@ class DatabaseSeeder extends Seeder
         $this->seedStoreProfile();
         $this->seedCustomerProfiles();
         $this->seedMobileScreens();
+    }
+
+    private function seedAdminUser(Role $adminRole): void
+    {
+        // Never seed/reset a well-known admin credential outside local/demo environments:
+        // re-running this seeder must not be able to reset a real admin's password.
+        if (app()->isProduction()) {
+            return;
+        }
+
+        $admin = User::query()->where('email', 'admin@example.com')->first();
+
+        if (! $admin) {
+            $password = Str::password(20);
+
+            $admin = User::query()->create([
+                'name' => 'Admin User',
+                'email' => 'admin@example.com',
+                'password' => $password,
+            ]);
+
+            $this->command?->info("Seeded demo admin account: admin@example.com / {$password}");
+        }
+
+        $admin->assignRole($adminRole);
     }
 
     private function seedPrograms(): void

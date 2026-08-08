@@ -41,10 +41,21 @@ class OrderController extends Controller
             'items.*.metadata' => ['nullable', 'array'],
         ]);
 
+        $resolvedItems = [];
+
         foreach ($validated['items'] as $item) {
             $product = $this->findProductForItem($item);
 
-            if ($product && ! $product->hasEnoughStock((int) $item['quantity'])) {
+            if (! $product) {
+                return response()->json([
+                    'message' => "The selected product for \"{$item['title']}\" is invalid.",
+                    'errors' => [
+                        'items' => ["The selected product for \"{$item['title']}\" is invalid."],
+                    ],
+                ], 422);
+            }
+
+            if (! $product->hasEnoughStock((int) $item['quantity'])) {
                 return response()->json([
                     'message' => "Not enough stock for {$product->title}.",
                     'errors' => [
@@ -52,7 +63,14 @@ class OrderController extends Controller
                     ],
                 ], 422);
             }
+
+            $resolvedItems[] = [
+                ...$item,
+                'unit_price' => $product->price_value,
+            ];
         }
+
+        $validated['items'] = $resolvedItems;
 
         $subtotal = collect($validated['items'])
             ->sum(fn (array $item): int => (int) $item['quantity'] * (int) $item['unit_price']);

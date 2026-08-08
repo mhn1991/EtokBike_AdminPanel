@@ -18,7 +18,7 @@ class FilamentProductResourceTest extends TestCase
 
     public function test_the_products_resource_renders_in_the_admin_panel(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->admin()->create();
         $category = ProductCategory::query()->create([
             'slug' => 'bikes',
             'label' => 'دوچرخه',
@@ -41,7 +41,7 @@ class FilamentProductResourceTest extends TestCase
 
     public function test_the_product_create_page_has_a_guided_rich_authoring_layout(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->admin()->create();
 
         $this->actingAs($user)
             ->get('/admin/products/create')
@@ -55,7 +55,7 @@ class FilamentProductResourceTest extends TestCase
 
     public function test_product_can_be_created_with_variants_from_the_product_form(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->admin()->create();
         $category = ProductCategory::query()->create([
             'slug' => 'bikes',
             'label' => 'دوچرخه',
@@ -147,7 +147,7 @@ class FilamentProductResourceTest extends TestCase
 
     public function test_product_slug_is_suggested_until_a_staff_member_customizes_it(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->admin()->create();
         $category = ProductCategory::query()->create([
             'slug' => 'city-bikes',
             'label' => 'دوچرخه شهری',
@@ -214,7 +214,7 @@ class FilamentProductResourceTest extends TestCase
 
     public function test_the_product_categories_resource_renders_in_the_admin_panel(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->admin()->create();
 
         ProductCategory::query()->create([
             'slug' => 'parts',
@@ -229,7 +229,7 @@ class FilamentProductResourceTest extends TestCase
 
     public function test_product_category_can_be_created_under_a_parent_category(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->admin()->create();
         $parent = ProductCategory::query()->create([
             'slug' => 'bikes',
             'label' => 'دوچرخه',

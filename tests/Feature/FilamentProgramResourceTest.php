@@ -14,7 +14,7 @@ class FilamentProgramResourceTest extends TestCase
 
     public function test_the_programs_resource_renders_in_the_admin_panel(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->admin()->create();
         $category = ProgramCategory::query()->create([
             'slug' => 'rides',
             'label' => 'رکاب‌زنی',
@@ -39,7 +39,7 @@ class FilamentProgramResourceTest extends TestCase
 
     public function test_the_program_categories_resource_renders_in_the_admin_panel(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->admin()->create();
 
         ProgramCategory::query()->create([
             'slug' => 'camping',

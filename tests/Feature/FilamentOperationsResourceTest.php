@@ -17,7 +17,7 @@ class FilamentOperationsResourceTest extends TestCase
 
     public function test_service_resources_render_in_the_admin_panel(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->admin()->create();
         $category = ServiceCategory::query()->create([
             'slug' => 'maintenance',
             'label' => 'سرویس',
@@ -45,7 +45,7 @@ class FilamentOperationsResourceTest extends TestCase
 
     public function test_message_resources_render_in_the_admin_panel(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->admin()->create();
         $department = MessageDepartment::query()->create([
             'slug' => 'support',
             'title' => 'پشتیبانی سفارش',

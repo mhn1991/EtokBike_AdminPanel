@@ -40,18 +40,19 @@ class CustomerProfileUpdater
     private function findProfile(?User $user, string $email, string $phone): ?CustomerProfile
     {
         if ($user) {
-            $profile = CustomerProfile::query()
+            return CustomerProfile::query()
                 ->where('user_id', $user->id)
                 ->first();
-
-            if ($profile) {
-                return $profile;
-            }
         }
 
+        // Anonymous requests may only match/update a profile that isn't linked to a
+        // registered account, so an unauthenticated caller can never overwrite the
+        // stored name/phone/address of someone else's real account just by knowing
+        // their email or phone number.
         if ($email !== '') {
             $profile = CustomerProfile::query()
                 ->where('email', $email)
+                ->whereNull('user_id')
                 ->first();
 
             if ($profile) {
@@ -62,6 +63,7 @@ class CustomerProfileUpdater
         if ($phone !== '') {
             return CustomerProfile::query()
                 ->where('phone', $phone)
+                ->whereNull('user_id')
                 ->first();
         }
 
