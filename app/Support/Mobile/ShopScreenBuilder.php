@@ -257,6 +257,12 @@ class ShopScreenBuilder
                     ['id' => 'over_20m', 'label' => 'بالای ۲۰ میلیون'],
                 ],
             ],
+            [
+                'id' => 'maxPrice',
+                'label' => 'قیمت کمتر از',
+                'default' => '',
+                'placeholder' => '15000000',
+            ],
             ...$features,
         ];
     }
