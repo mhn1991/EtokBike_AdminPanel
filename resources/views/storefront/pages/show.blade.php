@@ -16,7 +16,7 @@
         </header>
 
         <div class="prose prose-neutral mt-8 max-w-none leading-8 text-ink">
-            {!! nl2br(e($page->body ?? '')) !!}
+            {{ $page->richBody() }}
         </div>
     </article>
 @endsection

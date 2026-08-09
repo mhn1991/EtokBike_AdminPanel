@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Filament\Forms\Components\RichEditor\RichContentRenderer;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 
@@ -49,5 +50,12 @@ class ContentPage extends Model
             'is_active' => 'boolean',
             'sort_order' => 'integer',
         ];
+    }
+
+    public function richBody(): RichContentRenderer
+    {
+        return RichContentRenderer::make($this->body)
+            ->fileAttachmentsDisk('public')
+            ->fileAttachmentsVisibility('public');
     }
 }

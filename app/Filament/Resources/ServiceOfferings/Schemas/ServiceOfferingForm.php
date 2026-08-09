@@ -4,6 +4,7 @@ namespace App\Filament\Resources\ServiceOfferings\Schemas;
 
 use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -54,8 +55,23 @@ class ServiceOfferingForm
                             ->maxLength(255),
                         TextInput::make('price_label')
                             ->maxLength(255),
-                        Textarea::make('description')
-                            ->rows(4)
+                        RichEditor::make('description')
+                            ->helperText(__('Shown on the service card in the app. The mobile app receives a plain-text version automatically; keep it short and avoid tables or columns.'))
+                            ->toolbarButtons([
+                                ['paragraph', 'h1', 'h2', 'h3', 'h4', 'lead', 'small'],
+                                ['bold', 'italic', 'underline', 'strike', 'subscript', 'superscript'],
+                                ['textColor', 'highlight', 'code', 'link'],
+                                ['alignStart', 'alignCenter', 'alignEnd', 'alignJustify'],
+                                ['bulletList', 'orderedList', 'blockquote', 'codeBlock', 'horizontalRule', 'details', 'grid', 'table'],
+                                ['attachFiles', 'clearFormatting', 'undo', 'redo'],
+                            ])
+                            ->fileAttachmentsDisk('public')
+                            ->fileAttachmentsDirectory('mobile/service-descriptions')
+                            ->fileAttachmentsVisibility('public')
+                            ->fileAttachmentsAcceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                            ->fileAttachmentsMaxSize(4096)
+                            ->preventFileAttachmentPathTampering()
+                            ->resizableImages()
                             ->columnSpanFull(),
                         Toggle::make('is_active')
                             ->label('Visible in app')

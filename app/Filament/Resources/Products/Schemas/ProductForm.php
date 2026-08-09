@@ -83,15 +83,15 @@ class ProductForm
                                 RichEditor::make('description')
                                     ->label('Full description')
                                     ->live(onBlur: true)
-                                    ->helperText(__('Use headings, short paragraphs, lists, links, tables, and images to explain features, fit, included items, and who the product suits. Use collapsible sections for long specs, and a divider to break up long pages. Price and stock are managed below.'))
+                                    ->helperText(__('Use headings, short paragraphs, lists, links, tables, and images to explain features, fit, included items, and who the product suits. Use collapsible sections for long specs, columns for side-by-side comparisons, and a divider to break up long pages. Price and stock are managed below.'))
                                     ->placeholder(__('Write the complete product description...'))
                                     ->toolbarButtons([
-                                        ['bold', 'italic', 'underline', 'strike', 'highlight', 'link'],
-                                        ['h2', 'h3', 'lead'],
-                                        ['alignStart', 'alignCenter', 'alignEnd'],
-                                        ['blockquote', 'bulletList', 'orderedList', 'horizontalRule'],
-                                        ['details', 'table', 'attachFiles'],
-                                        ['clearFormatting', 'undo', 'redo'],
+                                        ['paragraph', 'h1', 'h2', 'h3', 'h4', 'lead', 'small'],
+                                        ['bold', 'italic', 'underline', 'strike', 'subscript', 'superscript'],
+                                        ['textColor', 'highlight', 'code', 'link'],
+                                        ['alignStart', 'alignCenter', 'alignEnd', 'alignJustify'],
+                                        ['bulletList', 'orderedList', 'blockquote', 'codeBlock', 'horizontalRule', 'details', 'grid', 'table'],
+                                        ['attachFiles', 'clearFormatting', 'undo', 'redo'],
                                     ])
                                     ->fileAttachmentsDisk('public')
                                     ->fileAttachmentsDirectory('mobile/product-descriptions')

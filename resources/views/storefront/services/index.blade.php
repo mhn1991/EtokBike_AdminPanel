@@ -73,7 +73,9 @@
                                         <h4 class="mt-2 text-lg font-semibold text-ink">{{ $offering->title }}</h4>
                                         <p class="mt-2 text-sm leading-6 text-muted">{{ $offering->subtitle }}</p>
                                         @if ($offering->description)
-                                            <p class="mt-3 text-sm leading-6 text-muted">{{ $offering->description }}</p>
+                                            <div class="prose prose-sm prose-neutral mt-3 max-w-none leading-6 text-muted">
+                                                {{ $offering->richDescription() }}
+                                            </div>
                                         @endif
                                         @if ($offering->price_label)
                                             <p class="mt-4 font-semibold text-ink">{{ $offering->price_label }}</p>

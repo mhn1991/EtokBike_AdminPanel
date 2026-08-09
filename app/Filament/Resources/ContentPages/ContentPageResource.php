@@ -9,6 +9,7 @@ use App\Models\ContentPage;
 use BackedEnum;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -61,7 +62,24 @@ class ContentPageResource extends Resource
                     TextInput::make('slug')->required()->maxLength(255)->unique(ignoreRecord: true),
                     TextInput::make('sort_order')->required()->integer()->minValue(0)->default(0),
                     Textarea::make('excerpt')->rows(3)->maxLength(500)->columnSpanFull(),
-                    Textarea::make('body')->rows(10)->columnSpanFull(),
+                    RichEditor::make('body')
+                        ->toolbarButtons([
+                            ['paragraph', 'h1', 'h2', 'h3', 'h4', 'lead', 'small'],
+                            ['bold', 'italic', 'underline', 'strike', 'subscript', 'superscript'],
+                            ['textColor', 'highlight', 'code', 'link'],
+                            ['alignStart', 'alignCenter', 'alignEnd', 'alignJustify'],
+                            ['bulletList', 'orderedList', 'blockquote', 'codeBlock', 'horizontalRule', 'details', 'grid', 'table'],
+                            ['attachFiles', 'clearFormatting', 'undo', 'redo'],
+                        ])
+                        ->fileAttachmentsDisk('public')
+                        ->fileAttachmentsDirectory('seo/pages')
+                        ->fileAttachmentsVisibility('public')
+                        ->fileAttachmentsAcceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                        ->fileAttachmentsMaxSize(4096)
+                        ->preventFileAttachmentPathTampering()
+                        ->resizableImages()
+                        ->extraInputAttributes(['style' => 'min-height: 20rem;'])
+                        ->columnSpanFull(),
                     Toggle::make('is_active')->default(true),
                 ]),
             Section::make(__('SEO'))

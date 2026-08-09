@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Support\Mobile\ImageUrl;
+use Filament\Forms\Components\RichEditor\RichContentRenderer;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -32,6 +33,24 @@ class ServiceOffering extends Model
         return ['sort_order' => 'integer', 'is_active' => 'boolean'];
     }
 
+    public function richDescription(): RichContentRenderer
+    {
+        return RichContentRenderer::make($this->description)
+            ->fileAttachmentsDisk('public')
+            ->fileAttachmentsVisibility('public');
+    }
+
+    public function plainDescription(): ?string
+    {
+        if (blank($this->description)) {
+            return null;
+        }
+
+        $description = trim(preg_replace('/\s+/u', ' ', $this->richDescription()->toText()) ?? '');
+
+        return $description !== '' ? $description : null;
+    }
+
     /**
      * @return array<string, mixed>
      */
@@ -40,7 +59,7 @@ class ServiceOffering extends Model
         return [
             'title' => $this->title,
             'subtitle' => $this->subtitle,
-            'description' => $this->description,
+            'description' => $this->plainDescription(),
             'price' => $this->price_label,
             'thumbnailText' => $this->thumbnail_text,
             'thumbnailColor' => $this->thumbnail_color,
